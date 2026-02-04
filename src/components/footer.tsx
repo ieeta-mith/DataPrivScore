@@ -1,13 +1,11 @@
 import { motion } from 'motion/react';
-import { Github, Linkedin, Mail, Shield } from 'lucide-react';
+import { Github, Shield } from 'lucide-react';
 
 export const Footer = () => {
 	const currentYear = new Date().getFullYear();
 
 	const socialLinks = [
-		{ icon: Github, href: '#', label: 'GitHub' },
-		{ icon: Linkedin, href: '#', label: 'LinkedIn' },
-		{ icon: Mail, href: '#', label: 'Email' },
+		{ icon: Github, href: 'https://github.com/ieeta-mith', label: 'GitHub' },
 	];
 
 	return (
