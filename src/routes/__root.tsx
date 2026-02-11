@@ -1,12 +1,14 @@
+import SidebarWrapper from '@/components/sidebar-wrapper'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { Navbar } from '@/components/navbar'
 
 const RootLayout = () => {
   return (
-    <>
-      <Navbar />
-      <Outlet />
-    </>
+    <div className="flex min-h-screen">
+      <SidebarWrapper />
+      <main className="flex-1 overflow-auto">
+        <Outlet />
+      </main>
+    </div>
   )
 }
 

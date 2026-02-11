@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@import "@bioinformatics-ua/iam-sidebar/dist/index.css";
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
