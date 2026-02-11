@@ -13,7 +13,7 @@ import { classifyDataset } from '@/services/attribute-classifier'
 
 import { features } from '@/utils/constants'
 import { parseCSV } from '@/utils/csv-parser'
-import { setClassificationData } from '@/utils/storage'
+import { setClassificationData } from '@/lib/storage'
 
 import type { ProcessingStatus } from '@/types/props'
 
