@@ -18,10 +18,7 @@ const DEFAULT_CONFIG: ClassificationConfig = {
   strictMode: false,
 };
 
-/**
- * Main classification service for dataset attributes.
- * Runs entirely in the browser with no external dependencies.
- */
+
 export class AttributeClassifier {
   private config: ClassificationConfig;
 
@@ -29,9 +26,6 @@ export class AttributeClassifier {
     this.config = { ...DEFAULT_CONFIG, ...config };
   }
 
-  /**
-   * Classify all attributes in a parsed CSV dataset
-   */
   classifyDataset(parsedCSV: ParsedCSV): ClassificationResult {
     const attributes = parsedCSV.headers.map((header, index) => {
       const columnValues = parsedCSV.rows.map(row => row[index] || '');
@@ -47,9 +41,6 @@ export class AttributeClassifier {
     };
   }
 
-  /**
-   * Classify a single attribute based on its name and sample values
-   */
   classifyAttribute(name: string, values: string[]): AttributeClassification {
     const sampleValues = this.getSampleValues(values);
     const dataPattern = this.detectDataPattern(values);
@@ -83,9 +74,6 @@ export class AttributeClassifier {
     };
   }
 
-  /**
-   * Match attribute against classification rules
-   */
   private matchRules(name: string, values: string[]): {
     type: AttributeType;
     confidence: number;
@@ -127,9 +115,6 @@ export class AttributeClassifier {
     return null;
   }
 
-  /**
-   * Apply heuristic classification when no rules match
-   */
   private applyHeuristics(
     name: string,
     values: string[],
@@ -224,9 +209,6 @@ export class AttributeClassifier {
     }
   }
 
-  /**
-   * Detect the data pattern of a column based on its values
-   */
   private detectDataPattern(values: string[]): DataPattern {
     const nonEmptyValues = values.filter(v => v.trim() !== '');
     if (nonEmptyValues.length === 0) return 'unknown';
@@ -242,9 +224,9 @@ export class AttributeClassifier {
 
     // Check for date patterns
     const datePatterns = [
-      /^\d{4}-\d{2}-\d{2}$/,  // ISO date
+      /^\d{4}-\d{2}-\d{2}$/,    // ISO date
       /^\d{2}\/\d{2}\/\d{4}$/,  // US date
-      /^\d{2}-\d{2}-\d{4}$/,  // EU date
+      /^\d{2}-\d{2}-\d{4}$/,    // EU date
       /^\d{4}\/\d{2}\/\d{2}$/,  // Alternative ISO
     ];
     if (sample.every(v => datePatterns.some(p => p.test(v)))) {
@@ -286,25 +268,16 @@ export class AttributeClassifier {
     return 'text';
   }
 
-  /**
-   * Get unique sample values for display
-   */
   private getSampleValues(values: string[]): string[] {
     const uniqueValues = [...new Set(values.filter(v => v.trim() !== ''))];
     return uniqueValues.slice(0, this.config.sampleSize);
   }
 
-  /**
-   * Check if a column has high cardinality (many unique values)
-   */
   private hasHighCardinality(values: string[]): boolean {
     const uniqueRatio = this.getUniqueRatio(values);
     return uniqueRatio > 0.8;
   }
 
-  /**
-   * Calculate the ratio of unique values to total values
-   */
   private getUniqueRatio(values: string[]): number {
     const nonEmpty = values.filter(v => v.trim() !== '');
     if (nonEmpty.length === 0) return 0;
@@ -313,9 +286,6 @@ export class AttributeClassifier {
     return unique.size / nonEmpty.length;
   }
 
-  /**
-   * Generate summary statistics for the classification
-   */
   private generateSummary(attributes: AttributeClassification[]): ClassificationSummary {
     const totalAttributes = attributes.length;
     const directIdentifiers = attributes.filter(a => a.type === 'direct-identifier').length;
@@ -336,29 +306,17 @@ export class AttributeClassifier {
     };
   }
 
-  /**
-   * Update configuration
-   */
   updateConfig(config: Partial<ClassificationConfig>): void {
     this.config = { ...this.config, ...config };
   }
 
-  /**
-   * Get current configuration
-   */
   getConfig(): ClassificationConfig {
     return { ...this.config };
   }
 }
 
-/**
- * Singleton instance for convenience
- */
 export const attributeClassifier = new AttributeClassifier();
 
-/**
- * Helper function to classify a dataset in one call
- */
 export function classifyDataset(
   parsedCSV: ParsedCSV,
   config?: Partial<ClassificationConfig>
@@ -367,9 +325,6 @@ export function classifyDataset(
   return classifier.classifyDataset(parsedCSV);
 }
 
-/**
- * Update a single attribute's classification (for manual overrides)
- */
 export function updateAttributeClassification(
   result: ClassificationResult,
   attributeName: string,

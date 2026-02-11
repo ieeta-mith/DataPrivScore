@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
-import { HomeIcon, LockKeyhole, ShieldQuestionMark } from 'lucide-react';
+import { HomeIcon, LockKeyhole } from 'lucide-react';
 import { motion } from 'motion/react';
 
 export const Navbar = () => {
@@ -54,24 +54,6 @@ export const Navbar = () => {
 									<span className="relative z-10">Home</span>
 								</Link>
 							</Button>
-						</motion.div>
-
-						<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-							<Link to="/about">
-								<Button
-									variant="ghost"
-									className="[&.active]:bg-accent [&.active]:text-accent-foreground relative overflow-hidden group"
-								>
-									<motion.div
-										className="absolute inset-0 bg-linear-to-r from-primary/10 to-primary/5"
-										initial={{ x: '-100%' }}
-										whileHover={{ x: 0 }}
-										transition={{ duration: 0.3 }}
-									/>
-									<ShieldQuestionMark className="h-4 w-4 mr-2 relative z-10" />
-									<span className="relative z-10">About</span>
-								</Button>
-							</Link>
 						</motion.div>
 					</div>
 				</div>

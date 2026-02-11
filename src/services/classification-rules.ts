@@ -10,7 +10,6 @@ import type { ClassificationRule } from '@/types/attribute-classification';
 
 // ============================================================================
 // DIRECT IDENTIFIERS
-// Attributes that can uniquely identify an individual on their own
 // ============================================================================
 export const directIdentifierRules: ClassificationRule[] = [
   {
@@ -111,7 +110,6 @@ export const directIdentifierRules: ClassificationRule[] = [
 
 // ============================================================================
 // QUASI-IDENTIFIERS
-// Attributes that can be combined to re-identify individuals
 // ============================================================================
 export const quasiIdentifierRules: ClassificationRule[] = [
   {
@@ -218,7 +216,6 @@ export const quasiIdentifierRules: ClassificationRule[] = [
 
 // ============================================================================
 // SENSITIVE ATTRIBUTES
-// Private information that requires protection
 // ============================================================================
 export const sensitiveAttributeRules: ClassificationRule[] = [
   {
@@ -355,7 +352,6 @@ export const sensitiveAttributeRules: ClassificationRule[] = [
 
 // ============================================================================
 // NON-SENSITIVE ATTRIBUTES
-// Data that is generally not identifying or sensitive
 // ============================================================================
 export const nonSensitiveRules: ClassificationRule[] = [
   {
@@ -452,9 +448,6 @@ export const allClassificationRules: ClassificationRule[] = [
   ...nonSensitiveRules,
 ];
 
-/**
- * Get human-readable label for attribute type
- */
 export const attributeTypeLabels: Record<string, string> = {
   'direct-identifier': 'Direct Identifier',
   'quasi-identifier': 'Quasi-Identifier',
@@ -462,9 +455,6 @@ export const attributeTypeLabels: Record<string, string> = {
   'non-sensitive': 'Non-Sensitive',
 };
 
-/**
- * Get color class for attribute type (Tailwind classes)
- */
 export const attributeTypeColors: Record<string, { bg: string; text: string; border: string }> = {
   'direct-identifier': {
     bg: 'bg-red-100 dark:bg-red-950',
