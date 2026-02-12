@@ -23,11 +23,11 @@ export default function SidebarWrapper( config : SidebarConfig) {
         authEnabled: true,
         keyboardShortcuts: true,
         standaloneMode: true,
-        adminRoleName: import.meta.env.NEXT_PUBLIC_ADMIN_ROLE || 'dashboard-admin',
-        keycloakUrl: import.meta.env.NEXT_PUBLIC_KEYCLOAK_URL || 'http://localhost:8080/keycloak/',
-        tokenKey: import.meta.env.NEXT_PUBLIC_TOKEN_KEY || 'cookie.session-token',
-        refreshTokenKey: import.meta.env.NEXT_PUBLIC_REFRESH_TOKEN_KEY || 'cookie.session-token-refresh',
-        communityKey: import.meta.env.NEXT_PUBLIC_COMMUNITY_KEY || 'currentCommunity',
+        adminRoleName: import.meta.env.VITE_PUBLIC_ADMIN_ROLE || 'dashboard-admin',
+        keycloakUrl: import.meta.env.VITE_PUBLIC_KEYCLOAK_URL || 'http://localhost:8080/keycloak/',
+        tokenKey: import.meta.env.VITE_PUBLIC_TOKEN_KEY || 'cookie.session-token',
+        refreshTokenKey: import.meta.env.VITE_PUBLIC_REFRESH_TOKEN_KEY || 'cookie.session-token-refresh',
+        communityKey: import.meta.env.VITE_PUBLIC_COMMUNITY_KEY || 'currentCommunity',
         ...config,
       }}
     />

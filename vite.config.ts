@@ -6,6 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/privacy',
   plugins: [
     tanstackRouter({
       target: 'react',
@@ -20,6 +21,6 @@ export default defineConfig({
     },
   },
   server: {
-    port: 3000,
+    port: 3001,
   }
 })

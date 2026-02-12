@@ -3,7 +3,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import {
   ArrowLeft,
-  ArrowRight,
+  // ArrowRight,
   Download,
   FileSpreadsheet,
   Database,
@@ -15,18 +15,18 @@ import {
   FileText,
   TrendingUp,
   BarChart3,
-  Loader2,
+  // Loader2,
 } from "lucide-react";
 
-import { Card, CardContent } from '@/components/ui/card';
+// import { Card, CardContent } from '@/components/ui/card';
 import { AnimatedButton, Button } from '@/components/ui/button';
 import { DatasetStats } from '@/components/classification-stats';
 
-import { updateAttributeClassification } from '@/services/attribute-classifier';
+// import { updateAttributeClassification } from '@/services/attribute-classifier';
 
-import { setPrivacyResultData, getClassificationData, clearClassificationData } from '@/lib/storage';
+import { getClassificationData, clearClassificationData } from '@/lib/storage';
 
-import type { AttributeType, ClassificationResult } from '@/types/attribute-classification';
+import type { ClassificationResult } from '@/types/attribute-classification';
 import type { ParsedCSV } from '@/types/csv-parser';
 
 export const Route = createFileRoute('/classify')({
@@ -38,7 +38,7 @@ function ClassifyPage() {
   const [result, setResult] = useState<ClassificationResult | null>(null);
   const [parsedCSV, setParsedCSV] = useState<ParsedCSV | null>(null);
   const [fileName, setFileName] = useState<string | null>(null);
-  const [isCalculating, setIsCalculating] = useState(false);
+  // const [isCalculating, setIsCalculating] = useState(false);
 
   useEffect(() => {
     const data = getClassificationData();
