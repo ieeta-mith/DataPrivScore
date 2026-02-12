@@ -89,7 +89,7 @@ export interface ClassificationRule {
 
 export interface AttributeTypeInfo {
   title: string;
-  label: string;
+  label: AttributeType;
   icon: React.ComponentType<any>;
   short: string;
   examples: string;

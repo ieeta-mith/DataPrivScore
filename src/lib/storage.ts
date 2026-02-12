@@ -17,6 +17,10 @@ export function setClassificationData(
   storedFileName = fileName;
 }
 
+export function updateClassificationResult(updatedResult: ClassificationResult) {
+  storedClassificationResult = updatedResult;
+}
+
 export function getClassificationData() {
   return {
     parsedCSV: storedParsedCSV,

@@ -33,7 +33,7 @@ export const HIGH_CONFIDENCE_THRESHOLD = 0.8;
 export const attributeTypes: AttributeTypeInfo[] = [
   {
     title: 'Direct Identifier',
-    label: 'direct',
+    label: 'direct-identifier',
     icon: User,
     short: 'Uniquely identifies an individual on its own',
     examples: 'Name, SSN, Email, Phone, Patient ID',
@@ -45,7 +45,7 @@ export const attributeTypes: AttributeTypeInfo[] = [
   },
   {
     title: 'Quasi-Identifier',
-    label: 'quasi',
+    label: 'quasi-identifier',
     icon: Users,
     short: 'Can be combined to re-identify individuals',
     examples: 'Age, Gender, ZIP Code, Birth Data, Occupation',
