@@ -23,11 +23,13 @@ import { AnimatedButton, Button } from '@/components/ui/button';
 import { DatasetStats } from '@/components/classification-stats';
 
 import { updateAttributeClassification } from '@/services/attribute-classifier';
+import { calculatePrivacyIndex } from "@/services/privacy";
 
 import {
   updateClassificationResult,
 	getClassificationData,
 	clearClassificationData,
+  setPrivacyResultData,
 } from '@/lib/storage';
 
 import type { AttributeType, ClassificationResult } from '@/types/attribute-classification';
@@ -113,21 +115,20 @@ function ClassifyPage() {
 
 		setIsCalculating(true);
 
-		// Use setTimeout to allow UI to update before heavy calculation
-		// setTimeout(() => {
-		//   try {
-		//     const privacyResult = calculatePrivacyIndex({
-		//       parsedCSV,
-		//       classification: result,
-		//     });
+		setTimeout(() => {
+		  try {
+		    const privacyResult = calculatePrivacyIndex({
+		      parsedCSV,
+		      classification: result,
+		    });
 
-		//     setPrivacyResultData(privacyResult, result, parsedCSV, fileName);
-		//     navigate({ to: "/results" });
-		//   } catch (error) {
-		//     console.error("Error calculating privacy index:", error);
-		//     setIsCalculating(false);
-		//   }
-		// }, 100);
+		    setPrivacyResultData(privacyResult, result, parsedCSV, fileName);
+		    navigate({ to: "/results" });
+		  } catch (error) {
+		    console.error("Error calculating privacy index:", error);
+		    setIsCalculating(false);
+		  }
+		}, 2000);
 	};
 
 	return (

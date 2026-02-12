@@ -27,7 +27,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { HelpDialogClassification } from '@/components/help-dialog-classification';
+import { HelpDialogClassification } from '@/components/help-dialogs/classification';
 
 import { attributeTypes } from '@/utils/constants';
 
