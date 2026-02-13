@@ -1,0 +1,94 @@
+{
+  "fileName": "dataset_10_attributes.csv",
+  "timestamp": "2026-02-13T22:35:32.568Z",
+  "summary": {
+    "totalAttributes": 10,
+    "directIdentifiers": 3,
+    "quasiIdentifiers": 5,
+    "sensitiveAttributes": 2,
+    "nonSensitiveAttributes": 0,
+    "averageConfidence": 0.89
+  },
+  "attributes": [
+    {
+      "name": "Full Name",
+      "type": "direct-identifier",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "text",
+      "reason": "Personal name that directly identifies individuals"
+    },
+    {
+      "name": "Date of Birth",
+      "type": "quasi-identifier",
+      "confidence": 0.92,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Birth date is a powerful quasi-identifier"
+    },
+    {
+      "name": "Social Security Number",
+      "type": "direct-identifier",
+      "confidence": 0.98,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Government-issued identification number"
+    },
+    {
+      "name": "Phone Number",
+      "type": "direct-identifier",
+      "confidence": 0.9,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Phone number can directly identify individuals"
+    },
+    {
+      "name": "Gender",
+      "type": "quasi-identifier",
+      "confidence": 0.85,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Gender combined with other attributes can re-identify"
+    },
+    {
+      "name": "Zip Code",
+      "type": "quasi-identifier",
+      "confidence": 0.9,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Geographic codes are key quasi-identifiers"
+    },
+    {
+      "name": "Occupation",
+      "type": "quasi-identifier",
+      "confidence": 0.8,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Occupation combined with other data can re-identify"
+    },
+    {
+      "name": "Annual Income",
+      "type": "sensitive",
+      "confidence": 0.9,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "Financial compensation is sensitive information"
+    },
+    {
+      "name": "Medical Condition",
+      "type": "sensitive",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Medical diagnosis is sensitive health information"
+    },
+    {
+      "name": "Education Level",
+      "type": "sensitive",
+      "confidence": 0.75,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Education level is sensitive personal information"
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "fileName": "dataset_5_attributes.csv",
+  "timestamp": "2026-02-13T22:33:50.866Z",
+  "summary": {
+    "totalAttributes": 5,
+    "directIdentifiers": 2,
+    "quasiIdentifiers": 2,
+    "sensitiveAttributes": 1,
+    "nonSensitiveAttributes": 0,
+    "averageConfidence": 0.9099999999999999
+  },
+  "attributes": [
+    {
+      "name": "Name",
+      "type": "direct-identifier",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "text",
+      "reason": "Personal name that directly identifies individuals"
+    },
+    {
+      "name": "Age",
+      "type": "quasi-identifier",
+      "confidence": 0.9,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "Age is a common quasi-identifier used in linkage attacks"
+    },
+    {
+      "name": "Email",
+      "type": "direct-identifier",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Email address is a direct identifier"
+    },
+    {
+      "name": "Salary",
+      "type": "sensitive",
+      "confidence": 0.9,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "Financial compensation is sensitive information"
+    },
+    {
+      "name": "City",
+      "type": "quasi-identifier",
+      "confidence": 0.85,
+      "isManualOverride": false,
+      "dataPattern": "location",
+      "reason": "Geographic location is a quasi-identifier"
+    }
+  ]
+}
