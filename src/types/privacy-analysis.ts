@@ -323,12 +323,12 @@ export interface PrivacyAnalysisConfig {
 export const DEFAULT_PRIVACY_CONFIG: PrivacyAnalysisConfig = {
   kThreshold: 5,
   lThreshold: 2,
-  tThreshold: 0.15,
+  tThreshold: 0.3,
   lDiversityType: 'distinct',
   metricWeights: {
     kAnonymity: 0.25,
     lDiversity: 0.20,
-    tCloseness: 0.15,
+    tCloseness: 0.3,
     techniqueDetection: 0.20,
     reidentificationRisk: 0.20,
   },

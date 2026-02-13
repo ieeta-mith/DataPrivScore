@@ -1,0 +1,40 @@
+Name,Age,Gender,Zip Code,City,Country,Marital Status,Education Level,Occupation,Annual Salary
+Alice Johnson,30,Female,10001,New York,USA,Single,Bachelors,Software Engineer,72000
+Emma Williams,30,Female,10001,New York,USA,Single,Bachelors,Data Analyst,68000
+Sarah Davis,30,Female,10001,New York,USA,Single,Bachelors,Product Manager,75000
+Michael Brown,35,Male,90210,Los Angeles,USA,Married,Masters,Financial Analyst,85000
+James Wilson,35,Male,90210,Los Angeles,USA,Married,Masters,Project Manager,82000
+Robert Taylor,35,Male,90210,Los Angeles,USA,Married,Masters,Consultant,88000
+Jennifer Martinez,40,Female,60601,Chicago,USA,Divorced,Bachelors,HR Manager,67000
+Laura Anderson,40,Female,60601,Chicago,USA,Divorced,Bachelors,Marketing Manager,64000
+Diana Thomas,40,Female,60601,Chicago,USA,Divorced,Bachelors,Sales Manager,70000
+Christopher Lee,45,Male,77001,Houston,USA,Married,Doctorate,Physician,125000
+David Garcia,45,Male,77001,Houston,USA,Married,Doctorate,Surgeon,130000
+William Harris,45,Male,77001,Houston,USA,Married,Doctorate,Dentist,118000
+Emily Clark,25,Female,98101,Seattle,USA,Single,Bachelors,Junior Developer,52000
+Sophia Lewis,25,Female,98101,Seattle,USA,Single,Bachelors,QA Engineer,48000
+Olivia Walker,25,Female,98101,Seattle,USA,Single,Bachelors,Technical Writer,45000
+Daniel Robinson,50,Male,33101,Miami,USA,Widowed,Masters,CEO,185000
+Matthew Hall,50,Male,33101,Miami,USA,Widowed,Masters,CFO,175000
+Andrew Young,50,Male,33101,Miami,USA,Widowed,Masters,COO,180000
+Jessica King,35,Female,85001,Phoenix,USA,Married,Bachelors,Teacher,48000
+Amanda Wright,35,Female,85001,Phoenix,USA,Married,Bachelors,Nurse,52000
+Rachel Scott,35,Female,85001,Phoenix,USA,Married,Bachelors,Social Worker,45000
+Benjamin Adams,40,Male,19101,Philadelphia,USA,Single,Masters,Lawyer,125000
+Kevin Nelson,40,Male,19101,Philadelphia,USA,Single,Masters,Judge,135000
+Joshua Baker,40,Male,19101,Philadelphia,USA,Single,Masters,Paralegal,78000
+Grace Mitchell,45,Female,78201,San Antonio,USA,Married,Bachelors,Accountant,68000
+Chloe Perez,45,Female,78201,San Antonio,USA,Married,Bachelors,Auditor,72000
+Mia Roberts,45,Female,78201,San Antonio,USA,Married,Bachelors,Tax Advisor,65000
+Nathan Green,30,Male,02101,Boston,USA,Single,Doctorate,Researcher,92000
+Tyler Campbell,30,Male,02101,Boston,USA,Single,Doctorate,Professor,95000
+Ryan Mitchell,30,Male,02101,Boston,USA,Single,Doctorate,Scientist,88000
+Victoria Hill,28,Female,75201,Dallas,USA,Single,Masters,Graphic Designer,58000
+Natalie Ross,28,Female,75201,Dallas,USA,Single,Masters,Web Developer,62000
+Hannah Ford,28,Female,75201,Dallas,USA,Single,Masters,UI Designer,55000
+Marcus Johnson,42,Male,30301,Atlanta,USA,Married,Bachelors,Sales Director,95000
+Derek Morgan,42,Male,30301,Atlanta,USA,Married,Bachelors,Operations Manager,92000
+Frank Castle,42,Male,30301,Atlanta,USA,Married,Bachelors,Regional Manager,89000
+Elena Gilbert,32,Female,97201,Portland,USA,Divorced,Masters,Research Analyst,71000
+Clara Oswald,32,Female,97201,Portland,USA,Divorced,Masters,Policy Advisor,68000
+Iris West,32,Female,97201,Portland,USA,Divorced,Masters,Program Manager,74000

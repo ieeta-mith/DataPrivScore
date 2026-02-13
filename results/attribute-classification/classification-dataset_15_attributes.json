@@ -1,0 +1,134 @@
+{
+  "fileName": "dataset_15_attributes.csv",
+  "timestamp": "2026-02-13T22:36:58.971Z",
+  "summary": {
+    "totalAttributes": 15,
+    "directIdentifiers": 6,
+    "quasiIdentifiers": 7,
+    "sensitiveAttributes": 2,
+    "nonSensitiveAttributes": 0,
+    "averageConfidence": 0.8833333333333333
+  },
+  "attributes": [
+    {
+      "name": "First Name",
+      "type": "direct-identifier",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "text",
+      "reason": "Personal name that directly identifies individuals"
+    },
+    {
+      "name": "Last Name",
+      "type": "direct-identifier",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "text",
+      "reason": "Personal name that directly identifies individuals"
+    },
+    {
+      "name": "Email Address",
+      "type": "direct-identifier",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Email address is a direct identifier"
+    },
+    {
+      "name": "Phone",
+      "type": "direct-identifier",
+      "confidence": 0.9,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Phone number can directly identify individuals"
+    },
+    {
+      "name": "Date of Birth",
+      "type": "quasi-identifier",
+      "confidence": 0.92,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Birth date is a powerful quasi-identifier"
+    },
+    {
+      "name": "National ID",
+      "type": "direct-identifier",
+      "confidence": 0.98,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Government-issued identification number"
+    },
+    {
+      "name": "Gender",
+      "type": "quasi-identifier",
+      "confidence": 0.85,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Gender combined with other attributes can re-identify"
+    },
+    {
+      "name": "Marital Status",
+      "type": "sensitive",
+      "confidence": 0.75,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Marital status is sensitive personal information"
+    },
+    {
+      "name": "Street Address",
+      "type": "direct-identifier",
+      "confidence": 0.85,
+      "isManualOverride": false,
+      "dataPattern": "text",
+      "reason": "Physical or network address can identify individuals"
+    },
+    {
+      "name": "City",
+      "type": "quasi-identifier",
+      "confidence": 0.85,
+      "isManualOverride": false,
+      "dataPattern": "location",
+      "reason": "Geographic location is a quasi-identifier"
+    },
+    {
+      "name": "Country",
+      "type": "quasi-identifier",
+      "confidence": 0.85,
+      "isManualOverride": false,
+      "dataPattern": "location",
+      "reason": "Geographic location is a quasi-identifier"
+    },
+    {
+      "name": "Employment Status",
+      "type": "quasi-identifier",
+      "confidence": 0.8,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Occupation combined with other data can re-identify"
+    },
+    {
+      "name": "Job Title",
+      "type": "quasi-identifier",
+      "confidence": 0.8,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Occupation combined with other data can re-identify"
+    },
+    {
+      "name": "Monthly Salary",
+      "type": "sensitive",
+      "confidence": 0.9,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "Financial compensation is sensitive information"
+    },
+    {
+      "name": "Health Status",
+      "type": "sensitive",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Medical diagnosis is sensitive health information"
+    }
+  ]
+}

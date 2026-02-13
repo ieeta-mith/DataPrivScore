@@ -1,0 +1,231 @@
+{
+  "fileName": "dataset_poorly_anonymized.csv",
+  "timestamp": "2026-02-13T23:14:36.291Z",
+  "overallScore": 12,
+  "grade": "F",
+  "riskLevel": "critical",
+  "metricScores": [
+    {
+      "name": "K-Anonymity",
+      "score": 14,
+      "weight": 0.25,
+      "weightedScore": 3.5,
+      "status": "fail",
+      "details": "k=1 (threshold: 5), 0.0% compliant"
+    },
+    {
+      "name": "L-Diversity",
+      "score": 20,
+      "weight": 0.2,
+      "weightedScore": 4,
+      "status": "fail",
+      "details": "l=1 (threshold: 2), 0.0% compliant"
+    },
+    {
+      "name": "T-Closeness",
+      "score": 13,
+      "weight": 0.15,
+      "weightedScore": 1.95,
+      "status": "fail",
+      "details": "max distance: 0.498 (threshold: 0.15)"
+    },
+    {
+      "name": "Privacy Techniques",
+      "score": 15,
+      "weight": 0.2,
+      "weightedScore": 3,
+      "status": "fail",
+      "details": "1 technique(s) detected, 6% coverage"
+    },
+    {
+      "name": "Re-identification Risk",
+      "score": 0,
+      "weight": 0.2,
+      "weightedScore": 0,
+      "status": "fail",
+      "details": "critical risk (100.00% probability)"
+    }
+  ],
+  "kAnonymity": {
+    "kValue": 1,
+    "threshold": 5,
+    "satisfies": false,
+    "complianceRate": 0,
+    "equivalenceClasses": 35
+  },
+  "lDiversity": {
+    "lValue": 1,
+    "threshold": 2,
+    "satisfies": false,
+    "complianceRate": 0,
+    "type": "distinct"
+  },
+  "tCloseness": {
+    "maxDistance": 0.49769585253456206,
+    "threshold": 0.15,
+    "satisfies": false,
+    "complianceRate": 0
+  },
+  "detectedTechniques": [
+    {
+      "technique": "generalization",
+      "confidence": 0.6,
+      "affectedAttributes": [
+        "Gender"
+      ]
+    }
+  ],
+  "reidentificationRisk": {
+    "score": 100,
+    "probability": 1,
+    "level": "critical"
+  },
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "priority": "critical",
+      "category": "general",
+      "title": "Remove or Protect Direct Identifiers",
+      "description": "Direct identifiers (Full Name, Email, SSN, Phone Number, Street Address) can directly identify individuals and should be removed, hashed, or pseudonymized.",
+      "expectedImpact": 25,
+      "affectedAttributes": [
+        "Full Name",
+        "Email",
+        "SSN",
+        "Phone Number",
+        "Street Address"
+      ],
+      "action": "Apply pseudonymization or cryptographic hashing to these attributes."
+    },
+    {
+      "id": "rec-2",
+      "priority": "high",
+      "category": "k-anonymity",
+      "title": "Improve K-Anonymity",
+      "description": "Dataset achieves k=1 but requires k=5. 35 records are in violating equivalence classes.",
+      "expectedImpact": 20,
+      "affectedAttributes": [
+        "Date of Birth",
+        "Gender",
+        "Zip Code",
+        "City",
+        "Country",
+        "Occupation"
+      ],
+      "action": "Generalize quasi-identifier values or suppress outlier records."
+    },
+    {
+      "id": "rec-3",
+      "priority": "high",
+      "category": "l-diversity",
+      "title": "Improve L-Diversity",
+      "description": "Dataset achieves l=1 diversity but requires l=2. Some equivalence classes have only one unique sensitive value, enabling attribute disclosure.",
+      "expectedImpact": 15,
+      "affectedAttributes": [
+        "Annual Salary",
+        "Medical Condition",
+        "Credit Score"
+      ],
+      "action": "Apply anatomy or bucketization to sensitive attributes."
+    },
+    {
+      "id": "rec-5",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Pseudonymization",
+      "description": "Direct identifiers should be pseudonymized or removed.",
+      "expectedImpact": 15,
+      "affectedAttributes": [
+        "Full Name",
+        "Email",
+        "SSN",
+        "Phone Number",
+        "Street Address"
+      ],
+      "action": "Apply Pseudonymization to: Full Name, Email, SSN, Phone Number, Street Address"
+    },
+    {
+      "id": "rec-6",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Hashing",
+      "description": "Consider hashing direct identifiers if linkage is needed.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Full Name",
+        "Email",
+        "SSN",
+        "Phone Number",
+        "Street Address"
+      ],
+      "action": "Apply Hashing to: Full Name, Email, SSN, Phone Number, Street Address"
+    },
+    {
+      "id": "rec-7",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Generalization",
+      "description": "Quasi-identifiers should be generalized to achieve k-anonymity.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Date of Birth",
+        "Zip Code",
+        "City",
+        "Country",
+        "Occupation"
+      ],
+      "action": "Apply Generalization to: Date of Birth, Zip Code, City, Country, Occupation"
+    },
+    {
+      "id": "rec-4",
+      "priority": "medium",
+      "category": "t-closeness",
+      "title": "Address Distributional Skew",
+      "description": "Maximum distributional distance (0.498) exceeds threshold (0.15). This could enable inference attacks.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Annual Salary"
+      ],
+      "action": "Apply data swapping or noise addition to reduce skew in equivalence classes."
+    },
+    {
+      "id": "rec-8",
+      "priority": "medium",
+      "category": "technique",
+      "title": "Apply Bucketing",
+      "description": "Sensitive attributes could benefit from bucketing.",
+      "expectedImpact": 5,
+      "affectedAttributes": [
+        "Annual Salary",
+        "Medical Condition",
+        "Credit Score"
+      ],
+      "action": "Apply Bucketing to: Annual Salary, Medical Condition, Credit Score"
+    }
+  ],
+  "metadata": {
+    "recordCount": 35,
+    "attributeCount": 16,
+    "classificationSummary": {
+      "directIdentifiers": 5,
+      "quasiIdentifiers": 6,
+      "sensitiveAttributes": 3,
+      "nonSensitiveAttributes": 2
+    },
+    "analysisDuration": 3,
+    "config": {
+      "kThreshold": 5,
+      "lThreshold": 2,
+      "tThreshold": 0.15,
+      "lDiversityType": "distinct",
+      "metricWeights": {
+        "kAnonymity": 0.25,
+        "lDiversity": 0.2,
+        "tCloseness": 0.15,
+        "techniqueDetection": 0.2,
+        "reidentificationRisk": 0.2
+      },
+      "includeDetailedAnalysis": true
+    }
+  }
+}

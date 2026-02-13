@@ -16,7 +16,7 @@ export interface TClosenessConfig {
 }
 
 const DEFAULT_CONFIG: TClosenessConfig = {
-  tThreshold: 0.15,
+  tThreshold: 0.3,
 };
 
 // ============================================================================
