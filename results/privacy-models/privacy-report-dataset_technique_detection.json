@@ -1,0 +1,192 @@
+{
+  "fileName": "dataset_technique_detection.csv",
+  "timestamp": "2026-02-13T23:09:43.575Z",
+  "overallScore": 27,
+  "grade": "F",
+  "riskLevel": "critical",
+  "metricScores": [
+    {
+      "name": "K-Anonymity",
+      "score": 14,
+      "weight": 0.25,
+      "weightedScore": 3.5,
+      "status": "fail",
+      "details": "k=1 (threshold: 5), 0.0% compliant"
+    },
+    {
+      "name": "L-Diversity",
+      "score": 20,
+      "weight": 0.2,
+      "weightedScore": 4,
+      "status": "fail",
+      "details": "l=1 (threshold: 2), 0.0% compliant"
+    },
+    {
+      "name": "T-Closeness",
+      "score": 14,
+      "weight": 0.15,
+      "weightedScore": 2.1,
+      "status": "fail",
+      "details": "max distance: 0.497 (threshold: 0.15)"
+    },
+    {
+      "name": "Privacy Techniques",
+      "score": 88,
+      "weight": 0.2,
+      "weightedScore": 17.6,
+      "status": "pass",
+      "details": "4 technique(s) detected, 75% coverage"
+    },
+    {
+      "name": "Re-identification Risk",
+      "score": 0,
+      "weight": 0.2,
+      "weightedScore": 0,
+      "status": "fail",
+      "details": "critical risk (100.00% probability)"
+    }
+  ],
+  "kAnonymity": {
+    "kValue": 1,
+    "threshold": 5,
+    "satisfies": false,
+    "complianceRate": 0,
+    "equivalenceClasses": 40
+  },
+  "lDiversity": {
+    "lValue": 1,
+    "threshold": 2,
+    "satisfies": false,
+    "complianceRate": 0,
+    "type": "distinct"
+  },
+  "tCloseness": {
+    "maxDistance": 0.49696969696969684,
+    "threshold": 0.15,
+    "satisfies": false,
+    "complianceRate": 0
+  },
+  "detectedTechniques": [
+    {
+      "technique": "generalization",
+      "confidence": 0.9,
+      "affectedAttributes": [
+        "Age Range",
+        "Salary Band",
+        "Swapped Gender"
+      ]
+    },
+    {
+      "technique": "masking",
+      "confidence": 0.9,
+      "affectedAttributes": [
+        "Masked Name",
+        "Generalized Zip",
+        "Masked Phone",
+        "Masked ID"
+      ]
+    },
+    {
+      "technique": "hashing",
+      "confidence": 0.95,
+      "affectedAttributes": [
+        "Hashed Email",
+        "Hashed SSN"
+      ]
+    },
+    {
+      "technique": "bucketing",
+      "confidence": 0.85,
+      "affectedAttributes": [
+        "Age Range"
+      ]
+    }
+  ],
+  "reidentificationRisk": {
+    "score": 100,
+    "probability": 1,
+    "level": "critical"
+  },
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "priority": "high",
+      "category": "k-anonymity",
+      "title": "Improve K-Anonymity",
+      "description": "Dataset achieves k=1 but requires k=5. 40 records are in violating equivalence classes.",
+      "expectedImpact": 20,
+      "affectedAttributes": [
+        "Age Range",
+        "Generalized Zip",
+        "City Region",
+        "Noisy Income",
+        "Swapped Gender",
+        "Generalized Country"
+      ],
+      "action": "Generalize quasi-identifier values or suppress outlier records."
+    },
+    {
+      "id": "rec-2",
+      "priority": "high",
+      "category": "l-diversity",
+      "title": "Improve L-Diversity",
+      "description": "Dataset achieves l=1 diversity but requires l=2. Some equivalence classes have only one unique sensitive value, enabling attribute disclosure.",
+      "expectedImpact": 15,
+      "affectedAttributes": [
+        "Salary Band"
+      ],
+      "action": "Apply anatomy or bucketization to sensitive attributes."
+    },
+    {
+      "id": "rec-4",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Generalization",
+      "description": "Quasi-identifiers should be generalized to achieve k-anonymity.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "City Region",
+        "Noisy Income",
+        "Generalized Country"
+      ],
+      "action": "Apply Generalization to: City Region, Noisy Income, Generalized Country"
+    },
+    {
+      "id": "rec-3",
+      "priority": "medium",
+      "category": "t-closeness",
+      "title": "Address Distributional Skew",
+      "description": "Maximum distributional distance (0.497) exceeds threshold (0.15). This could enable inference attacks.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Salary Band"
+      ],
+      "action": "Apply data swapping or noise addition to reduce skew in equivalence classes."
+    }
+  ],
+  "metadata": {
+    "recordCount": 40,
+    "attributeCount": 12,
+    "classificationSummary": {
+      "directIdentifiers": 5,
+      "quasiIdentifiers": 6,
+      "sensitiveAttributes": 1,
+      "nonSensitiveAttributes": 0
+    },
+    "analysisDuration": 6.100000000093132,
+    "config": {
+      "kThreshold": 5,
+      "lThreshold": 2,
+      "tThreshold": 0.15,
+      "lDiversityType": "distinct",
+      "metricWeights": {
+        "kAnonymity": 0.25,
+        "lDiversity": 0.2,
+        "tCloseness": 0.15,
+        "techniqueDetection": 0.2,
+        "reidentificationRisk": 0.2
+      },
+      "includeDetailedAnalysis": true
+    }
+  }
+}

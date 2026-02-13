@@ -1,0 +1,201 @@
+{
+  "fileName": "dataset_l_diversity.csv",
+  "timestamp": "2026-02-13T23:05:37.791Z",
+  "overallScore": 39,
+  "grade": "F",
+  "riskLevel": "high",
+  "metricScores": [
+    {
+      "name": "K-Anonymity",
+      "score": 42,
+      "weight": 0.25,
+      "weightedScore": 10.5,
+      "status": "warning",
+      "details": "k=3 (threshold: 5), 0.0% compliant"
+    },
+    {
+      "name": "L-Diversity",
+      "score": 86,
+      "weight": 0.2,
+      "weightedScore": 17.2,
+      "status": "pass",
+      "details": "l=2 (threshold: 2), 100.0% compliant"
+    },
+    {
+      "name": "T-Closeness",
+      "score": 2,
+      "weight": 0.15,
+      "weightedScore": 0.3,
+      "status": "fail",
+      "details": "max distance: 0.923 (threshold: 0.15)"
+    },
+    {
+      "name": "Privacy Techniques",
+      "score": 16,
+      "weight": 0.2,
+      "weightedScore": 3.2,
+      "status": "fail",
+      "details": "1 technique(s) detected, 10% coverage"
+    },
+    {
+      "name": "Re-identification Risk",
+      "score": 41,
+      "weight": 0.2,
+      "weightedScore": 8.200000000000001,
+      "status": "warning",
+      "details": "high risk (33.33% probability)"
+    }
+  ],
+  "kAnonymity": {
+    "kValue": 3,
+    "threshold": 5,
+    "satisfies": false,
+    "complianceRate": 0,
+    "equivalenceClasses": 13
+  },
+  "lDiversity": {
+    "lValue": 2,
+    "threshold": 2,
+    "satisfies": true,
+    "complianceRate": 100,
+    "type": "distinct"
+  },
+  "tCloseness": {
+    "maxDistance": 0.9230769230769228,
+    "threshold": 0.15,
+    "satisfies": false,
+    "complianceRate": 0
+  },
+  "detectedTechniques": [
+    {
+      "technique": "generalization",
+      "confidence": 0.6,
+      "affectedAttributes": [
+        "Gender"
+      ]
+    }
+  ],
+  "reidentificationRisk": {
+    "score": 59,
+    "probability": 0.3333333333333333,
+    "level": "high"
+  },
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "priority": "critical",
+      "category": "general",
+      "title": "Remove or Protect Direct Identifiers",
+      "description": "Direct identifiers (Name) can directly identify individuals and should be removed, hashed, or pseudonymized.",
+      "expectedImpact": 25,
+      "affectedAttributes": [
+        "Name"
+      ],
+      "action": "Apply pseudonymization or cryptographic hashing to these attributes."
+    },
+    {
+      "id": "rec-2",
+      "priority": "high",
+      "category": "k-anonymity",
+      "title": "Improve K-Anonymity",
+      "description": "Dataset achieves k=3 but requires k=5. 39 records are in violating equivalence classes.",
+      "expectedImpact": 20,
+      "affectedAttributes": [
+        "Age",
+        "Gender",
+        "Zip Code",
+        "City",
+        "Country"
+      ],
+      "action": "Generalize quasi-identifier values or suppress outlier records."
+    },
+    {
+      "id": "rec-4",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Pseudonymization",
+      "description": "Direct identifiers should be pseudonymized or removed.",
+      "expectedImpact": 15,
+      "affectedAttributes": [
+        "Name"
+      ],
+      "action": "Apply Pseudonymization to: Name"
+    },
+    {
+      "id": "rec-5",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Hashing",
+      "description": "Consider hashing direct identifiers if linkage is needed.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Name"
+      ],
+      "action": "Apply Hashing to: Name"
+    },
+    {
+      "id": "rec-6",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Generalization",
+      "description": "Quasi-identifiers should be generalized to achieve k-anonymity.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Age",
+        "Zip Code",
+        "City",
+        "Country"
+      ],
+      "action": "Apply Generalization to: Age, Zip Code, City, Country"
+    },
+    {
+      "id": "rec-3",
+      "priority": "medium",
+      "category": "t-closeness",
+      "title": "Address Distributional Skew",
+      "description": "Maximum distributional distance (0.923) exceeds threshold (0.15). This could enable inference attacks.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Medical Condition"
+      ],
+      "action": "Apply data swapping or noise addition to reduce skew in equivalence classes."
+    },
+    {
+      "id": "rec-7",
+      "priority": "medium",
+      "category": "technique",
+      "title": "Apply Bucketing",
+      "description": "Sensitive attributes could benefit from bucketing.",
+      "expectedImpact": 5,
+      "affectedAttributes": [
+        "Medical Condition"
+      ],
+      "action": "Apply Bucketing to: Medical Condition"
+    }
+  ],
+  "metadata": {
+    "recordCount": 39,
+    "attributeCount": 10,
+    "classificationSummary": {
+      "directIdentifiers": 1,
+      "quasiIdentifiers": 5,
+      "sensitiveAttributes": 1,
+      "nonSensitiveAttributes": 3
+    },
+    "analysisDuration": 1.8999999999068677,
+    "config": {
+      "kThreshold": 5,
+      "lThreshold": 2,
+      "tThreshold": 0.15,
+      "lDiversityType": "distinct",
+      "metricWeights": {
+        "kAnonymity": 0.25,
+        "lDiversity": 0.2,
+        "tCloseness": 0.15,
+        "techniqueDetection": 0.2,
+        "reidentificationRisk": 0.2
+      },
+      "includeDetailedAnalysis": true
+    }
+  }
+}

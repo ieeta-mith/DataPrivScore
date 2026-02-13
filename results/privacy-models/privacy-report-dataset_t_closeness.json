@@ -1,0 +1,184 @@
+{
+  "fileName": "dataset_t_closeness.csv",
+  "timestamp": "2026-02-13T23:07:22.915Z",
+  "overallScore": 64,
+  "grade": "D",
+  "riskLevel": "medium",
+  "metricScores": [
+    {
+      "name": "K-Anonymity",
+      "score": 56,
+      "weight": 0.25,
+      "weightedScore": 14,
+      "status": "warning",
+      "details": "k=4 (threshold: 5), 0.0% compliant"
+    },
+    {
+      "name": "L-Diversity",
+      "score": 94,
+      "weight": 0.2,
+      "weightedScore": 18.8,
+      "status": "pass",
+      "details": "l=3 (threshold: 2), 100.0% compliant"
+    },
+    {
+      "name": "T-Closeness",
+      "score": 99,
+      "weight": 0.15,
+      "weightedScore": 14.85,
+      "status": "pass",
+      "details": "max distance: 0.092 (threshold: 0.15)"
+    },
+    {
+      "name": "Privacy Techniques",
+      "score": 30,
+      "weight": 0.2,
+      "weightedScore": 6,
+      "status": "fail",
+      "details": "2 technique(s) detected, 20% coverage"
+    },
+    {
+      "name": "Re-identification Risk",
+      "score": 53,
+      "weight": 0.2,
+      "weightedScore": 10.600000000000001,
+      "status": "warning",
+      "details": "medium risk (25.00% probability)"
+    }
+  ],
+  "kAnonymity": {
+    "kValue": 4,
+    "threshold": 5,
+    "satisfies": false,
+    "complianceRate": 0,
+    "equivalenceClasses": 10
+  },
+  "lDiversity": {
+    "lValue": 3,
+    "threshold": 2,
+    "satisfies": true,
+    "complianceRate": 100,
+    "type": "distinct"
+  },
+  "tCloseness": {
+    "maxDistance": 0.09166666666666667,
+    "threshold": 0.15,
+    "satisfies": true,
+    "complianceRate": 100
+  },
+  "detectedTechniques": [
+    {
+      "technique": "generalization",
+      "confidence": 0.6,
+      "affectedAttributes": [
+        "Gender"
+      ]
+    },
+    {
+      "technique": "bucketing",
+      "confidence": 0.85,
+      "affectedAttributes": [
+        "Salary Range"
+      ]
+    }
+  ],
+  "reidentificationRisk": {
+    "score": 47,
+    "probability": 0.25,
+    "level": "medium"
+  },
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "priority": "critical",
+      "category": "general",
+      "title": "Remove or Protect Direct Identifiers",
+      "description": "Direct identifiers (Name) can directly identify individuals and should be removed, hashed, or pseudonymized.",
+      "expectedImpact": 25,
+      "affectedAttributes": [
+        "Name"
+      ],
+      "action": "Apply pseudonymization or cryptographic hashing to these attributes."
+    },
+    {
+      "id": "rec-2",
+      "priority": "high",
+      "category": "k-anonymity",
+      "title": "Improve K-Anonymity",
+      "description": "Dataset achieves k=4 but requires k=5. 40 records are in violating equivalence classes.",
+      "expectedImpact": 20,
+      "affectedAttributes": [
+        "Age",
+        "Gender",
+        "Zip Code",
+        "City",
+        "Country"
+      ],
+      "action": "Generalize quasi-identifier values or suppress outlier records."
+    },
+    {
+      "id": "rec-3",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Pseudonymization",
+      "description": "Direct identifiers should be pseudonymized or removed.",
+      "expectedImpact": 15,
+      "affectedAttributes": [
+        "Name"
+      ],
+      "action": "Apply Pseudonymization to: Name"
+    },
+    {
+      "id": "rec-4",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Hashing",
+      "description": "Consider hashing direct identifiers if linkage is needed.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Name"
+      ],
+      "action": "Apply Hashing to: Name"
+    },
+    {
+      "id": "rec-5",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Generalization",
+      "description": "Quasi-identifiers should be generalized to achieve k-anonymity.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "Age",
+        "Zip Code",
+        "City",
+        "Country"
+      ],
+      "action": "Apply Generalization to: Age, Zip Code, City, Country"
+    }
+  ],
+  "metadata": {
+    "recordCount": 40,
+    "attributeCount": 10,
+    "classificationSummary": {
+      "directIdentifiers": 1,
+      "quasiIdentifiers": 5,
+      "sensitiveAttributes": 1,
+      "nonSensitiveAttributes": 3
+    },
+    "analysisDuration": 3.6999999997206032,
+    "config": {
+      "kThreshold": 5,
+      "lThreshold": 2,
+      "tThreshold": 0.15,
+      "lDiversityType": "distinct",
+      "metricWeights": {
+        "kAnonymity": 0.25,
+        "lDiversity": 0.2,
+        "tCloseness": 0.15,
+        "techniqueDetection": 0.2,
+        "reidentificationRisk": 0.2
+      },
+      "includeDetailedAnalysis": true
+    }
+  }
+}
