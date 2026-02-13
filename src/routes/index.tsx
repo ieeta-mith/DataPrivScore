@@ -87,7 +87,7 @@ function Index() {
             <Lock className="h-20 w-20 text-primary" />
           </motion.div>
 
-          <h1 className="text-5xl md:text-6xl font-bold mb-6">Privacy Index Calculator</h1>
+          <h1 className="text-5xl md:text-6xl font-bold mb-6">DataPrivScore</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Analyze and quantify the privacy level of your datasets using advanced
             privacy-preserving models
