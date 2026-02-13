@@ -1,0 +1,40 @@
+Name,Age,Gender,Zip Code,City,Country,Marital Status,Education Level,Occupation,Medical Condition
+Alice Johnson,30,Female,10001,New York,USA,Single,Bachelors,Software Engineer,Diabetes
+Emma Williams,30,Female,10001,New York,USA,Single,Bachelors,Data Analyst,Hypertension
+Sarah Davis,30,Female,10001,New York,USA,Single,Bachelors,Product Manager,Diabetes
+Michael Brown,35,Male,90210,Los Angeles,USA,Married,Masters,Financial Analyst,Heart Disease
+James Wilson,35,Male,90210,Los Angeles,USA,Married,Masters,Project Manager,Obesity
+Robert Taylor,35,Male,90210,Los Angeles,USA,Married,Masters,Consultant,Heart Disease
+Jennifer Martinez,40,Female,60601,Chicago,USA,Divorced,Bachelors,HR Manager,Depression
+Laura Anderson,40,Female,60601,Chicago,USA,Divorced,Bachelors,Marketing Manager,Migraine
+Diana Thomas,40,Female,60601,Chicago,USA,Divorced,Bachelors,Sales Manager,Depression
+Christopher Lee,45,Male,77001,Houston,USA,Married,Doctorate,Physician,Back Pain
+David Garcia,45,Male,77001,Houston,USA,Married,Doctorate,Surgeon,Hypertension
+William Harris,45,Male,77001,Houston,USA,Married,Doctorate,Dentist,Back Pain
+Emily Clark,25,Female,98101,Seattle,USA,Single,Bachelors,Junior Developer,Allergies
+Sophia Lewis,25,Female,98101,Seattle,USA,Single,Bachelors,QA Engineer,Eczema
+Olivia Walker,25,Female,98101,Seattle,USA,Single,Bachelors,Technical Writer,Allergies
+Daniel Robinson,50,Male,33101,Miami,USA,Widowed,Masters,CEO,Diabetes
+Matthew Hall,50,Male,33101,Miami,USA,Widowed,Masters,CFO,Stroke
+Andrew Young,50,Male,33101,Miami,USA,Widowed,Masters,COO,Diabetes
+Jessica King,35,Female,85001,Phoenix,USA,Married,Bachelors,Teacher,Thyroid Disorder
+Amanda Wright,35,Female,85001,Phoenix,USA,Married,Bachelors,Nurse,PCOS
+Rachel Scott,35,Female,85001,Phoenix,USA,Married,Bachelors,Social Worker,Thyroid Disorder
+Benjamin Adams,40,Male,19101,Philadelphia,USA,Single,Masters,Lawyer,Stress
+Kevin Nelson,40,Male,19101,Philadelphia,USA,Single,Masters,Judge,GERD
+Joshua Baker,40,Male,19101,Philadelphia,USA,Single,Masters,Paralegal,Stress
+Grace Mitchell,45,Female,78201,San Antonio,USA,Married,Bachelors,Accountant,Osteoporosis
+Chloe Perez,45,Female,78201,San Antonio,USA,Married,Bachelors,Auditor,Fibromyalgia
+Mia Roberts,45,Female,78201,San Antonio,USA,Married,Bachelors,Tax Advisor,Osteoporosis
+Nathan Green,30,Male,02101,Boston,USA,Single,Doctorate,Researcher,ADHD
+Tyler Campbell,30,Male,02101,Boston,USA,Single,Doctorate,Professor,Bipolar
+Ryan Mitchell,30,Male,02101,Boston,USA,Single,Doctorate,Scientist,ADHD
+Victoria Hill,28,Female,75201,Dallas,USA,Single,Masters,Graphic Designer,Anxiety
+Natalie Ross,28,Female,75201,Dallas,USA,Single,Masters,Web Developer,Depression
+Hannah Ford,28,Female,75201,Dallas,USA,Single,Masters,UI Designer,Anxiety
+Marcus Johnson,42,Male,30301,Atlanta,USA,Married,Bachelors,Sales Director,Asthma
+Derek Morgan,42,Male,30301,Atlanta,USA,Married,Bachelors,Operations Manager,Bronchitis
+Frank Castle,42,Male,30301,Atlanta,USA,Married,Bachelors,Regional Manager,Asthma
+Elena Gilbert,32,Female,97201,Portland,USA,Divorced,Masters,Research Analyst,Arthritis
+Clara Oswald,32,Female,97201,Portland,USA,Divorced,Masters,Policy Advisor,Chronic Pain
+Iris West,32,Female,97201,Portland,USA,Divorced,Masters,Program Manager,Arthritis

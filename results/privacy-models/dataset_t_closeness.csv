@@ -1,0 +1,41 @@
+Name,Age,Gender,Zip Code,City,Country,Marital Status,Education Level,Occupation,Salary Range
+Alice Johnson,30,Female,10001,New York,USA,Single,Bachelors,Software Engineer,High
+Emma Williams,30,Female,10001,New York,USA,Single,Bachelors,Data Analyst,Medium
+Sarah Davis,30,Female,10001,New York,USA,Single,Bachelors,Product Manager,Low
+Lisa Brown,30,Female,10001,New York,USA,Single,Bachelors,UX Designer,High
+Michael Brown,35,Male,90210,Los Angeles,USA,Married,Masters,Financial Analyst,Medium
+James Wilson,35,Male,90210,Los Angeles,USA,Married,Masters,Project Manager,Low
+Robert Taylor,35,Male,90210,Los Angeles,USA,Married,Masters,Consultant,High
+John Smith,35,Male,90210,Los Angeles,USA,Married,Masters,Architect,Medium
+Jennifer Martinez,40,Female,60601,Chicago,USA,Divorced,Bachelors,HR Manager,Low
+Laura Anderson,40,Female,60601,Chicago,USA,Divorced,Bachelors,Marketing Manager,High
+Diana Thomas,40,Female,60601,Chicago,USA,Divorced,Bachelors,Sales Manager,Medium
+Susan Clark,40,Female,60601,Chicago,USA,Divorced,Bachelors,Account Manager,Low
+Christopher Lee,45,Male,77001,Houston,USA,Married,Doctorate,Physician,High
+David Garcia,45,Male,77001,Houston,USA,Married,Doctorate,Surgeon,Medium
+William Harris,45,Male,77001,Houston,USA,Married,Doctorate,Dentist,Low
+Richard Moore,45,Male,77001,Houston,USA,Married,Doctorate,Pharmacist,High
+Emily Clark,25,Female,98101,Seattle,USA,Single,Bachelors,Junior Developer,Medium
+Sophia Lewis,25,Female,98101,Seattle,USA,Single,Bachelors,QA Engineer,Low
+Olivia Walker,25,Female,98101,Seattle,USA,Single,Bachelors,Technical Writer,High
+Ava Johnson,25,Female,98101,Seattle,USA,Single,Bachelors,Support Engineer,Medium
+Daniel Robinson,50,Male,33101,Miami,USA,Widowed,Masters,CEO,Low
+Matthew Hall,50,Male,33101,Miami,USA,Widowed,Masters,CFO,High
+Andrew Young,50,Male,33101,Miami,USA,Widowed,Masters,COO,Medium
+Thomas White,50,Male,33101,Miami,USA,Widowed,Masters,CTO,Low
+Jessica King,35,Female,85001,Phoenix,USA,Married,Bachelors,Teacher,High
+Amanda Wright,35,Female,85001,Phoenix,USA,Married,Bachelors,Nurse,Medium
+Rachel Scott,35,Female,85001,Phoenix,USA,Married,Bachelors,Social Worker,Low
+Karen Adams,35,Female,85001,Phoenix,USA,Married,Bachelors,Librarian,High
+Benjamin Adams,40,Male,19101,Philadelphia,USA,Single,Masters,Lawyer,Medium
+Kevin Nelson,40,Male,19101,Philadelphia,USA,Single,Masters,Judge,Low
+Joshua Baker,40,Male,19101,Philadelphia,USA,Single,Masters,Paralegal,High
+Steven Davis,40,Male,19101,Philadelphia,USA,Single,Masters,Legal Consultant,Medium
+Grace Mitchell,45,Female,78201,San Antonio,USA,Married,Bachelors,Accountant,Low
+Chloe Perez,45,Female,78201,San Antonio,USA,Married,Bachelors,Auditor,High
+Mia Roberts,45,Female,78201,San Antonio,USA,Married,Bachelors,Tax Advisor,Medium
+Isabella Garcia,45,Female,78201,San Antonio,USA,Married,Bachelors,Financial Planner,Low
+Nathan Green,30,Male,02101,Boston,USA,Single,Doctorate,Researcher,High
+Tyler Campbell,30,Male,02101,Boston,USA,Single,Doctorate,Professor,Medium
+Ryan Mitchell,30,Male,02101,Boston,USA,Single,Doctorate,Scientist,Low
+Brandon Phillips,30,Male,02101,Boston,USA,Single,Doctorate,Lab Director,High
