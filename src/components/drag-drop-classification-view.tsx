@@ -262,7 +262,7 @@ export function DragDropClassificationView({
 
       {/* High Confidence Warning Dialog */}
       <Dialog open={!!warningDialog} onOpenChange={() => setWarningDialog(null)}>
-        <DialogContent>
+        <DialogContent className='max-w-2xl'>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-amber-600">
               <AlertTriangle className="h-5 w-5" />

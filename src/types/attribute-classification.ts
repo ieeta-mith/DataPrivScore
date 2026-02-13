@@ -1,13 +1,3 @@
-/**
- * Attribute Classification Types for Privacy Analysis
- * 
- * Classification Categories:
- * - Direct Identifier: Uniquely identifies an individual (e.g., name, SSN, email)
- * - Quasi-Identifier: Can be combined to re-identify (e.g., age, zip code, gender)
- * - Sensitive: Private information requiring protection (e.g., medical conditions, salary)
- * - Non-Sensitive: Public or non-identifying data (e.g., timestamps, generic categories)
- */
-
 export type AttributeType = 
   | 'direct-identifier'
   | 'quasi-identifier'
@@ -57,9 +47,6 @@ export interface ClassificationSummary {
   averageConfidence: number;
 }
 
-/**
- * Configuration for the classification engine
- */
 export interface ClassificationConfig {
   /** Minimum confidence threshold for auto-classification (0-1) */
   minConfidenceThreshold: number;
@@ -69,9 +56,6 @@ export interface ClassificationConfig {
   strictMode: boolean;
 }
 
-/**
- * Classification rule definition for pattern matching
- */
 export interface ClassificationRule {
   /** Patterns to match against column names (case-insensitive) */
   namePatterns: RegExp[];

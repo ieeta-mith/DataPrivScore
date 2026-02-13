@@ -1,13 +1,5 @@
 import type { ClassificationRule } from '@/types/attribute-classification';
 
-/**
- * Classification rules for automatic attribute type detection.
- * Rules are evaluated in order of specificity - more specific rules first.
- * 
- * These rules are based on common privacy frameworks like GDPR, HIPAA, and
- * academic literature on data anonymization (e.g., k-anonymity, l-diversity).
- */
-
 // ============================================================================
 // DIRECT IDENTIFIERS
 // ============================================================================

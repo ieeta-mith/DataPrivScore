@@ -1,11 +1,3 @@
-/**
- * Privacy Plugin System Types
- * 
- * Defines the interfaces and types for the plugin-based privacy model architecture.
- * Each privacy metric (K-Anonymity, L-Diversity, T-Closeness, etc.) is implemented
- * as a plugin that conforms to these interfaces.
- */
-
 import type { ParsedCSV } from '@/types/csv-parser';
 import type { ClassificationResult } from '@/types/attribute-classification';
 import type { PrivacyAnalysisConfig } from '@/types/privacy-analysis';
@@ -14,9 +6,6 @@ import type { PrivacyAnalysisConfig } from '@/types/privacy-analysis';
 // Core Plugin Types
 // ============================================================================
 
-/**
- * Unique identifier for a privacy plugin
- */
 export type PluginId = 
   | 'k-anonymity'
   | 'l-diversity'
@@ -25,73 +14,58 @@ export type PluginId =
   | 'reidentification-risk'
   | string; // Allow custom plugin IDs
 
-/**
- * Plugin category for grouping and filtering
- */
 export type PluginCategory = 
   | 'privacy-model'      // Core privacy models (k-anon, l-div, t-close)
   | 'technique'          // Technique detection
   | 'risk'               // Risk assessment
   | 'custom';            // User-defined plugins
 
-/**
- * Status of a metric calculation
- */
 export type MetricStatus = 'pass' | 'warning' | 'fail';
 
 // ============================================================================
 // Plugin Input/Output Types
 // ============================================================================
 
-/**
- * Standard input for all privacy plugins
- */
 export interface PluginInput {
-  /** Parsed CSV data */
+  // Parsed CSV data
   parsedCSV: ParsedCSV;
-  /** Attribute classification result */
+  // Attribute classification result
   classification: ClassificationResult;
-  /** Analysis configuration */
+  // Analysis configuration
   config: PrivacyAnalysisConfig;
 }
 
-/**
- * Standard output that all plugins must return
- */
 export interface PluginOutput<TResult = unknown> {
-  /** The raw analysis result (plugin-specific) */
+  // The raw analysis result (plugin-specific)
   result: TResult;
-  /** Normalized score from 0-100 */
+  // Normalized score from 0-100
   score: number;
-  /** Status indicator */
+  // Status indicator
   status: MetricStatus;
-  /** Human-readable details about the result */
+  // Human-readable details about the result
   details: string;
-  /** Optional insights for the UI */
+  // Optional insights for the UI
   insights?: string[];
 }
 
-/**
- * Metadata about a plugin
- */
 export interface PluginMetadata {
-  /** Unique plugin identifier */
+  // Unique plugin identifier
   id: PluginId;
-  /** Display name for the plugin */
+  // Display name for the plugin
   name: string;
-  /** Short description */
+  // Short description
   description: string;
-  /** Plugin version */
+  // Plugin version
   version: string;
-  /** Plugin category */
+  // Plugin category
   category: PluginCategory;
-  /** Default weight in overall score calculation */
+  // Default weight in overall score calculation
   defaultWeight: number;
-  /** Whether this plugin is required for analysis */
+  // Whether this plugin is required for analysis
   required: boolean;
-  /** Dependencies on other plugins (by ID) */
+  // Dependencies on other plugins (by ID)
   dependencies?: PluginId[];
-  /** Plugin author (optional) */
+  // Plugin author (optional)
   author?: string;
 }
 
@@ -99,9 +73,6 @@ export interface PluginMetadata {
 // Plugin Interface
 // ============================================================================
 
-/**
- * Main plugin interface that all privacy metric plugins must implement
- */
 export interface PrivacyPlugin<TResult = unknown, TConfig = unknown> {
   /** Plugin metadata */
   readonly metadata: PluginMetadata;
