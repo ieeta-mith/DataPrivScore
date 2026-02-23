@@ -1,35 +1,36 @@
-import { Sidebar } from '@bioinformatics-ua/iam-sidebar';
+import { Sidebar} from '@bioinformatics-ua/iam-sidebar';
+import type { User, Plugin } from '@bioinformatics-ua/iam-sidebar';
 
-interface SidebarConfig {
+interface SidebarWrapperProps {
     config?: {
         collapsed?: boolean;
         theme?: 'dark' | 'light';
-        authEnabled?: boolean;
         keyboardShortcuts?: boolean;
         standaloneMode?: boolean;
-        adminRoleName?: string;
         keycloakUrl?: string;
-        tokenKey?: string;
-        refreshTokenKey?: string;
         communityKey?: string;
+        requireAuthentication?: boolean;
+        devMode?: {
+            enabled: boolean;
+            user: User;
+            plugins: Plugin[];
+        }
     };
 }
 
-export default function SidebarWrapper( config : SidebarConfig) {
-  return (
-    <Sidebar
-      config={{
-        collapsed: false,  // TODO GET LOCAL STORAGE VALUE
-        authEnabled: true,
-        keyboardShortcuts: true,
-        standaloneMode: true,
-        adminRoleName: import.meta.env.VITE_PUBLIC_ADMIN_ROLE || 'dashboard-admin',
-        keycloakUrl: import.meta.env.VITE_PUBLIC_KEYCLOAK_URL || 'http://localhost:8080/keycloak/',
-        tokenKey: import.meta.env.VITE_PUBLIC_TOKEN_KEY || 'cookie.session-token',
-        refreshTokenKey: import.meta.env.VITE_PUBLIC_REFRESH_TOKEN_KEY || 'cookie.session-token-refresh',
-        communityKey: import.meta.env.VITE_PUBLIC_COMMUNITY_KEY || 'currentCommunity',
-        ...config,
-      }}
-    />
-  );
+export default function SidebarWrapper({ config }: SidebarWrapperProps) {
+    return (
+        <Sidebar
+            config={{
+                collapsed: false,
+                theme: 'dark',
+                keyboardShortcuts: true,
+                standaloneMode: import.meta.env.VITE_PUBLIC_STANDALONE_MODE === 'true',
+                keycloakUrl: import.meta.env.VITE_PUBLIC_KEYCLOAK_URL,
+                communityKey: import.meta.env.VITE_PUBLIC_COMMUNITY_KEY,
+                requireAuthentication: true,
+                ...config,
+            }}
+        />
+    );
 }
