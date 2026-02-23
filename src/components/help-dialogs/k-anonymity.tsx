@@ -8,6 +8,7 @@ import {
 import { AnimatedButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HelpDialogHeader, InformationSection } from "@/components/help-dialogs/elements";
+import SwitchExample from "../switch-example";
 
 interface HelpDialogKAnonymityProps {
   open: boolean;
@@ -36,33 +37,12 @@ export function HelpDialogKAnonymity({ open, onOpenChange }: HelpDialogKAnonymit
 
           {/* Interactive Example */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold">Visual Example</h4>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Show:</span>
-                <button
-                  onClick={() => setShowAnonymized(false)}
-                  className={`px-3 py-1 text-sm rounded-l-md border transition-colors ${
-                    !showAnonymized 
-                      ? "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-300" 
-                      : "bg-muted border-muted-foreground/20"
-                  }`}
-                >
-                  Original (k=1)
-                </button>
-                <button
-                  onClick={() => setShowAnonymized(true)}
-                  className={`px-3 py-1 text-sm rounded-r-md border-y border-r transition-colors ${
-                    showAnonymized 
-                      ? "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-300" 
-                      : "bg-muted border-muted-foreground/20"
-                  }`}
-                >
-                  Anonymized (k=2)
-                </button>
-              </div>
-            </div>
-
+            <SwitchExample
+              showAnonymized={showAnonymized}
+              setShowAnonymized={setShowAnonymized}
+              option1="Original (k=1)"
+              option2="Anonymized (k=2)"
+            />
             {/* Data Table */}
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">

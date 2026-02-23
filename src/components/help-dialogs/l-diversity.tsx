@@ -8,6 +8,7 @@ import {
 import { AnimatedButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HelpDialogHeader, InformationSection } from "@/components/help-dialogs/elements";
+import SwitchExample from "../switch-example";
 
 interface HelpDialogLDiversityProps {
   open: boolean;
@@ -50,33 +51,12 @@ export function HelpDialogLDiversity({ open, onOpenChange }: HelpDialogLDiversit
 
           {/* Interactive Example */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold">Visual Example</h4>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Show:</span>
-                <button
-                  onClick={() => setShowDiverse(false)}
-                  className={`px-3 py-1 text-sm rounded-l-md border transition-colors ${
-                    !showDiverse 
-                      ? "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-300" 
-                      : "bg-muted border-muted-foreground/20"
-                  }`}
-                >
-                  k=2, l=1 (Vulnerable)
-                </button>
-                <button
-                  onClick={() => setShowDiverse(true)}
-                  className={`px-3 py-1 text-sm rounded-r-md border-y border-r transition-colors ${
-                    showDiverse 
-                      ? "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-300" 
-                      : "bg-muted border-muted-foreground/20"
-                  }`}
-                >
-                  k=2, l=2 (Protected)
-                </button>
-              </div>
-            </div>
-
+            <SwitchExample
+              setShowAnonymized={setShowDiverse}
+              showAnonymized={showDiverse}
+              option1="Vulnerable (l=1)"
+              option2="Protected (l=2)"
+            />
             {/* Data Table */}
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full text-sm">
