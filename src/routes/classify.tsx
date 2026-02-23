@@ -50,6 +50,7 @@ function ClassifyPage() {
 	useEffect(() => {
 		const data = getClassificationData();
 		if (data.result && data.parsedCSV && data.fileName) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			setResult(data.result);
 			setParsedCSV(data.parsedCSV);
 			setFileName(data.fileName);

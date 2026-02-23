@@ -69,6 +69,7 @@ function ResultsPage() {
   useEffect(() => {
     const data = getPrivacyResultData();
     if (data.privacyResult && data.classification && data.fileName) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResult(data.privacyResult);
       setFileName(data.fileName);
     } else {

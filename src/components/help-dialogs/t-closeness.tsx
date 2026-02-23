@@ -8,6 +8,7 @@ import {
 import { AnimatedButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { HelpDialogHeader, InformationSection } from "@/components/help-dialogs/elements";
+import SwitchExample from "../switch-example";
 
 interface HelpDialogTClosenessProps {
   open: boolean;
@@ -48,33 +49,13 @@ export function HelpDialogTCloseness({ open, onOpenChange }: HelpDialogTClosenes
           />
           {/* Interactive Example */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h4 className="font-semibold">Visual Example: Disease Distribution</h4>
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">Show:</span>
-                <button
-                  onClick={() => setShowFixed(false)}
-                  className={`px-3 py-1 text-sm rounded-l-md border transition-colors ${
-                    !showFixed 
-                      ? "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-300" 
-                      : "bg-muted border-muted-foreground/20"
-                  }`}
-                >
-                  Skewed (High t)
-                </button>
-                <button
-                  onClick={() => setShowFixed(true)}
-                  className={`px-3 py-1 text-sm rounded-r-md border-y border-r transition-colors ${
-                    showFixed 
-                      ? "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-300" 
-                      : "bg-muted border-muted-foreground/20"
-                  }`}
-                >
-                  Balanced (Low t)
-                </button>
-              </div>
-            </div>
-
+            <SwitchExample
+              setShowAnonymized={setShowFixed}
+              showAnonymized={showFixed}
+              option1="Skewed (High t)"
+              option2="Balanced (Low t)"
+            />
+            
             {/* Distribution Comparison */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Overall Distribution */}

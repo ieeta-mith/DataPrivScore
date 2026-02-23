@@ -6,34 +6,34 @@ import type { ParsedCSV } from './csv-parser';
 // ============================================================================
 
 export interface EquivalenceClass {
-  /** Unique identifier for this equivalence class */
+  // Unique identifier for the equivalence class
   id: string;
-  /** The quasi-identifier values that define this class */
+  // The quasi-identifier values that define this class
   quasiIdentifierValues: Record<string, string>;
-  /** Number of records in this equivalence class */
+  // Number of records in this equivalence class
   size: number;
-  /** Row indices belonging to this class */
+  // Row indices belonging to this class
   rowIndices: number[];
 }
 
 export interface KAnonymityResult {
-  /** The minimum k value achieved (smallest equivalence class size) */
+  // The minimum k value achieved (smallest equivalence class size)
   kValue: number;
-  /** Whether the dataset satisfies k-anonymity for the given threshold */
+  // Whether the dataset satisfies k-anonymity for the given threshold
   satisfiesKAnonymity: boolean;
-  /** The k threshold used for evaluation */
+  // The k threshold used for evaluation
   kThreshold: number;
-  /** Total number of equivalence classes */
+  // Total number of equivalence classes
   equivalenceClassCount: number;
-  /** Distribution of equivalence class sizes */
+  // Distribution of equivalence class sizes
   sizeDistribution: Record<number, number>;
-  /** Classes that violate k-anonymity (size < k) */
+  // Classes that violate k-anonymity (size < k)
   violatingClasses: EquivalenceClass[];
-  /** Percentage of records in compliant classes */
+  // Percentage of records in compliant classes
   complianceRate: number;
-  /** Average equivalence class size */
+  // Average equivalence class size
   averageClassSize: number;
-  /** Quasi-identifiers used for calculation */
+  // Quasi-identifiers used for calculation
   quasiIdentifiers: string[];
 }
 
@@ -44,36 +44,36 @@ export interface KAnonymityResult {
 export type LDiversityType = 'distinct' | 'entropy' | 'recursive';
 
 export interface LDiversityClassResult {
-  /** Equivalence class reference */
+  // Equivalence class reference
   equivalenceClassId: string;
-  /** Number of distinct sensitive values */
+  // Number of distinct sensitive values
   distinctCount: number;
-  /** Entropy of sensitive value distribution */
+  // Entropy of sensitive value distribution
   entropy: number;
-  /** Whether this class satisfies l-diversity */
+  // Whether this class satisfies l-diversity
   satisfiesLDiversity: boolean;
-  /** Distribution of sensitive values in this class */
+  // Distribution of sensitive values in this class
   sensitiveValueDistribution: Record<string, number>;
 }
 
 export interface LDiversityResult {
-  /** The minimum l value achieved */
+  // The minimum l value achieved
   lValue: number;
-  /** Whether the dataset satisfies l-diversity for the given threshold */
+  // Whether the dataset satisfies l-diversity for the given threshold
   satisfiesLDiversity: boolean;
-  /** The l threshold used for evaluation */
+  // The l threshold used for evaluation
   lThreshold: number;
-  /** Type of l-diversity calculated */
+  // Type of l-diversity calculated
   diversityType: LDiversityType;
-  /** Per-class l-diversity results */
+  // Per-class l-diversity results
   classResults: LDiversityClassResult[];
-  /** Classes that violate l-diversity */
+  // Classes that violate l-diversity
   violatingClasses: string[];
-  /** Percentage of records in compliant classes */
+  // Percentage of records in compliant classes
   complianceRate: number;
-  /** Sensitive attributes analyzed */
+  // Sensitive attributes analyzed
   sensitiveAttributes: string[];
-  /** Average entropy across all classes */
+  // Average entropy across all classes
   averageEntropy: number;
 }
 
@@ -82,34 +82,34 @@ export interface LDiversityResult {
 // ============================================================================
 
 export interface TClosenessClassResult {
-  /** Equivalence class reference */
+  // Equivalence class reference
   equivalenceClassId: string;
-  /** Earth Mover's Distance from overall distribution */
+  // Earth Mover's Distance from overall distribution
   distance: number;
-  /** Whether this class satisfies t-closeness */
+  // Whether this class satisfies t-closeness
   satisfiesTCloseness: boolean;
-  /** Local distribution of sensitive values */
+  // Local distribution of sensitive values
   localDistribution: Record<string, number>;
 }
 
 export interface TClosenessResult {
-  /** Maximum distance observed (worst case) */
+  // Maximum distance observed (worst case)
   maxDistance: number;
-  /** Whether the dataset satisfies t-closeness for the given threshold */
+  // Whether the dataset satisfies t-closeness for the given threshold
   satisfiesTCloseness: boolean;
-  /** The t threshold used for evaluation */
+  // The t threshold used for evaluation
   tThreshold: number;
-  /** Per-class t-closeness results */
+  // Per-class t-closeness results
   classResults: TClosenessClassResult[];
-  /** Classes that violate t-closeness */
+  // Classes that violate t-closeness
   violatingClasses: string[];
-  /** Percentage of records in compliant classes */
+  // Percentage of records in compliant classes
   complianceRate: number;
-  /** Global distribution of sensitive values */
+  // Global distribution of sensitive values
   globalDistribution: Record<string, number>;
-  /** Sensitive attribute analyzed */
+  // Sensitive attribute analyzed
   sensitiveAttribute: string;
-  /** Average distance across all classes */
+  // Average distance across all classes
   averageDistance: number;
 }
 
@@ -131,54 +131,54 @@ export type PrivacyTechnique =
   | 'none-detected';
 
 export interface TechniqueEvidence {
-  /** The attribute where the technique was detected */
+  // The attribute where the technique was detected
   attribute: string;
-  /** Confidence score for this detection (0-1) */
+  // Confidence score for this detection (0-1)
   confidence: number;
-  /** Sample values that indicate this technique */
+  // Sample values that indicate this technique
   evidenceSamples: string[];
-  /** Description of why this technique was detected */
+  // Description of why this technique was detected
   reason: string;
 }
 
 export interface DetectedTechnique {
-  /** The privacy technique detected */
+  // The privacy technique detected
   technique: PrivacyTechnique;
-  /** Attributes where this technique was applied */
+  // Attributes where this technique was applied
   affectedAttributes: string[];
-  /** Overall confidence for this technique detection */
+  // Overall confidence for this technique detection
   confidence: number;
-  /** Evidence supporting this detection */
+  // Evidence supporting this detection
   evidence: TechniqueEvidence[];
-  /** Human-readable description */
+  // Human-readable description
   description: string;
-  /** Privacy benefit of this technique */
+  // Privacy benefit of this technique
   privacyBenefit: 'low' | 'medium' | 'high';
 }
 
 export interface TechniqueDetectionResult {
-  /** All detected privacy techniques */
+  // All detected privacy techniques
   detectedTechniques: DetectedTechnique[];
-  /** Overall privacy technique coverage (0-1) */
+  // Overall privacy technique coverage (0-1)
   techniqueCoverage: number;
-  /** Number of attributes with detected techniques */
+  // Number of attributes with detected techniques
   protectedAttributeCount: number;
-  /** Total number of attributes analyzed */
+  // Total number of attributes analyzed
   totalAttributes: number;
-  /** Summary score based on techniques (0-100) */
+  // Summary score based on techniques (0-100)
   techniqueScore: number;
-  /** Recommendations for additional techniques */
+  // Recommendations for additional techniques
   recommendations: TechniqueRecommendation[];
 }
 
 export interface TechniqueRecommendation {
-  /** Recommended technique */
+  // Recommended technique
   technique: PrivacyTechnique;
-  /** Attributes that would benefit from this technique */
+  // Attributes that would benefit from this technique
   targetAttributes: string[];
-  /** Priority level */
+  // Priority level
   priority: 'critical' | 'high' | 'medium' | 'low';
-  /** Explanation */
+  // Explanation
   reason: string;
 }
 
@@ -189,109 +189,109 @@ export interface TechniqueRecommendation {
 export type RiskLevel = 'critical' | 'high' | 'medium' | 'low' | 'minimal';
 
 export interface PrivacyMetricScore {
-  /** Name of the metric */
+  // Name of the metric
   name: string;
-  /** Score from 0-100 */
+  // Score from 0-100
   score: number;
-  /** Weight in the overall calculation */
+  // Weight in the overall calculation
   weight: number;
-  /** Weighted contribution to final score */
+  // Weighted contribution to final score
   weightedScore: number;
-  /** Status indicator */
+  // Status indicator
   status: 'pass' | 'warning' | 'fail';
-  /** Details about the metric */
+  // Details about the metric
   details: string;
 }
 
 export interface ReidentificationRisk {
-  /** Overall risk score (0-100, lower is better privacy) */
+  // Overall risk score (0-100, lower is better privacy)
   riskScore: number;
-  /** Risk level classification */
+  // Risk level classification
   riskLevel: RiskLevel;
-  /** Estimated probability of re-identification */
+  // Estimated probability of re-identification
   reidentificationProbability: number;
-  /** Risk factors contributing to the score */
+  // Risk factors contributing to the score
   riskFactors: RiskFactor[];
-  /** Prosecutor attack risk (attacker knows target is in dataset) */
+  // Prosecutor attack risk (attacker knows target is in dataset)
   prosecutorRisk: number;
-  /** Journalist attack risk (attacker doesn't know if target is in dataset) */
+  // Journalist attack risk (attacker doesn't know if target is in dataset)
   journalistRisk: number;
-  /** Marketer attack risk (attacker targets any individual) */
+  // Marketer attack risk (attacker targets any individual)
   marketerRisk: number;
 }
 
 export interface RiskFactor {
-  /** Factor name */
+  // Factor name
   factor: string;
-  /** Impact on risk (0-100) */
+  // Impact on risk (0-100)
   impact: number;
-  /** Description */
+  // Description
   description: string;
-  /** Mitigation suggestion */
+  // Mitigation suggestion
   mitigation: string;
 }
 
 export interface PrivacyIndexResult {
-  /** Overall privacy index score (0-100) */
+  // Overall privacy index score (0-100)
   overallScore: number;
-  /** Risk level based on score */
+  // Risk level based on score
   riskLevel: RiskLevel;
-  /** Letter grade (A-F) */
+  // Letter grade (A-F)
   grade: 'A' | 'B' | 'C' | 'D' | 'F';
-  /** Individual metric scores */
+  // Individual metric scores
   metricScores: PrivacyMetricScore[];
-  /** K-Anonymity analysis */
+  // K-Anonymity analysis
   kAnonymity: KAnonymityResult;
-  /** L-Diversity analysis */
+  // L-Diversity analysis
   lDiversity: LDiversityResult;
-  /** T-Closeness analysis */
+  // T-Closeness analysis
   tCloseness: TClosenessResult;
-  /** Privacy technique detection */
+  // Privacy technique detection
   techniqueDetection: TechniqueDetectionResult;
-  /** Re-identification risk assessment */
+  // Re-identification risk assessment
   reidentificationRisk: ReidentificationRisk;
-  /** Timestamp of analysis */
+  // Timestamp of analysis
   timestamp: Date;
-  /** Analysis metadata */
+  // Analysis metadata
   metadata: AnalysisMetadata;
-  /** Recommendations for improvement */
+  // Recommendations for improvement
   recommendations: PrivacyRecommendation[];
 }
 
 export interface AnalysisMetadata {
-  /** Number of records analyzed */
+  // Number of records analyzed
   recordCount: number;
-  /** Number of attributes */
+  // Number of attributes
   attributeCount: number;
-  /** Classification result used */
+  // Classification result used
   classificationSummary: {
     directIdentifiers: number;
     quasiIdentifiers: number;
     sensitiveAttributes: number;
     nonSensitiveAttributes: number;
   };
-  /** Analysis duration in milliseconds */
+  // Analysis duration in milliseconds
   analysisDuration: number;
-  /** Configuration used */
+  // Configuration used
   config: PrivacyAnalysisConfig;
 }
 
 export interface PrivacyRecommendation {
-  /** Recommendation ID */
+  // Recommendation ID
   id: string;
-  /** Priority level */
+  // Priority level
   priority: 'critical' | 'high' | 'medium' | 'low';
-  /** Category of recommendation */
+  // Category of recommendation
   category: 'k-anonymity' | 'l-diversity' | 't-closeness' | 'technique' | 'general';
-  /** Title */
+  // Title
   title: string;
-  /** Detailed description */
+  // Detailed description
   description: string;
-  /** Expected impact on privacy score */
+  // Expected impact on privacy score
   expectedImpact: number;
-  /** Affected attributes */
+  // Affected attributes
   affectedAttributes: string[];
-  /** Suggested action */
+  // Suggested action
   action: string;
 }
 
@@ -300,15 +300,15 @@ export interface PrivacyRecommendation {
 // ============================================================================
 
 export interface PrivacyAnalysisConfig {
-  /** K-anonymity threshold (default: 5) */
+  // K-anonymity threshold (default: 5)
   kThreshold: number;
-  /** L-diversity threshold (default: 2) */
+  // L-diversity threshold (default: 2)
   lThreshold: number;
-  /** T-closeness threshold (default: 0.15) */
+  // T-closeness threshold (default: 0.15)
   tThreshold: number;
-  /** L-diversity type to use */
+  // L-diversity type to use
   lDiversityType: LDiversityType;
-  /** Weights for each metric in final score */
+  // Weights for each metric in final score
   metricWeights: {
     kAnonymity: number;
     lDiversity: number;
@@ -316,7 +316,7 @@ export interface PrivacyAnalysisConfig {
     techniqueDetection: number;
     reidentificationRisk: number;
   };
-  /** Whether to include detailed class-level analysis */
+  // Whether to include detailed class-level analysis
   includeDetailedAnalysis: boolean;
 }
 

@@ -15,10 +15,10 @@ export type PluginId =
   | string; // Allow custom plugin IDs
 
 export type PluginCategory = 
-  | 'privacy-model'      // Core privacy models (k-anon, l-div, t-close)
-  | 'technique'          // Technique detection
-  | 'risk'               // Risk assessment
-  | 'custom';            // User-defined plugins
+  | 'privacy-model'
+  | 'technique'
+  | 'risk'
+  | 'custom';   
 
 export type MetricStatus = 'pass' | 'warning' | 'fail';
 
@@ -27,11 +27,8 @@ export type MetricStatus = 'pass' | 'warning' | 'fail';
 // ============================================================================
 
 export interface PluginInput {
-  // Parsed CSV data
   parsedCSV: ParsedCSV;
-  // Attribute classification result
   classification: ClassificationResult;
-  // Analysis configuration
   config: PrivacyAnalysisConfig;
 }
 
