@@ -19,9 +19,6 @@ interface SidebarWrapperProps {
 }
 
 export default function SidebarWrapper( config : SidebarWrapperProps) {
-  console.log(import.meta.env.VITE_STANDALONE_MODE?.toLowerCase())
-  console.log(import.meta.env.VITE_KEYCLOAK_URL)
-  console.log(import.meta.env.VITE_COMMUNITY_KEY)
   return (
       <Sidebar
         config={{
@@ -31,7 +28,7 @@ export default function SidebarWrapper( config : SidebarWrapperProps) {
           standaloneMode: import.meta.env.VITE_STANDALONE_MODE?.toLowerCase() === 'true',
           keycloakUrl: import.meta.env.VITE_KEYCLOAK_URL,
           communityKey: import.meta.env.VITE_COMMUNITY_KEY,
-          requireAuthentication: false,
+          requireAuthentication: true,
           ...config
       }}
     />
