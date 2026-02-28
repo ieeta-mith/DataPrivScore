@@ -25,14 +25,23 @@ function Index() {
   const navigate = useNavigate()
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle')
+  const [message, setMessage] = useState<string | null>(null)
 
   const handleFileSelect = (file: File) => {
+    // Check if the file is a CSV
+    if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+      setMessage('Please upload a CSV file, other file types are not allowed ')
+      setProcessingStatus('error');
+      return;
+    }
+
     setSelectedFile(file)
     setProcessingStatus('idle')
   }
 
   const handleFileRemove = () => {
     setSelectedFile(null)
+    setMessage(null)
     setProcessingStatus('idle')
   }
 
@@ -40,6 +49,13 @@ function Index() {
     e.preventDefault()
 
     if (!selectedFile) {
+      setProcessingStatus('error');
+      return;
+    }
+
+    // Check if the file is a CSV
+    if (selectedFile.type !== 'text/csv' && !selectedFile.name.endsWith('.csv')) {
+      setMessage('Please upload a CSV file, other file types are not allowed ')
       setProcessingStatus('error');
       return;
     }
@@ -57,11 +73,13 @@ function Index() {
       // Store data and navigate to classification page
       setClassificationData(parsedCSV, result, selectedFile.name);
       setProcessingStatus('completed');
+      setMessage(`File "${selectedFile.name}" processed successfully!`);
       
       // Navigate to classification page
       navigate({ to: '/classify' });
 
     } catch (error) {
+      setMessage('An error occurred while processing the file. Please try again.');
       console.error('Error processing file:', error);
       setProcessingStatus('error');
     }
@@ -130,14 +148,12 @@ function Index() {
                   selectedFile={selectedFile}
                   disabled={processingStatus === 'processing'}
                 />
-
-                <AnimatedAlert
-                  status={processingStatus}
-                  message={undefined}
-                  successMessage={`File "${selectedFile?.name}" processed successfully!`}
-                  loadingMessage="Processing your dataset..."
-                />
-
+                {message && (
+                  <AnimatedAlert
+                    status={processingStatus}
+                    message={message}
+                  />
+                )}
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <AnimatedButton
                     type="submit"

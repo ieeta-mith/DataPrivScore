@@ -31,23 +31,10 @@ const alertConfig = {
 export const AnimatedAlert = ({
 	status,
 	message,
-	successMessage,
-	errorMessage,
-	loadingMessage,
 }: ProcessingStateProps) => {
 	if (status === 'idle') return null;
 
 	const config = alertConfig[status as keyof typeof alertConfig];
-
-	const displayMessage =
-		message ||
-		(status === 'completed'
-			? successMessage
-			: status === 'error'
-				? errorMessage
-				: status === 'processing'
-					? loadingMessage
-					: config.defaultMessage);
 
 	return (
 		<AnimatePresence mode="wait">
@@ -59,7 +46,7 @@ export const AnimatedAlert = ({
 			>
 				<Alert variant={config.variant}>
 					<config.icon className={`h-4 w-4 ${status === 'processing' ? 'animate-spin' : ''}`} />
-					<AlertDescription>{displayMessage}</AlertDescription>
+					<AlertDescription>{message ? message : config.defaultMessage}</AlertDescription>
 				</Alert>
 			</motion.div>
 		</AnimatePresence>
