@@ -251,7 +251,7 @@ export function PrivacyConfigPanel({
                   <CheckCircle2 className="h-4 w-4" />
                   Select Metrics to Evaluate
                 </h3>
-                <div className="grid gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {METRIC_CONFIGS.map((metricConfig) => {
                     const info = METRIC_INFO[metricConfig.key];
                     const isEnabled = config.enabledMetrics[metricConfig.key];
@@ -480,6 +480,9 @@ function ThresholdConfig({ metricKey, value, onChange }: ThresholdConfigProps) {
     value >= thresholdInfo.recommended.min && value <= thresholdInfo.recommended.max;
 
   const step = metricKey === 'tCloseness' ? 0.01 : 1;
+  
+  // Calculate percentage for value indicator position
+  const percentage = ((value - thresholdInfo.min) / (thresholdInfo.max - thresholdInfo.min)) * 100;
 
   return (
     <div className="space-y-3">
@@ -502,13 +505,24 @@ function ThresholdConfig({ metricKey, value, onChange }: ThresholdConfigProps) {
       </div>
 
       <div className="space-y-2">
-        <Slider
-          value={[value]}
-          onValueChange={([val]) => onChange(val)}
-          min={thresholdInfo.min}
-          max={thresholdInfo.max}
-          step={step}
-        />
+        <div className="relative pt-5">
+          {/* Value indicator bubble */}
+          <div 
+            className="absolute top-0 transform -translate-x-1/2 z-10"
+            style={{ left: `${Math.min(Math.max(percentage, 5), 95)}%` }}
+          >
+            <div className={`px-2 py-0.5 rounded text-xs font-semibold bg-primary text-primary-foreground shadow-sm`}>
+              {metricKey === 'tCloseness' ? value.toFixed(2) : value}
+            </div>
+          </div>
+          <Slider
+            value={[value]}
+            onValueChange={([val]) => onChange(val)}
+            min={thresholdInfo.min}
+            max={thresholdInfo.max}
+            step={step}
+          />
+        </div>
         <div className="flex justify-between text-xs text-muted-foreground">
           <span>{thresholdInfo.min}</span>
           <span className={isInRecommendedRange ? 'text-green-600 dark:text-green-400 font-medium' : ''}>

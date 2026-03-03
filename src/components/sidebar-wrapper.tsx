@@ -15,7 +15,7 @@ interface SidebarWrapperProps {
       user: User;
       plugins: Plugin[];
     }
-  };
+  };  
 }
 
 export default function SidebarWrapper( config : SidebarWrapperProps) {
@@ -28,7 +28,10 @@ export default function SidebarWrapper( config : SidebarWrapperProps) {
           standaloneMode: import.meta.env.VITE_STANDALONE_MODE?.toLowerCase() === 'true',
           keycloakUrl: import.meta.env.VITE_KEYCLOAK_URL,
           communityKey: import.meta.env.VITE_COMMUNITY_KEY,
-          requireAuthentication: false,
+          requireAuthentication: true,
+          devMode: {
+            enabled: true,
+          },
           ...config
       }}
     />

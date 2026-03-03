@@ -349,7 +349,7 @@ export interface PrivacyAnalysisConfig {
 export const METRIC_THRESHOLDS = {
   kAnonymity: {
     min: 2,
-    max: 100,
+    max: 20,
     default: 5,
     recommended: { min: 3, max: 10 },
     label: 'K-Anonymity Threshold (k)',
@@ -358,7 +358,7 @@ export const METRIC_THRESHOLDS = {
   },
   lDiversity: {
     min: 2,
-    max: 50,
+    max: 10,
     default: 2,
     recommended: { min: 2, max: 5 },
     label: 'L-Diversity Threshold (l)',
@@ -367,7 +367,7 @@ export const METRIC_THRESHOLDS = {
   },
   tCloseness: {
     min: 0.01,
-    max: 1.0,
+    max: 0.5,
     default: 0.3,
     recommended: { min: 0.15, max: 0.35 },
     label: 'T-Closeness Threshold (t)',
@@ -501,7 +501,7 @@ export const TECHNIQUE_INFO = {
 export const DEFAULT_PRIVACY_CONFIG: PrivacyAnalysisConfig = {
   kThreshold: 5,
   lThreshold: 2,
-  tThreshold: 0.3,
+  tThreshold: 0.4,
   lDiversityType: 'distinct',
   metricWeights: {
     kAnonymity: 0.25,

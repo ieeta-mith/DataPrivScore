@@ -116,6 +116,8 @@ export function calculatePrivacyIndexWithPlugins(input: PrivacyAnalysisInput): P
     parsedCSV,
     classification,
     kAnonymity,
+    lDiversity,
+    tCloseness,
     techniqueDetection
   );
 
@@ -230,7 +232,7 @@ export function calculatePrivacyIndex(input: PrivacyAnalysisInput): PrivacyIndex
 
   // Calculate re-identification risk (only if enabled)
   const reidentificationRisk = enabled.reidentificationRisk
-    ? calculateReidentificationRisk(parsedCSV, classification, kAnonymity, techniqueDetection)
+    ? calculateReidentificationRisk(parsedCSV, classification, kAnonymity, lDiversity, tCloseness, techniqueDetection)
     : createEmptyReidentificationRisk();
 
   // Calculate metric scores (only for enabled metrics)
@@ -507,9 +509,9 @@ function getMetricStatus(score: number): 'pass' | 'warning' | 'fail' {
  */
 function getRiskLevel(score: number): RiskLevel {
   if (score >= 90) return 'minimal';
-  if (score >= 70) return 'low';
-  if (score >= 50) return 'medium';
-  if (score >= 30) return 'high';
+  if (score >= 75) return 'low';
+  if (score >= 60) return 'medium';
+  if (score >= 50) return 'high';
   return 'critical';
 }
 
@@ -518,9 +520,9 @@ function getRiskLevel(score: number): RiskLevel {
  */
 function getGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
   if (score >= 90) return 'A';
-  if (score >= 80) return 'B';
-  if (score >= 70) return 'C';
-  if (score >= 60) return 'D';
+  if (score >= 75) return 'B';
+  if (score >= 60) return 'C';
+  if (score >= 50) return 'D';
   return 'F';
 }
 
@@ -535,19 +537,25 @@ function calculateReidentificationRisk(
   parsedCSV: ParsedCSV,
   classification: ClassificationResult,
   kAnonymity: KAnonymityResult,
+  lDiversity: LDiversityResult,
+  tCloseness: TClosenessResult,
   techniqueDetection: TechniqueDetectionResult
 ): ReidentificationRisk {
   const riskFactors: RiskFactor[] = [];
   let totalRiskImpact = 0;
 
+  // Techniques that protect direct identifiers
+  const protectiveTechniques = ['pseudonymization', 'hashing', 'masking', 'suppression', 'tokenization'];
+
   // Factor 1: Direct identifiers present
   const directIdentifiers = classification.summary.directIdentifiers;
-  const unprotectedDI = directIdentifiers - 
+  const protectedDIAttributes = new Set(
     techniqueDetection.detectedTechniques
-      .filter(t => t.technique === 'pseudonymization' || t.technique === 'hashing')
+      .filter(t => protectiveTechniques.includes(t.technique))
       .flatMap(t => t.affectedAttributes)
       .filter(a => classification.attributes.find(attr => attr.name === a && attr.type === 'direct-identifier'))
-      .length;
+  );
+  const unprotectedDI = directIdentifiers - protectedDIAttributes.size;
 
   if (unprotectedDI > 0) {
     const impact = Math.min(unprotectedDI * 25, 50);
@@ -555,7 +563,7 @@ function calculateReidentificationRisk(
       factor: 'Unprotected Direct Identifiers',
       impact,
       description: `${unprotectedDI} direct identifier(s) without protection`,
-      mitigation: 'Apply pseudonymization or hashing to direct identifiers',
+      mitigation: 'Apply pseudonymization, hashing, or masking to direct identifiers',
     });
     totalRiskImpact += impact;
   }
@@ -566,17 +574,43 @@ function calculateReidentificationRisk(
     riskFactors.push({
       factor: 'Insufficient K-Anonymity',
       impact,
-      description: `k=${kAnonymity.kValue} is below the recommended threshold of ${kAnonymity.kThreshold}`,
+      description: `k=${kAnonymity.kValue} is below the threshold of ${kAnonymity.kThreshold}`,
       mitigation: 'Generalize quasi-identifiers or suppress outlier records',
     });
     totalRiskImpact += impact;
   }
 
-  // Factor 3: Unique records
+  // Factor 3: L-Diversity violations
+  if (!lDiversity.satisfiesLDiversity && lDiversity.violatingClasses.length > 0) {
+    const violationRate = lDiversity.violatingClasses.length / Math.max(kAnonymity.equivalenceClassCount, 1);
+    const impact = Math.min(Math.round(violationRate * 25) + 5, 25);
+    riskFactors.push({
+      factor: 'L-Diversity Violations',
+      impact,
+      description: `${lDiversity.violatingClasses.length} equivalence class(es) lack sufficient sensitive value diversity`,
+      mitigation: 'Apply more generalization to increase diversity in sensitive attributes',
+    });
+    totalRiskImpact += impact;
+  }
+
+  // Factor 4: T-Closeness violations
+  if (!tCloseness.satisfiesTCloseness && tCloseness.maxDistance > tCloseness.tThreshold) {
+    const distanceExcess = tCloseness.maxDistance - tCloseness.tThreshold;
+    const impact = Math.min(Math.round(distanceExcess * 40), 20);
+    riskFactors.push({
+      factor: 'T-Closeness Violations',
+      impact,
+      description: `Max distribution distance (${tCloseness.maxDistance.toFixed(3)}) exceeds threshold (${tCloseness.tThreshold})`,
+      mitigation: 'Apply techniques to balance sensitive value distributions across groups',
+    });
+    totalRiskImpact += impact;
+  }
+
+  // Factor 5: Unique records
   const uniqueRecords = kAnonymity.violatingClasses.filter(ec => ec.size === 1).length;
   if (uniqueRecords > 0) {
     const uniqueRatio = uniqueRecords / parsedCSV.rows.length;
-    const impact = Math.min(uniqueRatio * 100, 25);
+    const impact = Math.min(Math.round(uniqueRatio * 100), 25);
     riskFactors.push({
       factor: 'Unique Records',
       impact,
@@ -586,7 +620,7 @@ function calculateReidentificationRisk(
     totalRiskImpact += impact;
   }
 
-  // Factor 4: Many quasi-identifiers
+  // Factor 6: Many quasi-identifiers
   const quasiCount = classification.summary.quasiIdentifiers;
   if (quasiCount > 5) {
     const impact = Math.min((quasiCount - 5) * 5, 20);
@@ -599,9 +633,9 @@ function calculateReidentificationRisk(
     totalRiskImpact += impact;
   }
 
-  // Factor 5: Low technique coverage
-  if (techniqueDetection.techniqueCoverage < 0.3) {
-    const impact = (1 - techniqueDetection.techniqueCoverage) * 15;
+  // Factor 7: Low technique coverage
+  if (techniqueDetection.techniqueCoverage < 0.5) {
+    const impact = Math.round((0.5 - techniqueDetection.techniqueCoverage) * 30);
     riskFactors.push({
       factor: 'Low Privacy Technique Coverage',
       impact,
