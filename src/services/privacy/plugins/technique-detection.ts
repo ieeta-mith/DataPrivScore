@@ -5,7 +5,9 @@ import type {
   TechniqueEvidence,
   TechniqueDetectionResult,
   TechniqueRecommendation,
+  TechniqueToggle,
 } from '@/types/privacy-analysis';
+import { DEFAULT_TECHNIQUE_TOGGLE } from '@/types/privacy-analysis';
 import type { PrivacyPlugin, PluginInput, PluginOutput, PluginMetadata, MetricStatus } from '@/types/privacy-plugins';
 
 // ============================================================================
@@ -466,32 +468,69 @@ function detectNoiseAddition(
 // ============================================================================
 
 /**
+ * Helper function to check if a detected technique is enabled
+ */
+function isEnabledTechnique(technique: string, enabled: TechniqueToggle): boolean {
+  const techniqueMap: Record<string, keyof TechniqueToggle> = {
+    'generalization': 'generalization',
+    'suppression': 'suppression',
+    'masking': 'masking',
+    'hashing': 'hashing',
+    'pseudonymization': 'pseudonymization',
+    'tokenization': 'tokenization',
+    'noise-addition': 'noiseAddition',
+    'data-swapping': 'dataSwapping',
+    'aggregation': 'aggregation',
+    'bucketing': 'bucketing',
+  };
+  
+  const key = techniqueMap[technique];
+  return key ? enabled[key] : true;
+}
+
+/**
  * Detect privacy-preserving techniques applied to a dataset
  */
 function detectPrivacyTechniques(
   parsedCSV: ParsedCSV,
   classification: ClassificationResult,
   minConfidence: number = 0.3,
-  generateRecs: boolean = true
+  generateRecs: boolean = true,
+  enabledTechniques: TechniqueToggle = DEFAULT_TECHNIQUE_TOGGLE
 ): TechniqueDetectionResult {
   const detectedTechniques: DetectedTechnique[] = [];
   const protectedAttributes = new Set<string>();
 
-  // Run all detection methods
-  const detectionMethods = [
-    detectGeneralization,
-    detectSuppression,
-    detectMasking,
-    detectHashing,
-    detectPseudonymization,
-    detectBucketing,
-    detectNoiseAddition,
-  ];
+  // Map technique keys to detection methods
+  type DetectionMethod = (csv: ParsedCSV, cls: ClassificationResult) => DetectedTechnique[];
+  const detectionMethodsMap: Record<keyof TechniqueToggle, DetectionMethod> = {
+    generalization: detectGeneralization,
+    suppression: detectSuppression,
+    masking: detectMasking,
+    hashing: detectHashing,
+    pseudonymization: detectPseudonymization,
+    tokenization: detectPseudonymization, // Tokenization uses same detection as pseudonymization
+    noiseAddition: detectNoiseAddition,
+    dataSwapping: detectNoiseAddition, // Data swapping uses similar patterns
+    aggregation: detectBucketing, // Aggregation uses similar patterns to bucketing
+    bucketing: detectBucketing,
+  };
 
-  for (const detectMethod of detectionMethods) {
+  // Run detection methods only for enabled techniques
+  const processedMethods = new Set<DetectionMethod>();
+  
+  for (const [techniqueKey, isEnabled] of Object.entries(enabledTechniques)) {
+    if (!isEnabled) continue;
+    
+    const detectMethod = detectionMethodsMap[techniqueKey as keyof TechniqueToggle];
+    if (!detectMethod || processedMethods.has(detectMethod)) continue;
+    
+    processedMethods.add(detectMethod);
     const results = detectMethod(parsedCSV, classification);
+    
     for (const technique of results) {
-      if (technique.confidence > minConfidence) {
+      // Filter results to only include enabled technique types
+      if (technique.confidence > minConfidence && isEnabledTechnique(technique.technique, enabledTechniques)) {
         detectedTechniques.push(technique);
         technique.affectedAttributes.forEach(attr => protectedAttributes.add(attr));
       }
@@ -667,11 +706,15 @@ export const techniqueDetectionPlugin: PrivacyPlugin<TechniqueDetectionResult, T
   calculate(input: PluginInput, pluginConfig?: TechniqueDetectionConfig): PluginOutput<TechniqueDetectionResult> {
     const config = { ...DEFAULT_CONFIG, ...pluginConfig };
 
+    // Get enabled techniques from the main config or use defaults
+    const enabledTechniques = input.config?.enabledTechniques ?? DEFAULT_TECHNIQUE_TOGGLE;
+
     const result = detectPrivacyTechniques(
       input.parsedCSV,
       input.classification,
       config.minConfidence,
-      config.generateRecommendations
+      config.generateRecommendations,
+      enabledTechniques
     );
 
     const score = result.techniqueScore;

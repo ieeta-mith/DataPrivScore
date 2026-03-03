@@ -299,6 +299,27 @@ export interface PrivacyRecommendation {
 // Configuration Types
 // ============================================================================
 
+export interface MetricToggle {
+  kAnonymity: boolean;
+  lDiversity: boolean;
+  tCloseness: boolean;
+  techniqueDetection: boolean;
+  reidentificationRisk: boolean;
+}
+
+export interface TechniqueToggle {
+  generalization: boolean;
+  suppression: boolean;
+  masking: boolean;
+  hashing: boolean;
+  pseudonymization: boolean;
+  tokenization: boolean;
+  noiseAddition: boolean;
+  dataSwapping: boolean;
+  aggregation: boolean;
+  bucketing: boolean;
+}
+
 export interface PrivacyAnalysisConfig {
   // K-anonymity threshold (default: 5)
   kThreshold: number;
@@ -318,7 +339,164 @@ export interface PrivacyAnalysisConfig {
   };
   // Whether to include detailed class-level analysis
   includeDetailedAnalysis: boolean;
+  // Enabled metrics toggle
+  enabledMetrics: MetricToggle;
+  // Enabled techniques toggle for detection
+  enabledTechniques: TechniqueToggle;
 }
+
+// Threshold limits and defaults for validation and guidance
+export const METRIC_THRESHOLDS = {
+  kAnonymity: {
+    min: 2,
+    max: 100,
+    default: 5,
+    recommended: { min: 3, max: 10 },
+    label: 'K-Anonymity Threshold (k)',
+    description: 'Minimum records with same quasi-identifier values',
+    unit: 'records',
+  },
+  lDiversity: {
+    min: 2,
+    max: 50,
+    default: 2,
+    recommended: { min: 2, max: 5 },
+    label: 'L-Diversity Threshold (l)',
+    description: 'Minimum distinct sensitive values per group',
+    unit: 'values',
+  },
+  tCloseness: {
+    min: 0.01,
+    max: 1.0,
+    default: 0.3,
+    recommended: { min: 0.15, max: 0.35 },
+    label: 'T-Closeness Threshold (t)',
+    description: 'Maximum distance between local and global distribution',
+    unit: '',
+  },
+} as const;
+
+export const METRIC_INFO = {
+  kAnonymity: {
+    name: 'K-Anonymity',
+    shortDescription: 'Ensures each record is indistinguishable from at least k-1 other records',
+    guidance: 'Higher k values provide stronger privacy but may reduce data utility. A value of 5 is commonly recommended.',
+    warningLow: 'Values below 3 may not provide adequate privacy protection against re-identification attacks.',
+    warningHigh: 'Values above 10 may significantly reduce data utility without proportional privacy gains.',
+  },
+  lDiversity: {
+    name: 'L-Diversity',
+    shortDescription: 'Ensures each equivalence class has at least l distinct sensitive values',
+    guidance: 'Protects against attribute disclosure attacks. Higher values increase diversity requirements.',
+    warningLow: 'Values below 2 offer minimal protection against attribute disclosure.',
+    warningHigh: 'Values above 5 may be hard to achieve with limited sensitive value diversity.',
+  },
+  tCloseness: {
+    name: 'T-Closeness',
+    shortDescription: 'Limits the distribution difference between groups and overall dataset',
+    guidance: 'Lower t values enforce stricter distribution similarity. Values between 0.15-0.35 are typical.',
+    warningLow: 'Values below 0.15 may be too restrictive and hard to satisfy.',
+    warningHigh: 'Values above 0.35 may allow significant distribution skew.',
+  },
+  techniqueDetection: {
+    name: 'Technique Detection',
+    shortDescription: 'Detects applied privacy-preserving techniques like masking, generalization, etc.',
+    guidance: 'This metric analyzes data patterns to identify privacy techniques already applied.',
+    warningLow: '',
+    warningHigh: '',
+  },
+  reidentificationRisk: {
+    name: 'Re-identification Risk',
+    shortDescription: 'Estimates the probability of identifying individuals in the dataset',
+    guidance: 'Combines multiple factors to assess overall re-identification vulnerability.',
+    warningLow: '',
+    warningHigh: '',
+  },
+} as const;
+
+export const DEFAULT_METRIC_TOGGLE: MetricToggle = {
+  kAnonymity: true,
+  lDiversity: true,
+  tCloseness: true,
+  techniqueDetection: true,
+  reidentificationRisk: true,
+};
+
+export const DEFAULT_TECHNIQUE_TOGGLE: TechniqueToggle = {
+  generalization: true,
+  suppression: true,
+  masking: true,
+  hashing: true,
+  pseudonymization: true,
+  tokenization: true,
+  noiseAddition: true,
+  dataSwapping: true,
+  aggregation: true,
+  bucketing: true,
+};
+
+export const TECHNIQUE_INFO = {
+  generalization: {
+    name: 'Generalization',
+    description: 'Replaces specific values with broader categories (e.g., exact age → age range)',
+    icon: 'Layers',
+    privacyBenefit: 'high' as const,
+  },
+  suppression: {
+    name: 'Suppression',
+    description: 'Removes or replaces sensitive values with placeholders (e.g., "*", "N/A")',
+    icon: 'EyeOff',
+    privacyBenefit: 'high' as const,
+  },
+  masking: {
+    name: 'Masking',
+    description: 'Partially hides values while preserving some information (e.g., "***-**-1234")',
+    icon: 'Mask',
+    privacyBenefit: 'medium' as const,
+  },
+  hashing: {
+    name: 'Hashing',
+    description: 'Transforms values into fixed-length cryptographic representations',
+    icon: 'Hash',
+    privacyBenefit: 'high' as const,
+  },
+  pseudonymization: {
+    name: 'Pseudonymization',
+    description: 'Replaces identifiers with artificial pseudonyms or codes',
+    icon: 'UserX',
+    privacyBenefit: 'medium' as const,
+  },
+  tokenization: {
+    name: 'Tokenization',
+    description: 'Substitutes sensitive data with non-sensitive tokens',
+    icon: 'Key',
+    privacyBenefit: 'high' as const,
+  },
+  noiseAddition: {
+    name: 'Noise Addition',
+    description: 'Adds random noise to numerical values while preserving statistical properties',
+    icon: 'Waves',
+    privacyBenefit: 'medium' as const,
+  },
+  dataSwapping: {
+    name: 'Data Swapping',
+    description: 'Exchanges values between records to break linkage',
+    icon: 'Shuffle',
+    privacyBenefit: 'medium' as const,
+  },
+  aggregation: {
+    name: 'Aggregation',
+    description: 'Groups records and reports aggregate statistics instead of individual values',
+    icon: 'BarChart3',
+    privacyBenefit: 'high' as const,
+  },
+  bucketing: {
+    name: 'Bucketing',
+    description: 'Groups continuous values into discrete buckets or bins',
+    icon: 'Archive',
+    privacyBenefit: 'medium' as const,
+  },
+} as const;
 
 export const DEFAULT_PRIVACY_CONFIG: PrivacyAnalysisConfig = {
   kThreshold: 5,
@@ -333,6 +511,8 @@ export const DEFAULT_PRIVACY_CONFIG: PrivacyAnalysisConfig = {
     reidentificationRisk: 0.20,
   },
   includeDetailedAnalysis: true,
+  enabledMetrics: DEFAULT_METRIC_TOGGLE,
+  enabledTechniques: DEFAULT_TECHNIQUE_TOGGLE,
 };
 
 // ============================================================================
