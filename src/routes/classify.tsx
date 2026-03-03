@@ -15,7 +15,7 @@ import {
 	FileText,
 	TrendingUp,
 	BarChart3,
-	Loader2,
+	Settings2,
 } from 'lucide-react';
 
 import { Card, CardContent } from '@/components/ui/card';
@@ -23,13 +23,11 @@ import { AnimatedButton, Button } from '@/components/ui/button';
 import { DatasetStats } from '@/components/classification-stats';
 
 import { updateAttributeClassification } from '@/services/attribute-classifier';
-import { calculatePrivacyIndex } from "@/services/privacy";
 
 import {
   updateClassificationResult,
 	getClassificationData,
 	clearClassificationData,
-  setPrivacyResultData,
 } from '@/lib/storage';
 
 import type { AttributeType, ClassificationResult } from '@/types/attribute-classification';
@@ -45,7 +43,6 @@ function ClassifyPage() {
 	const [result, setResult] = useState<ClassificationResult | null>(null);
 	const [parsedCSV, setParsedCSV] = useState<ParsedCSV | null>(null);
 	const [fileName, setFileName] = useState<string | null>(null);
-	const [isCalculating, setIsCalculating] = useState(false);
 
 	useEffect(() => {
 		const data = getClassificationData();
@@ -70,6 +67,10 @@ function ClassifyPage() {
 		setResult(updatedResult);
 		// Update stored data as well
 		if (parsedCSV && fileName) updateClassificationResult(updatedResult);
+	};
+
+	const handleProceedToConfiguration = () => {
+		navigate({ to: '/configure' });
 	};
 
 	const handleExportClassification = () => {
@@ -110,27 +111,6 @@ function ClassifyPage() {
 			</div>
 		);
 	}
-
-	const handleCalculatePrivacyIndex = async () => {
-		if (!result || !parsedCSV || !fileName) return;
-
-		setIsCalculating(true);
-
-		setTimeout(() => {
-		  try {
-		    const privacyResult = calculatePrivacyIndex({
-		      parsedCSV,
-		      classification: result,
-		    });
-
-		    setPrivacyResultData(privacyResult, result, parsedCSV, fileName);
-		    navigate({ to: "/results" });
-		  } catch (error) {
-		    console.error("Error calculating privacy index:", error);
-		    setIsCalculating(false);
-		  }
-		}, 2000);
-	};
 
 	return (
 		<div className="min-h-screen bg-linear-to-br from-background to-muted">
@@ -262,35 +242,32 @@ function ClassifyPage() {
 					transition={{ duration: 0.3, delay: 0.35 }}
 					className="mt-8"
 				>
-					<Card className="p-6">
-						<CardContent>
+					<Card className="border-2 border-primary/20 bg-linear-to-br from-primary/5 to-transparent">
+						<CardContent className="p-6">
 							<div className="flex flex-col md:flex-row items-center justify-between gap-4">
-								<div>
-									<h3 className="text-lg font-semibold">Ready to Calculate Privacy Index?</h3>
-									<p className="text-sm text-muted-foreground">
-										Once you're satisfied with the classifications, proceed to calculate the privacy
-										index using k-anonymity, l-diversity, t-closeness, and privacy technique
-										detection.
-									</p>
+								<div className="flex items-center gap-4">
+									<motion.div
+										className="p-3 rounded-xl bg-primary/10"
+										whileHover={{ scale: 1.05 }}
+										whileTap={{ scale: 0.95 }}
+									>
+										<Settings2 className="h-6 w-6 text-primary" />
+									</motion.div>
+									<div>
+										<h3 className="text-lg font-semibold">Configure Privacy Analysis</h3>
+										<p className="text-sm text-muted-foreground">
+											Customize thresholds, select metrics, and choose which privacy techniques to detect before calculating the privacy index.
+										</p>
+									</div>
 								</div>
-								<Button
+								<AnimatedButton
 									size="lg"
-									onClick={handleCalculatePrivacyIndex}
-									disabled={isCalculating}
+									onClick={handleProceedToConfiguration}
 									className="whitespace-nowrap"
 								>
-									{isCalculating ? (
-										<>
-											<Loader2 className="h-4 w-4 mr-2 animate-spin" />
-											Calculating...
-										</>
-									) : (
-										<>
-											Calculate Privacy Index
-											<ArrowRight className="h-4 w-4 ml-2" />
-										</>
-									)}
-								</Button>
+									Configure & Calculate
+									<ArrowRight className="h-4 w-4 ml-2" />
+								</AnimatedButton>
 							</div>
 						</CardContent>
 					</Card>

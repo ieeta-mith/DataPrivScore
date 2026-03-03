@@ -31,6 +31,7 @@ import type {
   LDiversityResult,
   TClosenessResult,
   TechniqueDetectionResult,
+  MetricToggle,
 } from '@/types/privacy-analysis';
 import { DEFAULT_PRIVACY_CONFIG } from '@/types/privacy-analysis';
 
@@ -203,26 +204,36 @@ export function calculatePrivacyIndex(input: PrivacyAnalysisInput): PrivacyIndex
     config,
   };
 
-  // Calculate individual metrics using plugins directly
-  const kAnonymityOutput = kAnonymityPlugin.calculate(pluginInput);
-  const lDiversityOutput = lDiversityPlugin.calculate(pluginInput);
-  const tClosenessOutput = tClosenessPlugin.calculate(pluginInput);
-  const techniqueOutput = techniqueDetectionPlugin.calculate(pluginInput);
+  // Calculate individual metrics using plugins directly (only if enabled)
+  const enabled = config.enabledMetrics;
+  
+  const kAnonymityOutput = enabled.kAnonymity 
+    ? kAnonymityPlugin.calculate(pluginInput)
+    : createDisabledPluginOutput<KAnonymityResult>('K-Anonymity', createEmptyKAnonymityResult(config));
+  
+  const lDiversityOutput = enabled.lDiversity 
+    ? lDiversityPlugin.calculate(pluginInput)
+    : createDisabledPluginOutput<LDiversityResult>('L-Diversity', createEmptyLDiversityResult(config));
+  
+  const tClosenessOutput = enabled.tCloseness 
+    ? tClosenessPlugin.calculate(pluginInput)
+    : createDisabledPluginOutput<TClosenessResult>('T-Closeness', createEmptyTClosenessResult(config));
+  
+  const techniqueOutput = enabled.techniqueDetection 
+    ? techniqueDetectionPlugin.calculate(pluginInput)
+    : createDisabledPluginOutput<TechniqueDetectionResult>('Technique Detection', createEmptyTechniqueResult());
 
   const kAnonymity = kAnonymityOutput.result;
   const lDiversity = lDiversityOutput.result;
   const tCloseness = tClosenessOutput.result;
   const techniqueDetection = techniqueOutput.result;
 
-  // Calculate re-identification risk
-  const reidentificationRisk = calculateReidentificationRisk(
-    parsedCSV,
-    classification,
-    kAnonymity,
-    techniqueDetection
-  );
+  // Calculate re-identification risk (only if enabled)
+  const reidentificationRisk = enabled.reidentificationRisk
+    ? calculateReidentificationRisk(parsedCSV, classification, kAnonymity, techniqueDetection)
+    : createEmptyReidentificationRisk();
 
-  // Calculate metric scores
+  // Calculate metric scores (only for enabled metrics)
   const metricScores = calculateMetricScores(
     kAnonymityOutput,
     lDiversityOutput,
@@ -232,8 +243,8 @@ export function calculatePrivacyIndex(input: PrivacyAnalysisInput): PrivacyIndex
     config
   );
 
-  // Calculate overall score
-  const overallScore = calculateOverallScore(metricScores);
+  // Calculate overall score (normalized for enabled metrics only)
+  const overallScore = calculateOverallScore(metricScores, config.enabledMetrics);
 
   // Determine risk level and grade
   const riskLevel = getRiskLevel(overallScore);
@@ -278,6 +289,103 @@ export function calculatePrivacyIndex(input: PrivacyAnalysisInput): PrivacyIndex
 }
 
 // ============================================================================
+// Helper Functions for Disabled Metrics
+// ============================================================================
+
+/**
+ * Create a plugin output for a disabled metric
+ */
+function createDisabledPluginOutput<T>(name: string, result: T): PluginOutput<T> {
+  return {
+    score: 0,
+    status: 'warning' as const,
+    details: `${name} metric is disabled`,
+    result,
+    insights: [`${name} analysis was not performed (metric disabled)`],
+  };
+}
+
+/**
+ * Create empty K-Anonymity result
+ */
+function createEmptyKAnonymityResult(config: PrivacyAnalysisConfig): KAnonymityResult {
+  return {
+    kValue: 0,
+    satisfiesKAnonymity: false,
+    kThreshold: config.kThreshold,
+    equivalenceClassCount: 0,
+    sizeDistribution: {},
+    violatingClasses: [],
+    complianceRate: 0,
+    averageClassSize: 0,
+    quasiIdentifiers: [],
+  };
+}
+
+/**
+ * Create empty L-Diversity result
+ */
+function createEmptyLDiversityResult(config: PrivacyAnalysisConfig): LDiversityResult {
+  return {
+    lValue: 0,
+    satisfiesLDiversity: false,
+    lThreshold: config.lThreshold,
+    diversityType: config.lDiversityType,
+    classResults: [],
+    violatingClasses: [],
+    complianceRate: 0,
+    sensitiveAttributes: [],
+    averageEntropy: 0,
+  };
+}
+
+/**
+ * Create empty T-Closeness result
+ */
+function createEmptyTClosenessResult(config: PrivacyAnalysisConfig): TClosenessResult {
+  return {
+    maxDistance: 0,
+    satisfiesTCloseness: false,
+    tThreshold: config.tThreshold,
+    classResults: [],
+    violatingClasses: [],
+    complianceRate: 0,
+    globalDistribution: {},
+    sensitiveAttribute: '',
+    averageDistance: 0,
+  };
+}
+
+/**
+ * Create empty Technique Detection result
+ */
+function createEmptyTechniqueResult(): TechniqueDetectionResult {
+  return {
+    detectedTechniques: [],
+    techniqueCoverage: 0,
+    protectedAttributeCount: 0,
+    totalAttributes: 0,
+    techniqueScore: 0,
+    recommendations: [],
+  };
+}
+
+/**
+ * Create empty Re-identification Risk result
+ */
+function createEmptyReidentificationRisk(): ReidentificationRisk {
+  return {
+    riskScore: 50,
+    riskLevel: 'medium',
+    reidentificationProbability: 0.5,
+    riskFactors: [],
+    prosecutorRisk: 50,
+    journalistRisk: 50,
+    marketerRisk: 50,
+  };
+}
+
+// ============================================================================
 // Metric Calculation Helpers
 // ============================================================================
 
@@ -293,60 +401,95 @@ function calculateMetricScores(
   config: PrivacyAnalysisConfig
 ): PrivacyMetricScore[] {
   const weights = config.metricWeights;
+  const enabled = config.enabledMetrics;
   const riskScore = 100 - reidentificationRisk.riskScore;
 
-  return [
-    {
+  const metrics: PrivacyMetricScore[] = [];
+
+  if (enabled.kAnonymity) {
+    metrics.push({
       name: 'K-Anonymity',
       score: kAnonymityOutput.score,
       weight: weights.kAnonymity,
       weightedScore: kAnonymityOutput.score * weights.kAnonymity,
       status: kAnonymityOutput.status,
       details: kAnonymityOutput.details,
-    },
-    {
+    });
+  }
+
+  if (enabled.lDiversity) {
+    metrics.push({
       name: 'L-Diversity',
       score: lDiversityOutput.score,
       weight: weights.lDiversity,
       weightedScore: lDiversityOutput.score * weights.lDiversity,
       status: lDiversityOutput.status,
       details: lDiversityOutput.details,
-    },
-    {
+    });
+  }
+
+  if (enabled.tCloseness) {
+    metrics.push({
       name: 'T-Closeness',
       score: tClosenessOutput.score,
       weight: weights.tCloseness,
       weightedScore: tClosenessOutput.score * weights.tCloseness,
       status: tClosenessOutput.status,
       details: tClosenessOutput.details,
-    },
-    {
+    });
+  }
+
+  if (enabled.techniqueDetection) {
+    metrics.push({
       name: 'Privacy Techniques',
       score: techniqueOutput.score,
       weight: weights.techniqueDetection,
       weightedScore: techniqueOutput.score * weights.techniqueDetection,
       status: techniqueOutput.status,
       details: techniqueOutput.details,
-    },
-    {
+    });
+  }
+
+  if (enabled.reidentificationRisk) {
+    metrics.push({
       name: 'Re-identification Risk',
       score: riskScore,
       weight: weights.reidentificationRisk,
       weightedScore: riskScore * weights.reidentificationRisk,
       status: getMetricStatus(riskScore),
       details: `${reidentificationRisk.riskLevel} risk (${(reidentificationRisk.reidentificationProbability * 100).toFixed(2)}% probability)`,
-    },
-  ];
+    });
+  }
+
+  return metrics;
 }
 
 /**
  * Calculate overall privacy score from weighted metrics
+ * Normalizes the score based on enabled metrics' weights
  */
-function calculateOverallScore(metricScores: PrivacyMetricScore[]): number {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function calculateOverallScore(metricScores: PrivacyMetricScore[], _enabledMetrics?: MetricToggle): number {
+  if (metricScores.length === 0) {
+    return 0;
+  }
+
   const totalWeightedScore = metricScores.reduce(
     (sum, m) => sum + m.weightedScore,
     0
   );
+  
+  // Calculate total weight of enabled metrics
+  const totalWeight = metricScores.reduce(
+    (sum, m) => sum + m.weight,
+    0
+  );
+  
+  // Normalize score based on enabled weights
+  if (totalWeight > 0) {
+    return Math.round(totalWeightedScore / totalWeight);
+  }
+  
   return Math.round(totalWeightedScore);
 }
 
