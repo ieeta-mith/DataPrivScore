@@ -29,9 +29,6 @@ export default function SidebarWrapper( config : SidebarWrapperProps) {
           keycloakUrl: import.meta.env.VITE_KEYCLOAK_URL,
           communityKey: import.meta.env.VITE_COMMUNITY_KEY,
           requireAuthentication: true,
-          devMode: {
-            enabled: true,
-          },
           ...config
       }}
     />

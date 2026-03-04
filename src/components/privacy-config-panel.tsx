@@ -428,7 +428,7 @@ export function PrivacyConfigPanel({
                   <RotateCcw className="h-4 w-4 mr-2" />
                   Reset to Defaults
                 </Button>
-                <AnimatedButton size="lg" onClick={onCalculate} disabled={isCalculating || enabledMetricsCount === 0}>
+                <AnimatedButton size="lg" onClick={onCalculate} disabled={isCalculating || enabledMetricsCount === 0 || weightWarning !== null}>
                   {isCalculating ? 'Calculating...' : 'Calculate Privacy Index'}
                 </AnimatedButton>
               </div>
@@ -443,6 +443,17 @@ export function PrivacyConfigPanel({
                   </div>
                 </div>
               )}
+
+              {weightWarning && (
+                <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-3">
+                  <div className="flex gap-2 items-center">
+                    <AlertTriangle className="h-4 w-4 text-amber-500" />
+                    <p className="text-sm text-amber-800 dark:text-amber-200">
+                      {weightWarning} Please adjust weights in Advanced Settings or use "Normalize to 100%".
+                    </p>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </motion.div>
         )}
@@ -451,15 +462,27 @@ export function PrivacyConfigPanel({
       {/* Collapsed Summary View */}
       {!isExpanded && (
         <CardContent className="pt-0">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-4 text-sm text-muted-foreground">
-              <span>k={config.kThreshold}</span>
-              <span>l={config.lThreshold}</span>
-              <span>t={config.tThreshold}</span>
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span>k={config.kThreshold}</span>
+                <span>l={config.lThreshold}</span>
+                <span>t={config.tThreshold}</span>
+              </div>
+              <AnimatedButton onClick={onCalculate} disabled={isCalculating || enabledMetricsCount === 0 || weightWarning !== null}>
+                {isCalculating ? 'Calculating...' : 'Calculate Privacy Index'}
+              </AnimatedButton>
             </div>
-            <AnimatedButton onClick={onCalculate} disabled={isCalculating || enabledMetricsCount === 0}>
-              {isCalculating ? 'Calculating...' : 'Calculate Privacy Index'}
-            </AnimatedButton>
+            {weightWarning && (
+              <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-2">
+                <div className="flex gap-2 items-center">
+                  <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0" />
+                  <p className="text-xs text-amber-800 dark:text-amber-200">
+                    {weightWarning}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </CardContent>
       )}
