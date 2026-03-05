@@ -38,8 +38,8 @@ export function HelpDialogResults({ open, onOpenChange }: HelpDialogResultsProps
               <GradeBadge grade="A" range="90-100" description="Excellent protection" color="emerald" />
               <GradeBadge grade="B" range="75-89" description="Good protection" color="green" />
               <GradeBadge grade="C" range="60-74" description="Moderate protection" color="yellow" />
-              <GradeBadge grade="D" range="40-59" description="Poor protection" color="orange" />
-              <GradeBadge grade="F" range="0-39" description="Critical risk" color="red" />
+              <GradeBadge grade="D" range="50-59" description="Poor protection" color="orange" />
+              <GradeBadge grade="F" range="0-49" description="Critical risk" color="red" />
             </div>
           </div>
 

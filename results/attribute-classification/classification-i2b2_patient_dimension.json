@@ -1,0 +1,158 @@
+{
+  "fileName": "i2b2_patient_dimension.csv",
+  "timestamp": "2026-03-05T17:37:16.411Z",
+  "summary": {
+    "totalAttributes": 18,
+    "directIdentifiers": 1,
+    "quasiIdentifiers": 10,
+    "sensitiveAttributes": 2,
+    "nonSensitiveAttributes": 5,
+    "averageConfidence": 0.6588888888888889
+  },
+  "attributes": [
+    {
+      "name": "patient_num",
+      "type": "quasi-identifier",
+      "confidence": 0.55,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "High cardinality numeric field"
+    },
+    {
+      "name": "vital_status_cd",
+      "type": "non-sensitive",
+      "confidence": 0.5,
+      "isManualOverride": false,
+      "dataPattern": "boolean",
+      "reason": "Unable to determine classification, defaulting to non-sensitive"
+    },
+    {
+      "name": "birth_date",
+      "type": "direct-identifier",
+      "confidence": 0.98,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Government-issued identification number"
+    },
+    {
+      "name": "death_date",
+      "type": "quasi-identifier",
+      "confidence": 0.6,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Date field may contribute to re-identification"
+    },
+    {
+      "name": "sex_cd",
+      "type": "non-sensitive",
+      "confidence": 0.5,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Categorical field with moderate cardinality"
+    },
+    {
+      "name": "age_in_years_num",
+      "type": "quasi-identifier",
+      "confidence": 0.55,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "High cardinality numeric field"
+    },
+    {
+      "name": "language_cd",
+      "type": "non-sensitive",
+      "confidence": 0.5,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Categorical field with moderate cardinality"
+    },
+    {
+      "name": "race_cd",
+      "type": "quasi-identifier",
+      "confidence": 0.88,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Ethnicity/race is a quasi-identifier"
+    },
+    {
+      "name": "marital_status_cd",
+      "type": "quasi-identifier",
+      "confidence": 0.75,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Marital status is a quasi-identifier"
+    },
+    {
+      "name": "religion_cd",
+      "type": "sensitive",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Religious affiliation is sensitive personal data"
+    },
+    {
+      "name": "zip_cd",
+      "type": "quasi-identifier",
+      "confidence": 0.55,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "High cardinality numeric field"
+    },
+    {
+      "name": "statecityzip_path",
+      "type": "quasi-identifier",
+      "confidence": 0.85,
+      "isManualOverride": false,
+      "dataPattern": "location",
+      "reason": "Geographic location is a quasi-identifier"
+    },
+    {
+      "name": "income_cd",
+      "type": "sensitive",
+      "confidence": 0.9,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "Financial compensation is sensitive information"
+    },
+    {
+      "name": "patient_blob",
+      "type": "non-sensitive",
+      "confidence": 0.5,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Categorical field with moderate cardinality"
+    },
+    {
+      "name": "update_date",
+      "type": "quasi-identifier",
+      "confidence": 0.6,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Date field may contribute to re-identification"
+    },
+    {
+      "name": "download_date",
+      "type": "quasi-identifier",
+      "confidence": 0.6,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Date field may contribute to re-identification"
+    },
+    {
+      "name": "import_date",
+      "type": "quasi-identifier",
+      "confidence": 0.6,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Date field may contribute to re-identification"
+    },
+    {
+      "name": "sourcesystem_cd",
+      "type": "non-sensitive",
+      "confidence": 0.5,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Categorical field with moderate cardinality"
+    }
+  ]
+}

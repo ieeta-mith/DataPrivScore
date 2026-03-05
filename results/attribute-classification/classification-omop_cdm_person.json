@@ -1,0 +1,158 @@
+{
+  "fileName": "omop_cdm_person.csv",
+  "timestamp": "2026-03-05T17:36:49.460Z",
+  "summary": {
+    "totalAttributes": 18,
+    "directIdentifiers": 7,
+    "quasiIdentifiers": 10,
+    "sensitiveAttributes": 0,
+    "nonSensitiveAttributes": 1,
+    "averageConfidence": 0.8177777777777778
+  },
+  "attributes": [
+    {
+      "name": "person_id",
+      "type": "direct-identifier",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Unique identifier field that directly identifies individuals"
+    },
+    {
+      "name": "gender_concept_id",
+      "type": "direct-identifier",
+      "confidence": 0.7,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "Name contains ID pattern, likely an identifier"
+    },
+    {
+      "name": "year_of_birth",
+      "type": "quasi-identifier",
+      "confidence": 0.92,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Birth date is a powerful quasi-identifier"
+    },
+    {
+      "name": "month_of_birth",
+      "type": "quasi-identifier",
+      "confidence": 0.92,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Birth date is a powerful quasi-identifier"
+    },
+    {
+      "name": "day_of_birth",
+      "type": "quasi-identifier",
+      "confidence": 0.92,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Birth date is a powerful quasi-identifier"
+    },
+    {
+      "name": "birth_datetime",
+      "type": "direct-identifier",
+      "confidence": 0.98,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Government-issued identification number"
+    },
+    {
+      "name": "race_concept_id",
+      "type": "quasi-identifier",
+      "confidence": 0.88,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Ethnicity/race is a quasi-identifier"
+    },
+    {
+      "name": "ethnicity_concept_id",
+      "type": "quasi-identifier",
+      "confidence": 0.88,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Ethnicity/race is a quasi-identifier"
+    },
+    {
+      "name": "location_id",
+      "type": "quasi-identifier",
+      "confidence": 0.85,
+      "isManualOverride": false,
+      "dataPattern": "location",
+      "reason": "Geographic location is a quasi-identifier"
+    },
+    {
+      "name": "provider_id",
+      "type": "direct-identifier",
+      "confidence": 0.7,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "Name contains ID pattern, likely an identifier"
+    },
+    {
+      "name": "care_site_id",
+      "type": "direct-identifier",
+      "confidence": 0.7,
+      "isManualOverride": false,
+      "dataPattern": "numeric",
+      "reason": "Name contains ID pattern, likely an identifier"
+    },
+    {
+      "name": "person_source_value",
+      "type": "direct-identifier",
+      "confidence": 0.6,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Data pattern suggests unique identifier"
+    },
+    {
+      "name": "gender_source_value",
+      "type": "non-sensitive",
+      "confidence": 0.5,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Categorical field with moderate cardinality"
+    },
+    {
+      "name": "gender_source_concept_id",
+      "type": "direct-identifier",
+      "confidence": 0.7,
+      "isManualOverride": false,
+      "dataPattern": "boolean",
+      "reason": "Name contains ID pattern, likely an identifier"
+    },
+    {
+      "name": "race_source_value",
+      "type": "quasi-identifier",
+      "confidence": 0.88,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Ethnicity/race is a quasi-identifier"
+    },
+    {
+      "name": "race_source_concept_id",
+      "type": "quasi-identifier",
+      "confidence": 0.88,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Ethnicity/race is a quasi-identifier"
+    },
+    {
+      "name": "ethnicity_source_value",
+      "type": "quasi-identifier",
+      "confidence": 0.88,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Ethnicity/race is a quasi-identifier"
+    },
+    {
+      "name": "ethnicity_source_concept_id",
+      "type": "quasi-identifier",
+      "confidence": 0.88,
+      "isManualOverride": false,
+      "dataPattern": "categorical",
+      "reason": "Ethnicity/race is a quasi-identifier"
+    }
+  ]
+}

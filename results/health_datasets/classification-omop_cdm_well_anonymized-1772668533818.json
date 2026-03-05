@@ -1,0 +1,158 @@
+{
+  "fileName": "omop_cdm_well_anonymized.csv",
+  "timestamp": "2026-03-04T23:44:37.296Z",
+  "summary": {
+    "totalAttributes": 18,
+    "directIdentifiers": 3,
+    "quasiIdentifiers": 6,
+    "sensitiveAttributes": 4,
+    "nonSensitiveAttributes": 5,
+    "averageConfidence": 0.9672222222222222
+  },
+  "attributes": [
+    {
+      "name": "person_id",
+      "type": "direct-identifier",
+      "confidence": 0.95,
+      "isManualOverride": false,
+      "dataPattern": "identifier",
+      "reason": "Unique identifier field that directly identifies individuals"
+    },
+    {
+      "name": "gender_concept_id",
+      "type": "non-sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "numeric",
+      "reason": "Manually moved from Quasi-Identifier to Non-Sensitive Attribute"
+    },
+    {
+      "name": "year_of_birth",
+      "type": "quasi-identifier",
+      "confidence": 0.92,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Birth date is a powerful quasi-identifier"
+    },
+    {
+      "name": "month_of_birth",
+      "type": "quasi-identifier",
+      "confidence": 0.92,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Birth date is a powerful quasi-identifier"
+    },
+    {
+      "name": "day_of_birth",
+      "type": "quasi-identifier",
+      "confidence": 0.92,
+      "isManualOverride": false,
+      "dataPattern": "date",
+      "reason": "Birth date is a powerful quasi-identifier"
+    },
+    {
+      "name": "birth_datetime",
+      "type": "quasi-identifier",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "identifier",
+      "reason": "Manually moved from Direct Identifier to Quasi-Identifier (overriding high confidence classification)"
+    },
+    {
+      "name": "race_concept_id",
+      "type": "sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Quasi-Identifier to Sensitive Attribute"
+    },
+    {
+      "name": "ethnicity_concept_id",
+      "type": "sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Quasi-Identifier to Sensitive Attribute"
+    },
+    {
+      "name": "location_id",
+      "type": "quasi-identifier",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "location",
+      "reason": "Manually moved from Direct Identifier to Quasi-Identifier"
+    },
+    {
+      "name": "provider_id",
+      "type": "non-sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Quasi-Identifier to Non-Sensitive Attribute"
+    },
+    {
+      "name": "care_site_id",
+      "type": "non-sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Quasi-Identifier to Non-Sensitive Attribute"
+    },
+    {
+      "name": "person_source_value",
+      "type": "direct-identifier",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "text",
+      "reason": "Manually moved from Non-Sensitive Attribute to Direct Identifier"
+    },
+    {
+      "name": "gender_source_value",
+      "type": "quasi-identifier",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Non-Sensitive Attribute to Quasi-Identifier"
+    },
+    {
+      "name": "gender_source_concept_id",
+      "type": "direct-identifier",
+      "confidence": 0.7,
+      "isManualOverride": false,
+      "dataPattern": "boolean",
+      "reason": "Name contains ID pattern, likely an identifier"
+    },
+    {
+      "name": "race_source_value",
+      "type": "sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Quasi-Identifier to Sensitive Attribute (overriding high confidence classification)"
+    },
+    {
+      "name": "race_source_concept_id",
+      "type": "non-sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Quasi-Identifier to Non-Sensitive Attribute (overriding high confidence classification)"
+    },
+    {
+      "name": "ethnicity_source_value",
+      "type": "sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Non-Sensitive Attribute to Sensitive Attribute"
+    },
+    {
+      "name": "ethnicity_source_concept_id",
+      "type": "non-sensitive",
+      "confidence": 1,
+      "isManualOverride": true,
+      "dataPattern": "categorical",
+      "reason": "Manually moved from Sensitive Attribute to Non-Sensitive Attribute"
+    }
+  ]
+}
