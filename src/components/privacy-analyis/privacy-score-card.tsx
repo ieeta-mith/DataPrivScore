@@ -52,6 +52,8 @@ interface ScoreCircleProps {
 }
 
 function ScoreCircle({ score, grade, gradeStyle }: ScoreCircleProps) {
+  const roundedScore = Math.round(score);
+  
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative">
@@ -65,7 +67,7 @@ function ScoreCircle({ score, grade, gradeStyle }: ScoreCircleProps) {
             fill="none"
             className="text-muted/20"
           />
-          <circle
+          <motion.circle
             cx="80"
             cy="80"
             r="70"
@@ -73,21 +75,33 @@ function ScoreCircle({ score, grade, gradeStyle }: ScoreCircleProps) {
             strokeWidth="12"
             fill="none"
             strokeDasharray={440}
-            strokeDashoffset={440 - (440 * score) / 100}
+            initial={{ strokeDashoffset: 440 }}
+            animate={{ strokeDashoffset: 440 - (440 * roundedScore) / 100 }}
+            transition={{ duration: 1.2, ease: "easeOut", delay: 0.3 }}
             strokeLinecap="round"
             className={gradeStyle.text}
           />
         </svg>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className={`text-5xl font-bold ${gradeStyle.text}`}>
-            {score}
-          </span>
+          <motion.span 
+            className={`text-5xl font-bold ${gradeStyle.text}`}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+          >
+            {roundedScore}
+          </motion.span>
           <span className="text-sm text-muted-foreground">out of 100</span>
         </div>
       </div>
-      <div className={`mt-4 text-6xl font-bold ${gradeStyle.text}`}>
+      <motion.div 
+        className={`mt-4 text-6xl font-bold ${gradeStyle.text}`}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7, type: "spring" }}
+      >
         {grade}
-      </div>
+      </motion.div>
       <p className="text-sm text-muted-foreground mt-1">Privacy Grade</p>
     </div>
   );

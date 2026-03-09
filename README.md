@@ -1,7 +1,7 @@
 
 <div align="center">
 
-  <img src="images/logo.png" alt="DataPrivScore Logo" width="240" height="auto" />
+  <img src="public/logo.png" alt="DataPrivScore Logo" width="240" height="auto" />
   
 
   **A lightweight tool for calculating data privacy risk through a transparent, quantitative scoring model.**

@@ -1,0 +1,225 @@
+{
+  "fileName": "omop_cdm_partial_anonymization.csv",
+  "timestamp": "2026-03-05T00:15:47.553Z",
+  "overallScore": 59,
+  "grade": "D",
+  "riskLevel": "high",
+  "metricScores": [
+    {
+      "name": "K-Anonymity",
+      "score": 100,
+      "weight": 0.1994415636218588,
+      "weightedScore": 19.94415636218588,
+      "status": "pass",
+      "details": "k=5 (threshold: 5), 100.0% compliant"
+    },
+    {
+      "name": "L-Diversity",
+      "score": 84,
+      "weight": 0.1994415636218588,
+      "weightedScore": 16.75309134423614,
+      "status": "pass",
+      "details": "l=2 (threshold: 2), 100.0% compliant"
+    },
+    {
+      "name": "T-Closeness",
+      "score": 13,
+      "weight": 0.1994415636218588,
+      "weightedScore": 2.5927403270841642,
+      "status": "fail",
+      "details": "max distance: 0.578 (threshold: 0.3)"
+    },
+    {
+      "name": "Privacy Techniques",
+      "score": 70,
+      "weight": 0.20276558968222314,
+      "weightedScore": 14.193591277755619,
+      "status": "pass",
+      "details": "4 technique(s) detected, 50% coverage"
+    },
+    {
+      "name": "Re-identification Risk",
+      "score": 29,
+      "weight": 0.19890971945220054,
+      "weightedScore": 5.768381864113816,
+      "status": "fail",
+      "details": "critical risk (20.00% probability)"
+    }
+  ],
+  "kAnonymity": {
+    "kValue": 5,
+    "threshold": 5,
+    "satisfies": true,
+    "complianceRate": 100,
+    "equivalenceClasses": 9
+  },
+  "lDiversity": {
+    "lValue": 2,
+    "threshold": 2,
+    "satisfies": true,
+    "complianceRate": 100,
+    "type": "distinct"
+  },
+  "tCloseness": {
+    "maxDistance": 0.5777777777777778,
+    "threshold": 0.3,
+    "satisfies": false,
+    "complianceRate": 0
+  },
+  "detectedTechniques": [
+    {
+      "technique": "generalization",
+      "confidence": 0.9,
+      "affectedAttributes": [
+        "gender_concept_id",
+        "year_of_birth",
+        "gender_source_value"
+      ]
+    },
+    {
+      "technique": "suppression",
+      "confidence": 0.95,
+      "affectedAttributes": [
+        "month_of_birth",
+        "day_of_birth",
+        "birth_datetime",
+        "location_id",
+        "provider_id",
+        "care_site_id"
+      ]
+    },
+    {
+      "technique": "masking",
+      "confidence": 0.9,
+      "affectedAttributes": [
+        "location_id",
+        "provider_id",
+        "care_site_id"
+      ]
+    },
+    {
+      "technique": "bucketing",
+      "confidence": 0.85,
+      "affectedAttributes": [
+        "year_of_birth"
+      ]
+    }
+  ],
+  "reidentificationRisk": {
+    "score": 71,
+    "probability": 0.2,
+    "level": "critical"
+  },
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "priority": "critical",
+      "category": "general",
+      "title": "Remove or Protect Direct Identifiers",
+      "description": "Direct identifiers (person_id, person_source_value) can directly identify individuals and should be removed, hashed, or pseudonymized.",
+      "expectedImpact": 25,
+      "affectedAttributes": [
+        "person_id",
+        "person_source_value"
+      ],
+      "action": "Apply pseudonymization or cryptographic hashing to these attributes."
+    },
+    {
+      "id": "rec-3",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Pseudonymization",
+      "description": "Direct identifiers should be pseudonymized or removed.",
+      "expectedImpact": 15,
+      "affectedAttributes": [
+        "person_id",
+        "person_source_value"
+      ],
+      "action": "Apply Pseudonymization to: person_id, person_source_value"
+    },
+    {
+      "id": "rec-4",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Hashing",
+      "description": "Consider hashing direct identifiers if linkage is needed.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "person_id",
+        "person_source_value"
+      ],
+      "action": "Apply Hashing to: person_id, person_source_value"
+    },
+    {
+      "id": "rec-2",
+      "priority": "medium",
+      "category": "t-closeness",
+      "title": "Address Distributional Skew",
+      "description": "Maximum distributional distance (0.578) exceeds threshold (0.3). This could enable inference attacks.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "race_concept_id"
+      ],
+      "action": "Apply data swapping or noise addition to reduce skew in equivalence classes."
+    },
+    {
+      "id": "rec-5",
+      "priority": "medium",
+      "category": "technique",
+      "title": "Apply Bucketing",
+      "description": "Sensitive attributes could benefit from bucketing.",
+      "expectedImpact": 5,
+      "affectedAttributes": [
+        "race_concept_id",
+        "ethnicity_concept_id",
+        "race_source_value",
+        "ethnicity_source_value"
+      ],
+      "action": "Apply Bucketing to: race_concept_id, ethnicity_concept_id, race_source_value, ethnicity_source_value"
+    }
+  ],
+  "metadata": {
+    "recordCount": 45,
+    "attributeCount": 18,
+    "classificationSummary": {
+      "directIdentifiers": 2,
+      "quasiIdentifiers": 7,
+      "sensitiveAttributes": 4,
+      "nonSensitiveAttributes": 5
+    },
+    "analysisDuration": 1.900000000372529,
+    "config": {
+      "kThreshold": 5,
+      "lThreshold": 2,
+      "tThreshold": 0.3,
+      "lDiversityType": "distinct",
+      "metricWeights": {
+        "kAnonymity": 0.1994415636218588,
+        "lDiversity": 0.1994415636218588,
+        "tCloseness": 0.1994415636218588,
+        "techniqueDetection": 0.20276558968222314,
+        "reidentificationRisk": 0.19890971945220054
+      },
+      "includeDetailedAnalysis": true,
+      "enabledMetrics": {
+        "kAnonymity": true,
+        "lDiversity": true,
+        "tCloseness": true,
+        "techniqueDetection": true,
+        "reidentificationRisk": true
+      },
+      "enabledTechniques": {
+        "generalization": true,
+        "suppression": true,
+        "masking": true,
+        "hashing": true,
+        "pseudonymization": true,
+        "tokenization": true,
+        "noiseAddition": true,
+        "dataSwapping": true,
+        "aggregation": true,
+        "bucketing": true
+      }
+    }
+  }
+}

@@ -1,0 +1,245 @@
+{
+  "fileName": "omop_cdm_no_anonymization.csv",
+  "timestamp": "2026-03-05T00:01:31.823Z",
+  "overallScore": 12,
+  "grade": "F",
+  "riskLevel": "critical",
+  "metricScores": [
+    {
+      "name": "K-Anonymity",
+      "score": 14,
+      "weight": 0.20618556701030927,
+      "weightedScore": 2.88659793814433,
+      "status": "fail",
+      "details": "k=1 (threshold: 5), 0.0% compliant"
+    },
+    {
+      "name": "L-Diversity",
+      "score": 20,
+      "weight": 0.20618556701030927,
+      "weightedScore": 4.123711340206185,
+      "status": "fail",
+      "details": "l=1 (threshold: 2), 0.0% compliant"
+    },
+    {
+      "name": "T-Closeness",
+      "score": 6,
+      "weight": 0.20618556701030927,
+      "weightedScore": 1.2371134020618557,
+      "status": "fail",
+      "details": "max distance: 0.933 (threshold: 0.3)"
+    },
+    {
+      "name": "Privacy Techniques",
+      "score": 16,
+      "weight": 0.20962199312714774,
+      "weightedScore": 3.353951890034364,
+      "status": "fail",
+      "details": "1 technique(s) detected, 11% coverage"
+    },
+    {
+      "name": "Re-identification Risk",
+      "score": 0,
+      "weight": 0.1718213058419244,
+      "weightedScore": 0,
+      "status": "fail",
+      "details": "critical risk (100.00% probability)"
+    }
+  ],
+  "kAnonymity": {
+    "kValue": 1,
+    "threshold": 5,
+    "satisfies": false,
+    "complianceRate": 0,
+    "equivalenceClasses": 45
+  },
+  "lDiversity": {
+    "lValue": 1,
+    "threshold": 2,
+    "satisfies": false,
+    "complianceRate": 0,
+    "type": "distinct"
+  },
+  "tCloseness": {
+    "maxDistance": 0.9333333333333333,
+    "threshold": 0.3,
+    "satisfies": false,
+    "complianceRate": 0
+  },
+  "detectedTechniques": [
+    {
+      "technique": "generalization",
+      "confidence": 0.6,
+      "affectedAttributes": [
+        "gender_concept_id",
+        "gender_source_value"
+      ]
+    }
+  ],
+  "reidentificationRisk": {
+    "score": 100,
+    "probability": 1,
+    "level": "critical"
+  },
+  "recommendations": [
+    {
+      "id": "rec-1",
+      "priority": "critical",
+      "category": "general",
+      "title": "Remove or Protect Direct Identifiers",
+      "description": "Direct identifiers (person_id, person_source_value) can directly identify individuals and should be removed, hashed, or pseudonymized.",
+      "expectedImpact": 25,
+      "affectedAttributes": [
+        "person_id",
+        "person_source_value"
+      ],
+      "action": "Apply pseudonymization or cryptographic hashing to these attributes."
+    },
+    {
+      "id": "rec-2",
+      "priority": "high",
+      "category": "k-anonymity",
+      "title": "Improve K-Anonymity",
+      "description": "Dataset achieves k=1 but requires k=5. 45 records are in violating equivalence classes.",
+      "expectedImpact": 20,
+      "affectedAttributes": [
+        "gender_concept_id",
+        "year_of_birth",
+        "month_of_birth",
+        "day_of_birth",
+        "birth_datetime",
+        "location_id",
+        "gender_source_value"
+      ],
+      "action": "Generalize quasi-identifier values or suppress outlier records."
+    },
+    {
+      "id": "rec-3",
+      "priority": "high",
+      "category": "l-diversity",
+      "title": "Improve L-Diversity",
+      "description": "Dataset achieves l=1 diversity but requires l=2. Some equivalence classes have only one unique sensitive value, enabling attribute disclosure.",
+      "expectedImpact": 15,
+      "affectedAttributes": [
+        "race_concept_id",
+        "ethnicity_concept_id",
+        "race_source_value",
+        "ethnicity_source_value"
+      ],
+      "action": "Apply anatomy or bucketization to sensitive attributes."
+    },
+    {
+      "id": "rec-5",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Pseudonymization",
+      "description": "Direct identifiers should be pseudonymized or removed.",
+      "expectedImpact": 15,
+      "affectedAttributes": [
+        "person_id",
+        "person_source_value"
+      ],
+      "action": "Apply Pseudonymization to: person_id, person_source_value"
+    },
+    {
+      "id": "rec-6",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Hashing",
+      "description": "Consider hashing direct identifiers if linkage is needed.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "person_id",
+        "person_source_value"
+      ],
+      "action": "Apply Hashing to: person_id, person_source_value"
+    },
+    {
+      "id": "rec-7",
+      "priority": "high",
+      "category": "technique",
+      "title": "Apply Generalization",
+      "description": "Quasi-identifiers should be generalized to achieve k-anonymity.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "year_of_birth",
+        "month_of_birth",
+        "day_of_birth",
+        "birth_datetime",
+        "location_id"
+      ],
+      "action": "Apply Generalization to: year_of_birth, month_of_birth, day_of_birth, birth_datetime, location_id"
+    },
+    {
+      "id": "rec-4",
+      "priority": "medium",
+      "category": "t-closeness",
+      "title": "Address Distributional Skew",
+      "description": "Maximum distributional distance (0.933) exceeds threshold (0.3). This could enable inference attacks.",
+      "expectedImpact": 10,
+      "affectedAttributes": [
+        "race_concept_id"
+      ],
+      "action": "Apply data swapping or noise addition to reduce skew in equivalence classes."
+    },
+    {
+      "id": "rec-8",
+      "priority": "medium",
+      "category": "technique",
+      "title": "Apply Bucketing",
+      "description": "Sensitive attributes could benefit from bucketing.",
+      "expectedImpact": 5,
+      "affectedAttributes": [
+        "race_concept_id",
+        "ethnicity_concept_id",
+        "race_source_value",
+        "ethnicity_source_value"
+      ],
+      "action": "Apply Bucketing to: race_concept_id, ethnicity_concept_id, race_source_value, ethnicity_source_value"
+    }
+  ],
+  "metadata": {
+    "recordCount": 45,
+    "attributeCount": 18,
+    "classificationSummary": {
+      "directIdentifiers": 2,
+      "quasiIdentifiers": 7,
+      "sensitiveAttributes": 4,
+      "nonSensitiveAttributes": 5
+    },
+    "analysisDuration": 2.5,
+    "config": {
+      "kThreshold": 5,
+      "lThreshold": 2,
+      "tThreshold": 0.3,
+      "lDiversityType": "distinct",
+      "metricWeights": {
+        "kAnonymity": 0.20618556701030927,
+        "lDiversity": 0.20618556701030927,
+        "tCloseness": 0.20618556701030927,
+        "techniqueDetection": 0.20962199312714774,
+        "reidentificationRisk": 0.1718213058419244
+      },
+      "includeDetailedAnalysis": true,
+      "enabledMetrics": {
+        "kAnonymity": true,
+        "lDiversity": true,
+        "tCloseness": true,
+        "techniqueDetection": true,
+        "reidentificationRisk": true
+      },
+      "enabledTechniques": {
+        "generalization": true,
+        "suppression": true,
+        "masking": true,
+        "hashing": true,
+        "pseudonymization": true,
+        "tokenization": true,
+        "noiseAddition": true,
+        "dataSwapping": true,
+        "aggregation": true,
+        "bucketing": true
+      }
+    }
+  }
+}

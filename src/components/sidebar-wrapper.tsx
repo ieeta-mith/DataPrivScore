@@ -15,7 +15,7 @@ interface SidebarWrapperProps {
       user: User;
       plugins: Plugin[];
     }
-  };
+  };  
 }
 
 export default function SidebarWrapper( config : SidebarWrapperProps) {

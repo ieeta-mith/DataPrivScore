@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ServerErrorRouteImport } from './routes/server-error'
 import { Route as ResultsRouteImport } from './routes/results'
 import { Route as NotFoundRouteImport } from './routes/not-found'
+import { Route as ConfigureRouteImport } from './routes/configure'
 import { Route as ClassifyRouteImport } from './routes/classify'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -30,6 +31,11 @@ const NotFoundRoute = NotFoundRouteImport.update({
   path: '/not-found',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ConfigureRoute = ConfigureRouteImport.update({
+  id: '/configure',
+  path: '/configure',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClassifyRoute = ClassifyRouteImport.update({
   id: '/classify',
   path: '/classify',
@@ -44,6 +50,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/classify': typeof ClassifyRoute
+  '/configure': typeof ConfigureRoute
   '/not-found': typeof NotFoundRoute
   '/results': typeof ResultsRoute
   '/server-error': typeof ServerErrorRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/classify': typeof ClassifyRoute
+  '/configure': typeof ConfigureRoute
   '/not-found': typeof NotFoundRoute
   '/results': typeof ResultsRoute
   '/server-error': typeof ServerErrorRoute
@@ -59,19 +67,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/classify': typeof ClassifyRoute
+  '/configure': typeof ConfigureRoute
   '/not-found': typeof NotFoundRoute
   '/results': typeof ResultsRoute
   '/server-error': typeof ServerErrorRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/classify' | '/not-found' | '/results' | '/server-error'
+  fullPaths:
+    | '/'
+    | '/classify'
+    | '/configure'
+    | '/not-found'
+    | '/results'
+    | '/server-error'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/classify' | '/not-found' | '/results' | '/server-error'
+  to:
+    | '/'
+    | '/classify'
+    | '/configure'
+    | '/not-found'
+    | '/results'
+    | '/server-error'
   id:
     | '__root__'
     | '/'
     | '/classify'
+    | '/configure'
     | '/not-found'
     | '/results'
     | '/server-error'
@@ -80,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ClassifyRoute: typeof ClassifyRoute
+  ConfigureRoute: typeof ConfigureRoute
   NotFoundRoute: typeof NotFoundRoute
   ResultsRoute: typeof ResultsRoute
   ServerErrorRoute: typeof ServerErrorRoute
@@ -108,6 +131,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotFoundRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/configure': {
+      id: '/configure'
+      path: '/configure'
+      fullPath: '/configure'
+      preLoaderRoute: typeof ConfigureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/classify': {
       id: '/classify'
       path: '/classify'
@@ -128,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ClassifyRoute: ClassifyRoute,
+  ConfigureRoute: ConfigureRoute,
   NotFoundRoute: NotFoundRoute,
   ResultsRoute: ResultsRoute,
   ServerErrorRoute: ServerErrorRoute,

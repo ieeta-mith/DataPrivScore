@@ -1,11 +1,13 @@
 import type { ClassificationResult } from "@/types/attribute-classification";
-import type { PrivacyIndexResult } from "@/types/privacy-analysis";
+import type { PrivacyIndexResult, PrivacyAnalysisConfig } from "@/types/privacy-analysis";
 import type { ParsedCSV } from "@/types/csv-parser";
+import { DEFAULT_PRIVACY_CONFIG } from "@/types/privacy-analysis";
 
 let storedParsedCSV: ParsedCSV | null = null;
 let storedClassificationResult: ClassificationResult | null = null;
 let storedFileName: string | null = null;
 let storedPrivacyResult: PrivacyIndexResult | null = null;
+let storedPrivacyConfig: PrivacyAnalysisConfig = DEFAULT_PRIVACY_CONFIG;
 
 export function setClassificationData(
   parsedCSV: ParsedCSV,
@@ -33,6 +35,18 @@ export function clearClassificationData() {
   storedParsedCSV = null;
   storedClassificationResult = null;
   storedFileName = null;
+}
+
+export function setPrivacyConfig(config: PrivacyAnalysisConfig) {
+  storedPrivacyConfig = config;
+}
+
+export function getPrivacyConfig(): PrivacyAnalysisConfig {
+  return storedPrivacyConfig;
+}
+
+export function resetPrivacyConfig() {
+  storedPrivacyConfig = DEFAULT_PRIVACY_CONFIG;
 }
 
 export function setPrivacyResultData(

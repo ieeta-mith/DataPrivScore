@@ -1,0 +1,46 @@
+person_id,gender_concept_id,year_of_birth,month_of_birth,day_of_birth,birth_datetime,race_concept_id,ethnicity_concept_id,location_id,provider_id,care_site_id,person_source_value,gender_source_value,gender_source_concept_id,race_source_value,race_source_concept_id,ethnicity_source_value,ethnicity_source_concept_id
+1,8507,1980-1989,*,*,*,8527,38003564,***,***,***,ANON_001,Male,0,White,0,Not Hispanic or Latino,0
+2,8507,1980-1989,*,*,*,8527,38003564,***,***,***,ANON_002,Male,0,White,0,Not Hispanic or Latino,0
+3,8507,1980-1989,*,*,*,8527,38003564,***,***,***,ANON_003,Male,0,White,0,Not Hispanic or Latino,0
+4,8507,1980-1989,*,*,*,8527,38003564,***,***,***,ANON_004,Male,0,White,0,Not Hispanic or Latino,0
+5,8507,1980-1989,*,*,*,8516,38003564,***,***,***,ANON_005,Male,0,Black or African American,0,Not Hispanic or Latino,0
+6,8532,1980-1989,*,*,*,8516,38003564,***,***,***,ANON_006,Female,0,Black or African American,0,Not Hispanic or Latino,0
+7,8532,1980-1989,*,*,*,8516,38003564,***,***,***,ANON_007,Female,0,Black or African American,0,Not Hispanic or Latino,0
+8,8532,1980-1989,*,*,*,8516,38003564,***,***,***,ANON_008,Female,0,Black or African American,0,Not Hispanic or Latino,0
+9,8532,1980-1989,*,*,*,8516,38003564,***,***,***,ANON_009,Female,0,Black or African American,0,Not Hispanic or Latino,0
+10,8532,1980-1989,*,*,*,8527,38003564,***,***,***,ANON_010,Female,0,White,0,Not Hispanic or Latino,0
+11,8507,1970-1979,*,*,*,8515,38003564,***,***,***,ANON_011,Male,0,Asian,0,Not Hispanic or Latino,0
+12,8507,1970-1979,*,*,*,8515,38003564,***,***,***,ANON_012,Male,0,Asian,0,Not Hispanic or Latino,0
+13,8507,1970-1979,*,*,*,8515,38003564,***,***,***,ANON_013,Male,0,Asian,0,Not Hispanic or Latino,0
+14,8507,1970-1979,*,*,*,8515,38003564,***,***,***,ANON_014,Male,0,Asian,0,Not Hispanic or Latino,0
+15,8507,1970-1979,*,*,*,8527,38003564,***,***,***,ANON_015,Male,0,White,0,Not Hispanic or Latino,0
+16,8532,1970-1979,*,*,*,8657,38003563,***,***,***,ANON_016,Female,0,American Indian or Alaska Native,0,Hispanic or Latino,0
+17,8532,1970-1979,*,*,*,8657,38003563,***,***,***,ANON_017,Female,0,American Indian or Alaska Native,0,Hispanic or Latino,0
+18,8532,1970-1979,*,*,*,8657,38003563,***,***,***,ANON_018,Female,0,American Indian or Alaska Native,0,Hispanic or Latino,0
+19,8532,1970-1979,*,*,*,8657,38003563,***,***,***,ANON_019,Female,0,American Indian or Alaska Native,0,Hispanic or Latino,0
+20,8532,1970-1979,*,*,*,8515,38003563,***,***,***,ANON_020,Female,0,Asian,0,Hispanic or Latino,0
+21,8507,1990-1999,*,*,*,8527,38003564,***,***,***,ANON_021,Male,0,White,0,Not Hispanic or Latino,0
+22,8507,1990-1999,*,*,*,8527,38003564,***,***,***,ANON_022,Male,0,White,0,Not Hispanic or Latino,0
+23,8507,1990-1999,*,*,*,8527,38003564,***,***,***,ANON_023,Male,0,White,0,Not Hispanic or Latino,0
+24,8507,1990-1999,*,*,*,8527,38003564,***,***,***,ANON_024,Male,0,White,0,Not Hispanic or Latino,0
+25,8507,1990-1999,*,*,*,8515,38003564,***,***,***,ANON_025,Male,0,Asian,0,Not Hispanic or Latino,0
+26,8532,1990-1999,*,*,*,8516,38003564,***,***,***,ANON_026,Female,0,Black or African American,0,Not Hispanic or Latino,0
+27,8532,1990-1999,*,*,*,8516,38003564,***,***,***,ANON_027,Female,0,Black or African American,0,Not Hispanic or Latino,0
+28,8532,1990-1999,*,*,*,8516,38003564,***,***,***,ANON_028,Female,0,Black or African American,0,Not Hispanic or Latino,0
+29,8532,1990-1999,*,*,*,8516,38003564,***,***,***,ANON_029,Female,0,Black or African American,0,Not Hispanic or Latino,0
+30,8532,1990-1999,*,*,*,8657,38003564,***,***,***,ANON_030,Female,0,American Indian or Alaska Native,0,Not Hispanic or Latino,0
+31,8507,1960-1969,*,*,*,8515,38003564,***,***,***,ANON_031,Male,0,Asian,0,Not Hispanic or Latino,0
+32,8507,1960-1969,*,*,*,8515,38003564,***,***,***,ANON_032,Male,0,Asian,0,Not Hispanic or Latino,0
+33,8507,1960-1969,*,*,*,8515,38003564,***,***,***,ANON_033,Male,0,Asian,0,Not Hispanic or Latino,0
+34,8507,1960-1969,*,*,*,8515,38003564,***,***,***,ANON_034,Male,0,Asian,0,Not Hispanic or Latino,0
+35,8507,1960-1969,*,*,*,8657,38003564,***,***,***,ANON_035,Male,0,American Indian or Alaska Native,0,Not Hispanic or Latino,0
+36,8532,1960-1969,*,*,*,8527,38003563,***,***,***,ANON_036,Female,0,White,0,Hispanic or Latino,0
+37,8532,1960-1969,*,*,*,8527,38003563,***,***,***,ANON_037,Female,0,White,0,Hispanic or Latino,0
+38,8532,1960-1969,*,*,*,8527,38003563,***,***,***,ANON_038,Female,0,White,0,Hispanic or Latino,0
+39,8532,1960-1969,*,*,*,8527,38003563,***,***,***,ANON_039,Female,0,White,0,Hispanic or Latino,0
+40,8532,1960-1969,*,*,*,8516,38003563,***,***,***,ANON_040,Female,0,Black or African American,0,Hispanic or Latino,0
+41,8507,1950-1959,*,*,*,8657,38003564,***,***,***,ANON_041,Male,0,American Indian or Alaska Native,0,Not Hispanic or Latino,0
+42,8507,1950-1959,*,*,*,8657,38003564,***,***,***,ANON_042,Male,0,American Indian or Alaska Native,0,Not Hispanic or Latino,0
+43,8507,1950-1959,*,*,*,8657,38003564,***,***,***,ANON_043,Male,0,American Indian or Alaska Native,0,Not Hispanic or Latino,0
+44,8507,1950-1959,*,*,*,8657,38003564,***,***,***,ANON_044,Male,0,American Indian or Alaska Native,0,Not Hispanic or Latino,0
+45,8507,1950-1959,*,*,*,8527,38003564,***,***,***,ANON_045,Male,0,White,0,Not Hispanic or Latino,0

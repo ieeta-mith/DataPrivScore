@@ -130,89 +130,99 @@ function ResultsPage() {
           </CollapsibleSection>
 
           {/* K-Anonymity Details */}
-          <CollapsibleSection
-            title="K-Anonymity Analysis"
-            icon={Users}
-            expanded={expandedSections.kAnonymity}
-            onToggle={() => toggleSection("kAnonymity")}
-            delay={0.2}
-            badge={
-              <Badge variant={result.kAnonymity.satisfiesKAnonymity ? "safe" : "sensitive"}>
-                {result.kAnonymity.satisfiesKAnonymity ? "Satisfied" : "Violated"}
-              </Badge>
-            }
-            helpButton={<HelpButton onClick={() => setActiveHelpDialog("kAnonymity")} />}
-          >
-            <KAnonymityDetails result={result} />
-          </CollapsibleSection>
+          {result.metadata.config.enabledMetrics.kAnonymity && (
+            <CollapsibleSection
+              title="K-Anonymity Analysis"
+              icon={Users}
+              expanded={expandedSections.kAnonymity}
+              onToggle={() => toggleSection("kAnonymity")}
+              delay={0.2}
+              badge={
+                <Badge variant={result.kAnonymity.satisfiesKAnonymity ? "safe" : "sensitive"}>
+                  {result.kAnonymity.satisfiesKAnonymity ? "Satisfied" : "Violated"}
+                </Badge>
+              }
+              helpButton={<HelpButton onClick={() => setActiveHelpDialog("kAnonymity")} />}
+            >
+              <KAnonymityDetails result={result} />
+            </CollapsibleSection>
+          )}
 
           {/* L-Diversity Details */}
-          <CollapsibleSection
-            title="L-Diversity Analysis"
-            icon={PieChart}
-            expanded={expandedSections.lDiversity}
-            onToggle={() => toggleSection("lDiversity")}
-            delay={0.25}
-            badge={
-              <Badge variant={result.lDiversity.satisfiesLDiversity ? "safe" : "sensitive"}>
-                {result.lDiversity.satisfiesLDiversity ? "Satisfied" : "Violated"}
-              </Badge>
-            }
-            helpButton={<HelpButton onClick={() => setActiveHelpDialog("lDiversity")} />}
-          >
-            <LDiversityDetails result={result} />
-          </CollapsibleSection>
+          {result.metadata.config.enabledMetrics.lDiversity && (
+            <CollapsibleSection
+              title="L-Diversity Analysis"
+              icon={PieChart}
+              expanded={expandedSections.lDiversity}
+              onToggle={() => toggleSection("lDiversity")}
+              delay={0.25}
+              badge={
+                <Badge variant={result.lDiversity.satisfiesLDiversity ? "safe" : "sensitive"}>
+                  {result.lDiversity.satisfiesLDiversity ? "Satisfied" : "Violated"}
+                </Badge>
+              }
+              helpButton={<HelpButton onClick={() => setActiveHelpDialog("lDiversity")} />}
+            >
+              <LDiversityDetails result={result} />
+            </CollapsibleSection>
+          )}
 
           {/* T-Closeness Details */}
-          <CollapsibleSection
-            title="T-Closeness Analysis"
-            icon={Activity}
-            expanded={expandedSections.tCloseness}
-            onToggle={() => toggleSection("tCloseness")}
-            delay={0.3}
-            badge={
-              <Badge variant={result.tCloseness.satisfiesTCloseness ? "safe" : "sensitive"}>
-                {result.tCloseness.satisfiesTCloseness ? "Satisfied" : "Violated"}
-              </Badge>
-            }
-            helpButton={<HelpButton onClick={() => setActiveHelpDialog("tCloseness")} />}
-          >
-            <TClosenessDetails result={result} />
-          </CollapsibleSection>
+          {result.metadata.config.enabledMetrics.tCloseness && (
+            <CollapsibleSection
+              title="T-Closeness Analysis"
+              icon={Activity}
+              expanded={expandedSections.tCloseness}
+              onToggle={() => toggleSection("tCloseness")}
+              delay={0.3}
+              badge={
+                <Badge variant={result.tCloseness.satisfiesTCloseness ? "safe" : "sensitive"}>
+                  {result.tCloseness.satisfiesTCloseness ? "Satisfied" : "Violated"}
+                </Badge>
+              }
+              helpButton={<HelpButton onClick={() => setActiveHelpDialog("tCloseness")} />}
+            >
+              <TClosenessDetails result={result} />
+            </CollapsibleSection>
+          )}
 
           {/* Privacy Techniques */}
-          <CollapsibleSection
-            title="Detected Privacy Techniques"
-            icon={Lock}
-            expanded={expandedSections.techniques}
-            onToggle={() => toggleSection("techniques")}
-            delay={0.35}
-            badge={
-              <Badge variant="secondary">
-                {result.techniqueDetection.detectedTechniques.length} technique(s)
-              </Badge>
-            }
-            helpButton={<HelpButton onClick={() => setActiveHelpDialog("techniques")} />}
-          >
-            <TechniqueDetails result={result} />
-          </CollapsibleSection>
+          {result.metadata.config.enabledMetrics.techniqueDetection && (
+            <CollapsibleSection
+              title="Detected Privacy Techniques"
+              icon={Lock}
+              expanded={expandedSections.techniques}
+              onToggle={() => toggleSection("techniques")}
+              delay={0.35}
+              badge={
+                <Badge variant="secondary">
+                  {result.techniqueDetection.detectedTechniques.length} technique(s)
+                </Badge>
+              }
+              helpButton={<HelpButton onClick={() => setActiveHelpDialog("techniques")} />}
+            >
+              <TechniqueDetails result={result} />
+            </CollapsibleSection>
+          )}
 
           {/* Re-identification Risk */}
-          <CollapsibleSection
-            title="Re-identification Risk Assessment"
-            icon={Target}
-            expanded={expandedSections.risk}
-            onToggle={() => toggleSection("risk")}
-            delay={0.4}
-            badge={
-              <Badge variant={result.reidentificationRisk.riskScore < 30 ? "safe" : result.reidentificationRisk.riskScore < 60 ? "quasi" : "sensitive"}>
-                {result.reidentificationRisk.riskScore}% Risk
-              </Badge>
-            }
-            helpButton={<HelpButton onClick={() => setActiveHelpDialog("risk")} />}
-          >
-            <RiskDetails result={result} />
-          </CollapsibleSection>
+          {result.metadata.config.enabledMetrics.reidentificationRisk && (
+            <CollapsibleSection
+              title="Re-identification Risk Assessment"
+              icon={Target}
+              expanded={expandedSections.risk}
+              onToggle={() => toggleSection("risk")}
+              delay={0.4}
+              badge={
+                <Badge variant={result.reidentificationRisk.riskScore < 30 ? "safe" : result.reidentificationRisk.riskScore < 60 ? "quasi" : "sensitive"}>
+                  {result.reidentificationRisk.riskScore}% Risk
+                </Badge>
+              }
+              helpButton={<HelpButton onClick={() => setActiveHelpDialog("risk")} />}
+            >
+              <RiskDetails result={result} />
+            </CollapsibleSection>
+          )}
 
           {/* Recommendations */}
           <CollapsibleSection

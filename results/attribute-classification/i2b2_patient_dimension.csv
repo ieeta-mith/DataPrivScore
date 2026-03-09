@@ -1,0 +1,46 @@
+patient_num,vital_status_cd,birth_date,death_date,sex_cd,age_in_years_num,language_cd,race_cd,marital_status_cd,religion_cd,zip_cd,statecityzip_path,income_cd,patient_blob,update_date,download_date,import_date,sourcesystem_cd
+1,N,1985-03-15,,M,41,english,white,married,christian,10001,\Location\USA\NY\New York\10001\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+2,N,1990-07-22,,F,35,spanish,black,single,catholic,90210,\Location\USA\CA\Los Angeles\90210\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+3,N,1978-11-08,,M,47,english,asian,married,buddhist,60601,\Location\USA\IL\Chicago\60601\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+4,N,1965-05-30,,F,60,english,white,divorced,protestant,33101,\Location\USA\FL\Miami\33101\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+5,N,1992-01-14,,M,34,english,black,single,baptist,77001,\Location\USA\TX\Houston\77001\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+6,N,1988-09-03,,F,37,english,white,married,methodist,85001,\Location\USA\AZ\Phoenix\85001\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+7,N,1972-12-25,,M,53,mandarin,asian,married,confucian,19101,\Location\USA\PA\Philadelphia\19101\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+8,N,1995-04-17,,F,30,english,native_american,single,spiritual,78201,\Location\USA\TX\San Antonio\78201\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+9,N,1980-06-09,,M,45,english,white,married,lutheran,92101,\Location\USA\CA\San Diego\92101\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+10,N,1983-02-28,,F,43,english,black,widowed,pentecostal,75201,\Location\USA\TX\Dallas\75201\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+11,N,1975-08-11,,M,50,korean,asian,married,buddhist,95101,\Location\USA\CA\San Jose\95101\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+12,N,1998-10-05,,F,27,english,white,single,none,78701,\Location\USA\TX\Austin\78701\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+13,N,1962-07-19,,M,63,english,white,married,presbyterian,32099,\Location\USA\FL\Jacksonville\32099\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+14,N,1991-03-02,,F,34,french,black,single,catholic,46201,\Location\USA\IN\Indianapolis\46201\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+15,N,1987-12-14,,M,38,english,pacific_islander,divorced,christian,43085,\Location\USA\OH\Columbus\43085\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+16,Y,1970-05-23,2025-11-10,F,55,english,white,widowed,jewish,28201,\Location\USA\NC\Charlotte\28201\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+17,N,1993-09-07,,M,32,vietnamese,asian,single,buddhist,94102,\Location\USA\CA\San Francisco\94102\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+18,N,1968-01-31,,F,58,spanish,hispanic,married,catholic,48201,\Location\USA\MI\Detroit\48201\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+19,N,1982-04-12,,M,43,english,white,divorced,episcopalian,98101,\Location\USA\WA\Seattle\98101\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+20,N,1996-11-26,,F,29,english,white,single,none,80201,\Location\USA\CO\Denver\80201\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+21,N,1974-06-18,,M,51,english,native_american,married,spiritual,20001,\Location\USA\DC\Washington\20001\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+22,N,1989-02-09,,F,37,japanese,asian,single,shinto,02101,\Location\USA\MA\Boston\02101\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+23,Y,1967-08-04,2024-06-20,M,56,english,white,widowed,baptist,37201,\Location\USA\TN\Nashville\37201\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+24,N,1994-10-21,,F,31,english,black,single,amish,21201,\Location\USA\MD\Baltimore\21201\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+25,N,1979-03-16,,M,46,spanish,hispanic,married,catholic,73301,\Location\USA\OK\Oklahoma City\73301\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+26,N,1986-07-29,,F,39,tagalog,asian,divorced,catholic,89101,\Location\USA\NV\Las Vegas\89101\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+27,N,1971-12-03,,M,54,english,black,married,methodist,40201,\Location\USA\KY\Louisville\40201\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+28,N,1997-05-15,,F,28,english,white,single,mormon,97201,\Location\USA\OR\Portland\97201\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+29,N,1963-09-22,,M,62,samoan,pacific_islander,married,christian,96801,\Location\USA\HI\Honolulu\96801\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+30,N,1984-01-08,,F,42,english,white,divorced,unitarian,53201,\Location\USA\WI\Milwaukee\53201\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+31,N,1976-04-27,,M,49,hindi,asian,married,hindu,87101,\Location\USA\NM\Albuquerque\87101\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+32,N,1999-11-13,,F,26,spanish,hispanic,single,catholic,85281,\Location\USA\AZ\Tucson\85281\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+33,N,1969-06-06,,M,56,english,white,married,lutheran,93701,\Location\USA\CA\Fresno\93701\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+34,N,1981-02-20,,F,45,english,native_american,widowed,spiritual,95814,\Location\USA\CA\Sacramento\95814\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+35,N,1990-08-31,,M,35,english,white,single,agnostic,64101,\Location\USA\MO\Kansas City\64101\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+36,N,1973-10-10,,F,52,cantonese,asian,married,taoist,30301,\Location\USA\GA\Atlanta\30301\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+37,N,1966-03-24,,M,59,english,black,divorced,baptist,33401,\Location\USA\FL\West Palm Beach\33401\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+38,N,1992-07-07,,F,33,english,white,married,catholic,23219,\Location\USA\VA\Richmond\23219\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+39,N,1977-12-19,,M,48,spanish,hispanic,single,pentecostal,70112,\Location\USA\LA\New Orleans\70112\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+40,N,1985-05-02,,F,40,english,asian,married,sikh,06101,\Location\USA\CT\Hartford\06101\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+41,N,1964-09-14,,M,61,english,pacific_islander,widowed,christian,99501,\Location\USA\AK\Anchorage\99501\,Low,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+42,N,1988-01-28,,F,38,english,black,divorced,episcopal,29401,\Location\USA\SC\Charleston\29401\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
+43,N,1995-04-11,,M,30,portuguese,hispanic,single,catholic,02904,\Location\USA\RI\Providence\02904\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_B
+44,Y,1970-11-05,2025-08-15,F,54,english,white,married,quaker,19801,\Location\USA\DE\Wilmington\19801\,High,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_C
+45,N,1983-06-23,,M,42,arabic,middle_eastern,married,muslim,55401,\Location\USA\MN\Minneapolis\55401\,Medium,null,2026-01-15,2026-01-15,2026-01-15,HOSPITAL_A
