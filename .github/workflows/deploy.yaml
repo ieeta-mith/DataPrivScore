@@ -4,6 +4,11 @@ on:
   push:
     branches: [ deploy ]
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
 jobs:
   build-and_deploy:
     runs-on: ubuntu-latest
@@ -23,12 +28,12 @@ jobs:
           npm ci
           npm run build
       
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist' 
 
       - name: Deploy to GitHub Pages
-        run: npm run deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
 
