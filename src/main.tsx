@@ -5,7 +5,6 @@ import { routeTree } from './routeTree.gen'
 
 const router = createRouter({ 
   routeTree,
-  basepath: '/privacy', 
 })
 
 declare module '@tanstack/react-router' {

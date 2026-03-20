@@ -1,4 +1,4 @@
-import SidebarWrapper from '@/components/sidebar-wrapper'
+// import SidebarWrapper from '@/components/sidebar-wrapper'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { NotFoundComponent } from './not-found'
 import { ServerErrorComponent } from './server-error'
@@ -6,7 +6,7 @@ import { ServerErrorComponent } from './server-error'
 const RootLayout = () => {
   return (
     <div className="flex min-h-screen">
-      <SidebarWrapper />
+      {/* <SidebarWrapper /> */}
       <main className="flex-1 overflow-auto">
         <Outlet />
       </main>
