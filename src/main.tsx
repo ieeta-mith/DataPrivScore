@@ -5,7 +5,7 @@ import { routeTree } from './routeTree.gen'
 
 const router = createRouter({ 
   routeTree,
-  basepath: '/DataPrivScore',
+  basepath: '/DataPrivScore/',
 })
 
 declare module '@tanstack/react-router' {
