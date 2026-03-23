@@ -127,7 +127,7 @@ function ClassifyPage() {
 						<div className="flex items-center gap-4">
 							<AnimatedButton variant="ghost" size="sm" onClick={handleBack}>
 								<ArrowLeft className="h-4 w-4 mr-2" />
-								Back
+								Back to Home
 							</AnimatedButton>
 							<div>
 								<h1 className="text-2xl md:text-3xl font-bold">Attribute Classification</h1>
