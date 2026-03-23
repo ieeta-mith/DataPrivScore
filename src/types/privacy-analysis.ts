@@ -501,7 +501,7 @@ export const TECHNIQUE_INFO = {
 export const DEFAULT_PRIVACY_CONFIG: PrivacyAnalysisConfig = {
   kThreshold: 5,
   lThreshold: 2,
-  tThreshold: 0.4,
+  tThreshold: 0.3,
   lDiversityType: 'distinct',
   metricWeights: {
     kAnonymity: 0.25,
