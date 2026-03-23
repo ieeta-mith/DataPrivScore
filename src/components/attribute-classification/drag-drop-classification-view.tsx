@@ -2,60 +2,44 @@ import { useState, useCallback, createElement } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   GripVertical,
-  AlertTriangle,
-  Lock,
-  Unlock,
-  HelpCircle,
-  Info,
   CheckCircle2,
 } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AnimatedButton, Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
-import { HelpDialogClassification } from '@/components/help-dialogs/classification';
 
-import { attributeTypes } from '@/utils/constants';
+import { attributeTypes, HIGH_CONFIDENCE_THRESHOLD } from '@/utils/constants';
 
 import type {
   AttributeClassification,
   AttributeType,
   ClassificationResult,
 } from '@/types/attribute-classification';
+import { WarningDialog } from '@/components/attribute-classification/warning-dialog';
 
 interface DragDropClassificationViewProps {
   result: ClassificationResult;
   onUpdateAttribute: (name: string, type: AttributeType, reason?: string) => void;
+  editMode: boolean;
 }
-
-const HIGH_CONFIDENCE_THRESHOLD = 0.8;
 
 export function DragDropClassificationView({
   result,
   onUpdateAttribute,
+  editMode
 }: DragDropClassificationViewProps) {
   const [draggedAttribute, setDraggedAttribute] = useState<AttributeClassification | null>(null);
   const [dragOverType, setDragOverType] = useState<AttributeType | null>(null);
-  const [editMode, setEditMode] = useState(false);
-  const [helpDialogOpen, setHelpDialogOpen] = useState(false);
   const [warningDialog, setWarningDialog] = useState<{
     attribute: AttributeClassification;
     targetType: AttributeType;
-  } | null>(null);
+  } | undefined>(undefined);
 
   const handleDragStart = useCallback((e: React.DragEvent, attribute: AttributeClassification) => {
     if (!editMode) return;
@@ -106,65 +90,8 @@ export function DragDropClassificationView({
     setDraggedAttribute(null);
   }, [editMode, draggedAttribute, onUpdateAttribute]);
 
-  const confirmMove = useCallback(() => {
-    if (warningDialog) {
-      onUpdateAttribute(
-        warningDialog.attribute.name,
-        warningDialog.targetType,
-        `Manually moved from ${attributeTypes.find(t => t.label === warningDialog.attribute.type)?.title || warningDialog.attribute.type} to ${
-          attributeTypes.find(t => t.label === warningDialog.targetType)?.title || warningDialog.targetType
-        } (overriding high confidence classification)`
-      );
-      setWarningDialog(null);
-    }
-  }, [warningDialog, onUpdateAttribute]);
-
   return (
     <TooltipProvider delayDuration={200}>
-      {/* Toolbar */}
-      <div className="flex items-center justify-between mb-6 p-4 bg-muted/30 rounded-lg border">
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Info className="h-4 w-4" />
-            <span>
-              {editMode 
-                ? 'Drag attributes between boxes to reclassify them' 
-                : 'Enable edit mode to modify classifications'}
-            </span>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setHelpDialogOpen(true)}
-            className="gap-2"
-          >
-            <HelpCircle className="h-4 w-4" />
-            Help Guide
-          </Button>
-          <AnimatedButton
-            variant={editMode ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setEditMode(!editMode)}
-            className={`gap-2 transition-all ${editMode ? 'shadow-md' : ''}`}
-          >
-            {editMode ? (
-              <>
-                <Unlock className="h-4 w-4" />
-                Editing
-              </>
-            ) : (
-              <>
-                <Lock className="h-4 w-4" />
-                Edit Mode
-              </>
-            )}
-          </AnimatedButton>
-        </div>
-      </div>
-
-      {/* Classification Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
         {attributeTypes.map((type, index) => {
           const colors = type.color;
@@ -189,7 +116,6 @@ export function DragDropClassificationView({
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, type.label)}
               >
-                {/* Card Header */}
                 <CardHeader className={`${colors.bg} border-b p-4 ${colors.border}`}>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -213,7 +139,6 @@ export function DragDropClassificationView({
                   </div>
                 </CardHeader>
 
-                {/* Card Content */}
                 <CardContent className={`p-4 min-h-45 transition-colors ${
                   isDragOver ? colors.bg : ''
                 }`}>
@@ -253,54 +178,11 @@ export function DragDropClassificationView({
           );
         })}
       </div>
-
-      {/* Help Guide Dialog */}
-      <HelpDialogClassification 
-        helpDialogOpen={helpDialogOpen}
-        setHelpDialogOpen={setHelpDialogOpen}
+      <WarningDialog
+        warningDialog={warningDialog}
+        setWarningDialog={setWarningDialog}
+        onUpdateAttribute={onUpdateAttribute}
       />
-
-      {/* High Confidence Warning Dialog */}
-      <Dialog open={!!warningDialog} onOpenChange={() => setWarningDialog(null)}>
-        <DialogContent className='max-w-2xl'>
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 text-amber-600">
-              <AlertTriangle className="h-5 w-5" />
-              High Confidence Classification
-            </DialogTitle>
-            <DialogDescription>
-              The attribute <strong>"{warningDialog?.attribute.name}"</strong> was classified as{' '}
-              <strong>{warningDialog && warningDialog.attribute.type}</strong>{' '}
-              with <strong>{warningDialog && (warningDialog.attribute.confidence * 100).toFixed(0)}% confidence</strong>.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="py-4">
-            <div className="p-4 rounded-lg bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800">
-              <p className="text-sm text-amber-800 dark:text-amber-200 mb-2">
-                <strong>Classification Reason:</strong>
-              </p>
-              <p className="text-sm text-amber-700 dark:text-amber-300">
-                {warningDialog?.attribute.classificationReason}
-              </p>
-            </div>
-          </div>
-
-          <p className="text-sm text-muted-foreground">
-            Are you sure you want to move it to{' '}
-            <strong>{warningDialog && warningDialog.targetType}</strong>?
-          </p>
-
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setWarningDialog(null)}>
-              Cancel
-            </Button>
-            <Button onClick={confirmMove}>
-              Move Anyway
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </TooltipProvider>
   );
 }
