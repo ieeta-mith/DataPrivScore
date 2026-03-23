@@ -243,14 +243,20 @@ function ClassifyPage() {
 				</motion.div>
 
 				{/* Classification Views */}
-				<TabView
-					result={result}
-					handleUpdateAttribute={handleUpdateAttribute}
-					editMode={editMode}
-					setEditMode={setEditMode}
-					helpDialogOpen={helpDialogOpen}
-					setHelpDialogOpen={setHelpDialogOpen}
-				/>
+				<motion.div
+					initial={{ opacity: 0, y: 20 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.3, delay: 0.35 }}
+				>
+					<TabView
+						result={result}
+						handleUpdateAttribute={handleUpdateAttribute}
+						editMode={editMode}
+						setEditMode={setEditMode}
+						helpDialogOpen={helpDialogOpen}
+						setHelpDialogOpen={setHelpDialogOpen}
+					/>
+				</motion.div>
 				{/* Next Step */}
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
