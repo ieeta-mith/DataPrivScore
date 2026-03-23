@@ -162,8 +162,11 @@ function ConfigurePage() {
   );
 
   const enabledTechniquesCount = useMemo(
-    () => Object.values(config.enabledTechniques).filter(Boolean).length,
-    [config.enabledTechniques]
+    () => {
+      if (!config.enabledMetrics.techniqueDetection) return null;
+      return Object.values(config.enabledTechniques).filter(Boolean).length;
+    },
+    [config.enabledTechniques, config.enabledMetrics.techniqueDetection]
   );
 
   const handleToggleMetric = useCallback(
@@ -174,8 +177,12 @@ function ConfigurePage() {
       };
       setConfig(newConfig);
       setPrivacyConfig(newConfig);
+
+      if (key === 'techniqueDetection' && !enabled && activeSection === 'techniques') {
+        setActiveSection('metrics');
+      }
     },
-    [config]
+    [config, activeSection]
   );
 
   const handleToggleTechnique = useCallback(
@@ -316,6 +323,18 @@ function ConfigurePage() {
     navigate({ to: '/classify' });
   };
 
+  const enabledWeightSum = useMemo(() => {
+    return Object.entries(config.metricWeights)
+      .filter(([key]) => config.enabledMetrics[key as MetricKey])
+      .reduce((sum, [, weight]) => sum + weight, 0);
+  }, [config]);
+
+  const totalPercentage = Math.round(enabledWeightSum * 100);
+
+  const weightError = totalPercentage !== 100 ?
+    `Enabled metric weights sum to ${totalPercentage}%. Consider adjusting to total 100%.` 
+    : null;
+
   if (!result) {
     return (
       <div className="min-h-screen bg-linear-to-br from-background to-muted flex items-center justify-center">
@@ -326,17 +345,6 @@ function ConfigurePage() {
       </div>
     );
   }
-
-  const weightWarning = (() => {
-    const enabledWeightSum = Object.entries(config.metricWeights)
-      .filter(([key]) => config.enabledMetrics[key as MetricKey])
-      .reduce((sum, [, weight]) => sum + weight, 0);
-
-    if (Math.abs(enabledWeightSum - 1) > 0.01) {
-      return `Enabled metric weights sum to ${(enabledWeightSum * 100).toFixed(0)}%. Consider adjusting to total 100%.`;
-    }
-    return null;
-  })();
 
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-muted">
@@ -414,22 +422,25 @@ function ConfigurePage() {
         >
           <div className="flex gap-2 p-1 bg-muted rounded-lg w-fit">
             {[
-              { id: 'metrics', label: 'Privacy Metrics', count: enabledMetricsCount },
-              { id: 'techniques', label: 'Technique Detection', count: enabledTechniquesCount },
-              { id: 'weights', label: 'Score Weights', count: null },
+              { id: 'metrics', label: 'Privacy Metrics', count: enabledMetricsCount, disabled: false },
+              { id: 'techniques', label: 'Technique Detection', count: enabledTechniquesCount, disabled: !config.enabledMetrics.techniqueDetection },
+              { id: 'weights', label: 'Score Weights', count: null, disabled: false },
             ].map((section) => (
               <button
                 key={section.id}
-                onClick={() => setActiveSection(section.id as typeof activeSection)}
+                onClick={() => !section.disabled && setActiveSection(section.id as typeof activeSection)}
+                disabled={section.disabled}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                   activeSection === section.id
                     ? 'bg-background shadow text-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
+                    : section.disabled 
+                      ? 'text-muted-foreground/40 cursor-not-allowed'
+                      : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {section.label}
                 {section.count !== null && (
-                  <Badge variant="secondary" className="text-xs">
+                  <Badge variant="secondary" className={`text-xs ${section.disabled ? 'opacity-50' : ''}`}>
                     {section.count}
                   </Badge>
                 )}
@@ -471,7 +482,7 @@ function ConfigurePage() {
                 config={config}
                 onToggleTechnique={handleToggleTechnique}
                 onToggleAll={toggleAllTechniques}
-                enabledCount={enabledTechniquesCount}
+                enabledCount={enabledTechniquesCount || 0}
               />
             </motion.div>
           )}
@@ -488,7 +499,7 @@ function ConfigurePage() {
                 config={config}
                 onWeightChange={handleWeightChange}
                 onNormalize={normalizeWeights}
-                warning={weightWarning}
+                warning={weightError}
               />
             </motion.div>
           )}
@@ -514,7 +525,7 @@ function ConfigurePage() {
                 <AnimatedButton
                   size="lg"
                   onClick={handleCalculatePrivacyIndex}
-                  disabled={isCalculating || enabledMetricsCount === 0}
+                  disabled={isCalculating || enabledMetricsCount === 0 || weightError !== null}
                   className="whitespace-nowrap"
                 >
                   {isCalculating ? (
@@ -871,18 +882,27 @@ function WeightsSection({ config, onWeightChange, onNormalize, warning }: Weight
         </Button>
       </div>
 
-      {warning && (
-        <motion.div variants={item}>
-          <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30">
-            <CardContent className="p-4">
-              <div className="flex gap-2 items-start">
-                <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                <p className="text-sm text-amber-800 dark:text-amber-200">{warning}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {warning && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0 }} 
+            animate={{ opacity: 1, height: 'auto' }} 
+            exit={{ opacity: 0, height: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="pb-4">
+              <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30">
+                <CardContent className="p-4">
+                  <div className="flex gap-2 items-start">
+                    <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                    <p className="text-sm text-amber-800 dark:text-amber-200">{warning}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <motion.div variants={item}>
         <Card className='p-6'>
