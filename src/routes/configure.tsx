@@ -16,7 +16,6 @@ import {
   RotateCcw,
   HelpCircle,
   Loader2,
-  Sparkles,
   Eye,
   EyeOff,
   Hash,
@@ -27,6 +26,7 @@ import {
   BarChart3,
   Archive,
   FileSpreadsheet,
+  Calculator,
 } from 'lucide-react';
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -524,7 +524,7 @@ function ConfigurePage() {
                     </>
                   ) : (
                     <>
-                      <Sparkles className="h-4 w-4 mr-2" />
+                      <Calculator className="h-4 w-4 mr-2" />
                       Calculate Privacy Index
                       <ArrowRight className="h-4 w-4 ml-2" />
                     </>
