@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { Button } from "@/components/ui/button";
+import { AnimatedButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CollapsibleSection } from "@/components/ui/collapsible-section";
@@ -82,7 +82,7 @@ function ResultsPage() {
   };
 
   const handleBack = () => {
-    navigate({ to: "/classify" });
+    navigate({ to: "/configure" });
   };
 
   const handleExportJSON = () => {
@@ -304,9 +304,10 @@ function ResultsHeader({ fileName, metadata, onBack, onExportJSON, onExportHTML,
       className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
     >
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
+        <AnimatedButton variant="ghost" size="icon" className="w-full p-2" onClick={onBack}>
+          <ArrowLeft className="h-5 w-5" /> 
+          Back to Configuration
+        </AnimatedButton>
         <div>
           <h1 className="text-2xl font-bold">Privacy Analysis Results</h1>
           <p className="text-muted-foreground text-sm">
@@ -315,17 +316,17 @@ function ResultsHeader({ fileName, metadata, onBack, onExportJSON, onExportHTML,
         </div>
       </div>
       <div className="flex items-center gap-2">
-        <Button variant="outline" size="icon" onClick={onHelp}>
+        <AnimatedButton variant="outline" size="icon" onClick={onHelp}>
           <HelpCircle className="h-4 w-4" />
-        </Button>
-        <Button variant="outline" onClick={onExportJSON} className="gap-2">
+        </AnimatedButton>
+        <AnimatedButton variant="outline" onClick={onExportJSON} className="gap-2">
           <FileJson className="h-4 w-4" />
           JSON
-        </Button>
-        <Button onClick={onExportHTML} className="gap-2">
+        </AnimatedButton>
+        <AnimatedButton onClick={onExportHTML} className="gap-2">
           <FileCode className="h-4 w-4" />
           HTML Report
-        </Button>
+        </AnimatedButton>
       </div>
     </motion.div>
   );
