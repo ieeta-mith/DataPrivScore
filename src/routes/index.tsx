@@ -162,7 +162,7 @@ function Index() {
                     disabled={!selectedFile || processingStatus === 'processing'}
                   >
                     <Upload className="mr-2 h-5 w-5" />
-                    {processingStatus === 'processing' ? 'Processing...' : 'Analyze Privacy'}
+                    {processingStatus === 'processing' ? 'Processing...' : 'Classify Attributes'}
                   </AnimatedButton>
                 </motion.div>
               </form>

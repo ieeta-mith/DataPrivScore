@@ -71,7 +71,7 @@ export const attributeTypes: AttributeTypeInfo[] = [
     title: 'Non-Sensitive Attribute',
     label: 'non-sensitive',
     icon: FileText,
-    short: 'Non-identifying, public, or administrative data',
+    short: 'Non-identifying public data',
     examples: 'Timestamps, Status Flags, Hashes, Categories',
     color: {
       bg: 'bg-green-100 dark:bg-green-950',
