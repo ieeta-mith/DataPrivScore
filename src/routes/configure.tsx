@@ -7,36 +7,15 @@ import {
   Settings2,
   Info,
   AlertTriangle,
-  CheckCircle2,
-  Users,
-  Layers,
-  Activity,
-  Search,
-  Shield,
   RotateCcw,
-  HelpCircle,
   Loader2,
-  Eye,
-  EyeOff,
-  Hash,
-  UserX,
-  Key,
-  Waves,
-  Shuffle,
-  BarChart3,
-  Archive,
   FileSpreadsheet,
   Calculator,
 } from 'lucide-react';
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button, AnimatedButton } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 import { calculatePrivacyIndex } from '@/services/privacy';
 
@@ -52,88 +31,21 @@ import type { ParsedCSV } from '@/types/csv-parser';
 import type {
   PrivacyAnalysisConfig,
   LDiversityType,
-  MetricToggle,
   TechniqueToggle,
 } from '@/types/privacy-analysis';
 import {
   DEFAULT_PRIVACY_CONFIG,
   METRIC_THRESHOLDS,
-  METRIC_INFO,
-  TECHNIQUE_INFO,
 } from '@/types/privacy-analysis';
+import type { MetricKey, TechniqueKey } from '@/types/configuration';
+import { MetricsSection } from '@/components/configuration/metrics-section';
+import { TechniquesSection } from '@/components/configuration/techniques-section';
+import { WeightsSection } from '@/components/configuration/weights-section';
+import { tabVariants } from '@/utils/constants';
 
 export const Route = createFileRoute('/configure')({
   component: ConfigurePage,
 });
-
-type MetricKey = keyof MetricToggle;
-type TechniqueKey = keyof TechniqueToggle;
-
-interface MetricConfig {
-  key: MetricKey;
-  icon: typeof Users;
-  hasThreshold: boolean;
-  thresholdKey?: keyof typeof METRIC_THRESHOLDS;
-  color: string;
-}
-
-const METRIC_CONFIGS: MetricConfig[] = [
-  { key: 'kAnonymity', icon: Users, hasThreshold: true, thresholdKey: 'kAnonymity', color: 'blue' },
-  { key: 'lDiversity', icon: Layers, hasThreshold: true, thresholdKey: 'lDiversity', color: 'purple' },
-  { key: 'tCloseness', icon: Activity, hasThreshold: true, thresholdKey: 'tCloseness', color: 'cyan' },
-  { key: 'techniqueDetection', icon: Search, hasThreshold: false, color: 'amber' },
-  { key: 'reidentificationRisk', icon: Shield, hasThreshold: false, color: 'red' },
-];
-
-const TECHNIQUE_ICONS: Record<TechniqueKey, typeof Layers> = {
-  generalization: Layers,
-  suppression: EyeOff,
-  masking: Eye,
-  hashing: Hash,
-  pseudonymization: UserX,
-  tokenization: Key,
-  noiseAddition: Waves,
-  dataSwapping: Shuffle,
-  aggregation: BarChart3,
-  bucketing: Archive,
-};
-
-const L_DIVERSITY_TYPES: { value: LDiversityType; label: string; description: string }[] = [
-  { value: 'distinct', label: 'Distinct', description: 'Count of unique sensitive values' },
-  { value: 'entropy', label: 'Entropy', description: 'Information-theoretic diversity measure' },
-  { value: 'recursive', label: 'Recursive', description: 'Most restrictive, frequency-based' },
-];
-
-function getThresholdWarning(
-  metricKey: keyof typeof METRIC_THRESHOLDS,
-  value: number
-): { type: 'low' | 'high' | null; message: string } {
-  const thresholdConfig = METRIC_THRESHOLDS[metricKey];
-  const metricInfo = METRIC_INFO[metricKey];
-
-  if (value < thresholdConfig.recommended.min) {
-    return { type: 'low', message: metricInfo.warningLow };
-  }
-  if (value > thresholdConfig.recommended.max) {
-    return { type: 'high', message: metricInfo.warningHigh };
-  }
-  return { type: null, message: '' };
-}
-
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-};
 
 function ConfigurePage() {
   const navigate = useNavigate();
@@ -349,7 +261,6 @@ function ConfigurePage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-muted">
       <div className="container mx-auto px-4 py-8">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -386,7 +297,6 @@ function ConfigurePage() {
           </div>
         </motion.div>
 
-        {/* Quick Guide */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -449,15 +359,14 @@ function ConfigurePage() {
           </div>
         </motion.div>
 
-        {/* Content Sections */}
         <AnimatePresence mode="wait">
           {activeSection === 'metrics' && (
             <motion.div
               key="metrics"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.2 }}
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
             >
               <MetricsSection
                 config={config}
@@ -473,10 +382,10 @@ function ConfigurePage() {
           {activeSection === 'techniques' && (
             <motion.div
               key="techniques"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.2 }}
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
             >
               <TechniquesSection
                 config={config}
@@ -490,10 +399,10 @@ function ConfigurePage() {
           {activeSection === 'weights' && (
             <motion.div
               key="weights"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              transition={{ duration: 0.2 }}
+              variants={tabVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
             >
               <WeightsSection
                 config={config}
@@ -505,7 +414,6 @@ function ConfigurePage() {
           )}
         </AnimatePresence>
 
-        {/* Action Footer */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -578,461 +486,6 @@ function ConfigurePage() {
           </p>
         </motion.div>
       </div>
-    </div>
-  );
-}
-
-// ============================================================================
-// Metrics Section
-// ============================================================================
-
-interface MetricsSectionProps {
-  config: PrivacyAnalysisConfig;
-  onToggleMetric: (key: MetricKey, enabled: boolean) => void;
-  onThresholdChange: (key: 'kThreshold' | 'lThreshold' | 'tThreshold', value: number) => void;
-  onLDiversityTypeChange: (type: LDiversityType) => void;
-  getThresholdValue: (key: keyof typeof METRIC_THRESHOLDS) => number;
-  getThresholdKey: (key: keyof typeof METRIC_THRESHOLDS) => 'kThreshold' | 'lThreshold' | 'tThreshold';
-}
-
-function MetricsSection({
-  config,
-  onToggleMetric,
-  onThresholdChange,
-  onLDiversityTypeChange,
-  getThresholdValue,
-  getThresholdKey,
-}: MetricsSectionProps) {
-  return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
-      <div className="flex items-center gap-2 mb-4">
-        <CheckCircle2 className="h-5 w-5 text-primary" />
-        <h2 className="text-lg font-semibold">Select Metrics to Evaluate</h2>
-      </div>
-
-      {METRIC_CONFIGS.map((metricConfig) => {
-        const info = METRIC_INFO[metricConfig.key];
-        const isEnabled = config.enabledMetrics[metricConfig.key];
-        const Icon = metricConfig.icon;
-
-        return (
-          <motion.div key={metricConfig.key} variants={item}>
-            <Card
-              className={`transition-all duration-200 ${
-                isEnabled
-                  ? 'border-primary/50 bg-primary/5 shadow-md'
-                  : 'border-muted bg-muted/30 opacity-70'
-              }`}
-            >
-              <CardContent className="p-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex items-start gap-4">
-                    <motion.div
-                      animate={{ scale: isEnabled ? 1 : 0.9 }}
-                      className={`p-3 rounded-xl ${
-                        isEnabled ? 'bg-primary/10' : 'bg-muted'
-                      }`}
-                    >
-                      <Icon
-                        className={`h-5 w-5 ${
-                          isEnabled ? 'text-primary' : 'text-muted-foreground'
-                        }`}
-                      />
-                    </motion.div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-base">{info.name}</span>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent side="right" className="max-w-xs">
-                            <p>{info.guidance}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{info.shortDescription}</p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={isEnabled}
-                    onCheckedChange={(checked) => onToggleMetric(metricConfig.key, checked)}
-                  />
-                </div>
-
-                {/* Threshold Configuration */}
-                <AnimatePresence>
-                  {isEnabled && metricConfig.hasThreshold && metricConfig.thresholdKey && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="mt-5 pt-5 border-t"
-                    >
-                      <ThresholdConfig
-                        metricKey={metricConfig.thresholdKey}
-                        value={getThresholdValue(metricConfig.thresholdKey)}
-                        onChange={(value) =>
-                          onThresholdChange(getThresholdKey(metricConfig.thresholdKey!), value)
-                        }
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* L-Diversity Type Selection */}
-                <AnimatePresence>
-                  {isEnabled && metricConfig.key === 'lDiversity' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="mt-4 pt-4 border-t"
-                    >
-                      <Label className="text-sm text-muted-foreground mb-3 block">
-                        L-Diversity Type
-                      </Label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {L_DIVERSITY_TYPES.map((type) => (
-                          <motion.button
-                            key={type.value}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => onLDiversityTypeChange(type.value)}
-                            className={`p-3 rounded-lg border text-left transition-colors ${
-                              config.lDiversityType === type.value
-                                ? 'border-primary bg-primary/10'
-                                : 'border-muted hover:border-primary/50'
-                            }`}
-                          >
-                            <span className="text-sm font-medium block">{type.label}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {type.description}
-                            </span>
-                          </motion.button>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </CardContent>
-            </Card>
-          </motion.div>
-        );
-      })}
-    </motion.div>
-  );
-}
-
-// ============================================================================
-// Techniques Section
-// ============================================================================
-
-interface TechniquesSectionProps {
-  config: PrivacyAnalysisConfig;
-  onToggleTechnique: (key: TechniqueKey, enabled: boolean) => void;
-  onToggleAll: (enabled: boolean) => void;
-  enabledCount: number;
-}
-
-function TechniquesSection({
-  config,
-  onToggleTechnique,
-  onToggleAll,
-  enabledCount,
-}: TechniquesSectionProps) {
-  const totalTechniques = Object.keys(config.enabledTechniques).length;
-  const allEnabled = enabledCount === totalTechniques;
-  const noneEnabled = enabledCount === 0;
-
-  return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <Search className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-semibold">Privacy Techniques to Detect</h2>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onToggleAll(true)}
-            disabled={allEnabled}
-          >
-            Enable All
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => onToggleAll(false)}
-            disabled={noneEnabled}
-          >
-            Disable All
-          </Button>
-        </div>
-      </div>
-
-      <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30 mb-4">
-        <CardContent className="p-4">
-          <div className="flex gap-3">
-            <Info className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                What are Privacy Techniques?
-              </p>
-              <p className="text-sm text-amber-800 dark:text-amber-200">
-                Privacy techniques are methods applied to data to protect individual privacy while
-                maintaining data utility. Select which techniques you want to detect in your
-                dataset.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {(Object.keys(TECHNIQUE_INFO) as TechniqueKey[]).map((techKey) => {
-          const info = TECHNIQUE_INFO[techKey];
-          const isEnabled = config.enabledTechniques[techKey];
-          const Icon = TECHNIQUE_ICONS[techKey];
-
-          return (
-            <motion.div key={techKey} variants={item}>
-              <Card
-                className={`transition-all duration-200 cursor-pointer h-full ${
-                  isEnabled
-                    ? 'border-primary/50 bg-primary/5 shadow-sm'
-                    : 'border-muted bg-muted/30 opacity-70'
-                }`}
-                onClick={() => onToggleTechnique(techKey, !isEnabled)}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3">
-                      <motion.div
-                        animate={{ scale: isEnabled ? 1 : 0.9 }}
-                        className={`p-2 rounded-lg ${
-                          isEnabled ? 'bg-primary/10' : 'bg-muted'
-                        }`}
-                      >
-                        <Icon
-                          className={`h-4 w-4 ${
-                            isEnabled ? 'text-primary' : 'text-muted-foreground'
-                          }`}
-                        />
-                      </motion.div>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">{info.name}</span>
-                          <Badge
-                            variant={
-                              info.privacyBenefit === 'high'
-                                ? 'default'
-                                : info.privacyBenefit === 'medium'
-                                  ? 'secondary'
-                                  : 'outline'
-                            }
-                            className="text-xs"
-                          >
-                            {info.privacyBenefit} benefit
-                          </Badge>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{info.description}</p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={isEnabled}
-                      onCheckedChange={(checked) => onToggleTechnique(techKey, checked)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })}
-      </div>
-    </motion.div>
-  );
-}
-
-// ============================================================================
-// Weights Section
-// ============================================================================
-
-interface WeightsSectionProps {
-  config: PrivacyAnalysisConfig;
-  onWeightChange: (key: MetricKey, value: number) => void;
-  onNormalize: () => void;
-  warning: string | null;
-}
-
-function WeightsSection({ config, onWeightChange, onNormalize, warning }: WeightsSectionProps) {
-  return (
-    <motion.div variants={container} initial="hidden" animate="show" className="space-y-4">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <BarChart3 className="h-5 w-5 text-primary" />
-          <h2 className="text-lg font-semibold">Score Weights</h2>
-        </div>
-        <Button variant="outline" size="sm" onClick={onNormalize}>
-          Normalize to 100%
-        </Button>
-      </div>
-
-      <AnimatePresence>
-        {warning && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }} 
-            animate={{ opacity: 1, height: 'auto' }} 
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="pb-4">
-              <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30">
-                <CardContent className="p-4">
-                  <div className="flex gap-2 items-start">
-                    <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-                    <p className="text-sm text-amber-800 dark:text-amber-200">{warning}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <motion.div variants={item}>
-        <Card className='p-6'>
-          <CardHeader>
-            <CardTitle className="text-base">Metric Weight Distribution</CardTitle>
-            <CardDescription>
-              Adjust how much each metric contributes to the final privacy score
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {METRIC_CONFIGS.map((metricConfig) => {
-              const isEnabled = config.enabledMetrics[metricConfig.key];
-              const weight = config.metricWeights[metricConfig.key];
-              const info = METRIC_INFO[metricConfig.key];
-              const Icon = metricConfig.icon;
-
-              return (
-                <motion.div
-                  key={metricConfig.key}
-                  animate={{ opacity: isEnabled ? 1 : 0.4 }}
-                  className={`transition-opacity ${!isEnabled ? 'pointer-events-none' : ''}`}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-3 w-48 shrink-0">
-                      <div className={`p-2 rounded-lg bg-muted`}>
-                        <Icon className="h-4 w-4 text-muted-foreground" />
-                      </div>
-                      <span className="text-sm font-medium">{info.name}</span>
-                    </div>
-                    <Slider
-                      value={[weight * 100]}
-                      onValueChange={([val]) => onWeightChange(metricConfig.key, val / 100)}
-                      min={0}
-                      max={100}
-                      step={5}
-                      disabled={!isEnabled}
-                      className="flex-1"
-                    />
-                    <div className="w-16 text-right">
-                      <span className="text-sm font-mono">{(weight * 100).toFixed(0)}%</span>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-// ============================================================================
-// Threshold Config Component
-// ============================================================================
-
-interface ThresholdConfigProps {
-  metricKey: keyof typeof METRIC_THRESHOLDS;
-  value: number;
-  onChange: (value: number) => void;
-}
-
-function ThresholdConfig({ metricKey, value, onChange }: ThresholdConfigProps) {
-  const thresholdInfo = METRIC_THRESHOLDS[metricKey];
-  const warning = getThresholdWarning(metricKey, value);
-  const isInRecommendedRange =
-    value >= thresholdInfo.recommended.min && value <= thresholdInfo.recommended.max;
-
-  const step = metricKey === 'tCloseness' ? 0.01 : 1;
-
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Label className="text-sm font-medium">{thresholdInfo.label}</Label>
-        <div className="flex items-center gap-2">
-          <Input
-            type="number"
-            value={value}
-            onChange={(e) => onChange(parseFloat(e.target.value) || thresholdInfo.min)}
-            min={thresholdInfo.min}
-            max={thresholdInfo.max}
-            step={step}
-            className="w-24 h-9 text-center"
-          />
-          {thresholdInfo.unit && (
-            <span className="text-xs text-muted-foreground">{thresholdInfo.unit}</span>
-          )}
-        </div>
-      </div>
-
-      <div className="space-y-2">
-        <Slider
-          value={[value]}
-          onValueChange={([val]) => onChange(val)}
-          min={thresholdInfo.min}
-          max={thresholdInfo.max}
-          step={step}
-        />
-        <div className="flex justify-between text-xs text-muted-foreground">
-          <span>{thresholdInfo.min}</span>
-          <span
-            className={
-              isInRecommendedRange ? 'text-green-600 dark:text-green-400 font-medium' : ''
-            }
-          >
-            Recommended: {thresholdInfo.recommended.min}-{thresholdInfo.recommended.max}
-          </span>
-          <span>{thresholdInfo.max}</span>
-        </div>
-      </div>
-
-      <p className="text-xs text-muted-foreground">{thresholdInfo.description}</p>
-
-      <AnimatePresence>
-        {warning.type && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            className={`flex items-start gap-2 p-3 rounded-lg text-xs ${
-              warning.type === 'low'
-                ? 'bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200'
-                : 'bg-orange-50 dark:bg-orange-950/30 text-orange-800 dark:text-orange-200'
-            }`}
-          >
-            <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
-            <span>{warning.message}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }
