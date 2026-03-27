@@ -2,9 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  ArrowLeft,
   ArrowRight,
-  Settings2,
   Info,
   AlertTriangle,
   RotateCcw,
@@ -42,6 +40,7 @@ import { MetricsSection } from '@/components/configuration/metrics-section';
 import { TechniquesSection } from '@/components/configuration/techniques-section';
 import { WeightsSection } from '@/components/configuration/weights-section';
 import { tabVariants } from '@/utils/constants';
+import { PageHeader } from '@/components/page-header';
 
 export const Route = createFileRoute('/configure')({
   component: ConfigurePage,
@@ -261,41 +260,25 @@ function ConfigurePage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-muted">
       <div className="container mx-auto px-4 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="mb-8"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={handleBack}>
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Back to Classification
-              </Button>
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Settings2 className="h-6 w-6 text-primary" />
-                  </div>
-                  Privacy Analysis Configuration
-                </h1>
-                <div className="flex items-center gap-2 text-muted-foreground mt-1">
-                  <FileSpreadsheet className="h-4 w-4" />
-                  <span>{fileName}</span>
-                  <span>•</span>
-                  <span>Configure analysis parameters before calculation</span>
-                </div>
-              </div>
+        <PageHeader
+          title="Privacy Analysis Configuration"
+          backDescription="Back to Classification"
+          handleFunc={handleBack}
+          subTitle={
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <FileSpreadsheet className="h-4 w-4" />
+              <span>{fileName}</span>
+              <span>•</span>
+              <span>Configure analysis parameters before calculation</span>
             </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleResetConfig}>
-                <RotateCcw className="h-4 w-4 mr-2" />
-                Reset Defaults
-              </Button>
-            </div>
-          </div>
-        </motion.div>
+          }
+          actionSection={
+            <Button variant="outline" size="sm" onClick={handleResetConfig}>
+              <RotateCcw className="h-4 w-4 mr-2" />
+              Reset Defaults
+            </Button>
+          }
+        />
 
         <motion.div
           initial={{ opacity: 0, y: 20 }}
