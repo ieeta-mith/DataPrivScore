@@ -41,6 +41,7 @@ import { TechniquesSection } from '@/components/configuration/techniques-section
 import { WeightsSection } from '@/components/configuration/weights-section';
 import { tabVariants } from '@/utils/constants';
 import { PageHeader } from '@/components/page-header';
+import { PrivacyNote } from '@/components/privacy-note';
 
 export const Route = createFileRoute('/configure')({
   component: ConfigurePage,
@@ -457,17 +458,7 @@ function ConfigurePage() {
           </motion.div>
         )}
 
-        {/* Privacy Note */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.3, delay: 0.4 }}
-          className="mt-6 text-center"
-        >
-          <p className="text-sm text-muted-foreground">
-            🔒 All processing happens in your browser. No data is sent to external servers.
-          </p>
-        </motion.div>
+        <PrivacyNote />
       </div>
     </div>
   );

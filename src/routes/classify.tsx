@@ -33,6 +33,7 @@ import type { AttributeType, ClassificationResult } from '@/types/attribute-clas
 import type { ParsedCSV } from '@/types/csv-parser';
 import { TabView } from '@/components/attribute-classification/tab-view';
 import { PageHeader } from '@/components/page-header';
+import { PrivacyNote } from '@/components/privacy-note';
 
 export const Route = createFileRoute('/classify')({
 	component: ClassifyPage,
@@ -285,16 +286,7 @@ function ClassifyPage() {
 				</motion.div>
 
 				{/* Privacy Note */}
-				<motion.div
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ duration: 0.3, delay: 0.45 }}
-					className="mt-6 text-center"
-				>
-					<p className="text-sm text-muted-foreground">
-						🔒 All processing happens in your browser. No data is sent to external servers.
-					</p>
-				</motion.div>
+				<PrivacyNote />
 			</div>
 		</div>
 	);
