@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { motion } from 'motion/react';
 import {
-	ArrowLeft,
 	ArrowRight,
 	Download,
 	FileSpreadsheet,
@@ -33,6 +32,8 @@ import {
 import type { AttributeType, ClassificationResult } from '@/types/attribute-classification';
 import type { ParsedCSV } from '@/types/csv-parser';
 import { TabView } from '@/components/attribute-classification/tab-view';
+import { PageHeader } from '@/components/page-header';
+import { PrivacyNote } from '@/components/privacy-note';
 
 export const Route = createFileRoute('/classify')({
 	component: ClassifyPage,
@@ -117,36 +118,25 @@ function ClassifyPage() {
 	return (
 		<div className="min-h-screen bg-linear-to-br from-background to-muted">
 			<div className="container mx-auto px-4 py-8">
-				<motion.div
-					initial={{ opacity: 0, y: -20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.3 }}
-					className="mb-8"
-				>
-					<div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
-						<div className="flex items-center gap-4">
-							<AnimatedButton variant="ghost" size="sm" onClick={handleBack}>
-								<ArrowLeft className="h-4 w-4 mr-2" />
-								Back to Home
-							</AnimatedButton>
-							<div>
-								<h1 className="text-2xl md:text-3xl font-bold">Attribute Classification</h1>
-								<div className="flex items-center gap-2 text-muted-foreground">
-									<FileSpreadsheet className="h-4 w-4" />
-									<span>{fileName}</span>
-									<span>•</span>
-									<span>{result.summary.totalAttributes} attributes</span>
-								</div>
-							</div>
+				<PageHeader
+					title="Attribute Classification"
+					backDescription="Back to Home"
+					handleFunc={handleBack}
+					subTitle={
+						<div className="flex items-center gap-2 text-muted-foreground">
+							<FileSpreadsheet className="h-4 w-4" />
+							<span>{fileName}</span>
+							<span>•</span>
+							<span>{result.summary.totalAttributes} attributes</span>
 						</div>
-						<div className="flex items-center gap-2">
-							<AnimatedButton variant="outline" size="sm" onClick={handleExportClassification}>
-								<Download className="h-4 w-4 mr-2" />
-								Export
-							</AnimatedButton>
-						</div>
-					</div>
-				</motion.div>
+					}
+					actionSection={
+						<AnimatedButton variant="outline" size="sm" onClick={handleExportClassification}>
+							<Download className="h-4 w-4 mr-2" />
+							Export
+						</AnimatedButton>
+					}
+				/>
 
 				{/* Dataset Information Cards */}
 				<motion.div
@@ -296,16 +286,7 @@ function ClassifyPage() {
 				</motion.div>
 
 				{/* Privacy Note */}
-				<motion.div
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ duration: 0.3, delay: 0.45 }}
-					className="mt-6 text-center"
-				>
-					<p className="text-sm text-muted-foreground">
-						🔒 All processing happens in your browser. No data is sent to external servers.
-					</p>
-				</motion.div>
+				<PrivacyNote />
 			</div>
 		</div>
 	);
