@@ -23,7 +23,7 @@ export const HelpDialogClassification = ({
 }: HelpDialogClassificationProps) => {
   return (
     <Dialog open={helpDialogOpen} onOpenChange={setHelpDialogOpen}>
-      <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
             <HelpCircle className="h-5 w-5 text-primary" />

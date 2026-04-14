@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
-  ArrowLeft,
   BarChart3,
   PieChart,
   Lock,
@@ -15,7 +14,7 @@ import {
 } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
-import { Button } from "@/components/ui/button";
+import { AnimatedButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CollapsibleSection } from "@/components/ui/collapsible-section";
@@ -44,6 +43,7 @@ import {
 } from "@/components/help-dialogs";
 
 import type { PrivacyIndexResult } from "@/types/privacy-analysis";
+import { PageHeader } from "@/components/page-header";
 
 export const Route = createFileRoute("/results")({
   component: ResultsPage,
@@ -82,7 +82,7 @@ function ResultsPage() {
   };
 
   const handleBack = () => {
-    navigate({ to: "/classify" });
+    navigate({ to: "/configure" });
   };
 
   const handleExportJSON = () => {
@@ -105,14 +105,30 @@ function ResultsPage() {
     <TooltipProvider>
       <div className="min-h-screen bg-linear-to-br from-background to-muted">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
-          {/* Header */}
-          <ResultsHeader
-            fileName={fileName}
-            metadata={result.metadata}
-            onBack={handleBack}
-            onExportJSON={handleExportJSON}
-            onExportHTML={handleExportHTML}
-            onHelp={() => setActiveHelpDialog("general")}
+          <PageHeader
+            title="Privacy Analysis Results"
+            backDescription="Back to Configuration"
+            handleFunc={handleBack}
+            subTitle={
+              <p className="text-muted-foreground text-sm">
+                {fileName} • {result.metadata.recordCount.toLocaleString()} records • {result.metadata.attributeCount} attributes
+              </p>
+            }
+            actionSection={
+              <>
+                <AnimatedButton variant="outline" size="icon" onClick={() => setActiveHelpDialog("general")}>
+                  <HelpCircle className="h-4 w-4" />
+                </AnimatedButton>
+                <AnimatedButton variant="outline" onClick={handleExportJSON} className="gap-2">
+                  <FileJson className="h-4 w-4" />
+                  JSON
+                </AnimatedButton>
+                <AnimatedButton onClick={handleExportHTML} className="gap-2">
+                  <FileCode className="h-4 w-4" />
+                  HTML Report
+                </AnimatedButton>
+              </>
+            }
           />
 
           {/* Main Score Card */}
@@ -284,50 +300,6 @@ function LoadingState() {
         <p className="text-muted-foreground">Loading privacy analysis...</p>
       </div>
     </div>
-  );
-}
-
-interface ResultsHeaderProps {
-  fileName: string | null;
-  metadata: PrivacyIndexResult["metadata"];
-  onBack: () => void;
-  onExportJSON: () => void;
-  onExportHTML: () => void;
-  onHelp: () => void;
-}
-
-function ResultsHeader({ fileName, metadata, onBack, onExportJSON, onExportHTML, onHelp }: ResultsHeaderProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
-    >
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold">Privacy Analysis Results</h1>
-          <p className="text-muted-foreground text-sm">
-            {fileName} • {metadata.recordCount.toLocaleString()} records • {metadata.attributeCount} attributes
-          </p>
-        </div>
-      </div>
-      <div className="flex items-center gap-2">
-        <Button variant="outline" size="icon" onClick={onHelp}>
-          <HelpCircle className="h-4 w-4" />
-        </Button>
-        <Button variant="outline" onClick={onExportJSON} className="gap-2">
-          <FileJson className="h-4 w-4" />
-          JSON
-        </Button>
-        <Button onClick={onExportHTML} className="gap-2">
-          <FileCode className="h-4 w-4" />
-          HTML Report
-        </Button>
-      </div>
-    </motion.div>
   );
 }
 
