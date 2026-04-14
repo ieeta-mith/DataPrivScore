@@ -1,5 +1,6 @@
 import type { MetricKey } from "@/types/configuration";
-import { METRIC_INFO, type PrivacyAnalysisConfig } from "@/types/privacy-analysis";
+import type { PrivacyAnalysisConfig } from "@/types/privacy-analysis";
+import { METRIC_INFO } from "@/utils/constants";
 import { AlertTriangle, BarChart3 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { AnimatedButton } from "@/components/ui/button";

@@ -1,7 +1,7 @@
 import type { ClassificationResult } from "@/types/attribute-classification";
 import type { PrivacyIndexResult, PrivacyAnalysisConfig } from "@/types/privacy-analysis";
 import type { ParsedCSV } from "@/types/csv-parser";
-import { DEFAULT_PRIVACY_CONFIG } from "@/types/privacy-analysis";
+import { DEFAULT_PRIVACY_CONFIG } from "@/utils/constants";
 
 let storedParsedCSV: ParsedCSV | null = null;
 let storedClassificationResult: ClassificationResult | null = null;

@@ -7,7 +7,7 @@ import type {
   TechniqueRecommendation,
   TechniqueToggle,
 } from '@/types/privacy-analysis';
-import { DEFAULT_TECHNIQUE_TOGGLE } from '@/types/privacy-analysis';
+import { DEFAULT_TECHNIQUE_TOGGLE } from '@/utils/constants';
 import type { PrivacyPlugin, PluginInput, PluginOutput, PluginMetadata, MetricStatus } from '@/types/privacy-plugins';
 
 // ============================================================================
@@ -45,9 +45,6 @@ const metadata: PluginMetadata = {
 // Detection Methods
 // ============================================================================
 
-/**
- * Detect generalization (values replaced with broader categories)
- */
 function detectGeneralization(
   parsedCSV: ParsedCSV,
   classification: ClassificationResult
@@ -59,45 +56,37 @@ function detectGeneralization(
     const colIndex = parsedCSV.headers.indexOf(attr.name);
     if (colIndex === -1) continue;
 
-    const values = parsedCSV.rows.map(row => row[colIndex] || '');
-    const uniqueValues = [...new Set(values)];
+    const values = parsedCSV.rows.map(row => (row[colIndex] || '').trim());
+    const validValues = values.filter (v => v !== '');
+    if (validValues.length === 0) continue;
 
-    // Check for range patterns (e.g., "20-30", "30-40")
+    const uniqueValues = [...new Set(validValues)];
+    
+    // Check for range patterns
     const rangePattern = /^\d+[-–]\d+$/;
-    const rangeValues = uniqueValues.filter(v => rangePattern.test(v.trim()));
-    
-    if (rangeValues.length >= 2) {
+    const rangeValues = validValues.filter(v => rangePattern.test(v));
+    const rangeRatio = rangeValues.length / validValues.length;
+
+    // Require at least 15% of the column to match the range pattern to consider it generalized
+    if (rangeRatio >= 0.15) {
+      const uniqueRanges = [...new Set(rangeValues)];
       evidence.push({
         attribute: attr.name,
-        confidence: 0.9,
-        evidenceSamples: rangeValues.slice(0, 3),
-        reason: 'Numeric range patterns detected (e.g., "20-30")',
-      });
+        confidence: Math.min(rangeRatio + 0.4, 0.95),
+        evidenceSamples: uniqueRanges.slice(0, 3),
+        reason: `Numeric ranges detected in ${(rangeRatio * 100).toFixed(1)}% of rows`,
+      })
     }
-
-    // Check for region/category patterns
-    const categoryPattern = /^(Region|Category|Group|Level|Type|Class)[-_]?\d+$/i;
-    const categoryValues = uniqueValues.filter(v => categoryPattern.test(v.trim()));
-    
-    if (categoryValues.length >= 2) {
-      evidence.push({
-        attribute: attr.name,
-        confidence: 0.85,
-        evidenceSamples: categoryValues.slice(0, 3),
-        reason: 'Categorical generalization patterns detected',
-      });
-    }
-
-    // Check for very low cardinality in supposedly high-cardinality fields
-    if (attr.dataPattern === 'identifier' || attr.type === 'quasi-identifier') {
-      const uniqueRatio = uniqueValues.length / parsedCSV.rows.length;
-      if (uniqueRatio < 0.1 && uniqueValues.length > 1) {
+    // Check for categorical bins replacing high cardinality data
+    if (attr.type === 'quasi-identifier' || attr.dataPattern === 'categorical') {
+      const uniqueRatio = uniqueValues.length / validValues.length;
+      if (uniqueRatio < 0.05 && uniqueValues.length >= 2 && uniqueValues.length <= 15) {
         evidence.push({
           attribute: attr.name,
           confidence: 0.6,
           evidenceSamples: uniqueValues.slice(0, 3),
-          reason: `Low unique value ratio (${(uniqueRatio * 100).toFixed(1)}%) suggests generalization`,
-        });
+          reason: `High frequency of highly consolidated values suggests binning/generalization`,
+        })
       }
     }
   }
@@ -108,12 +97,33 @@ function detectGeneralization(
       affectedAttributes: [...new Set(evidence.map(e => e.attribute))],
       confidence: Math.max(...evidence.map(e => e.confidence)),
       evidence,
-      description: 'Values have been replaced with broader categories or ranges',
+      description: 'Values have been generalized to reduce granularity',
       privacyBenefit: 'high',
     });
   }
 
   return techniques;
+}
+
+/** 
+ * Calculate the Shannon Entropy of a string
+ * Used to distinguish true cryptographic hashes from standard sequential or UUID 
+*/
+function calculateEntropy(str: string): number {
+  const len = str.length;
+  if (len === 0) return 0;
+
+  const charCounts = new Map<string, number>();
+  for (const char of str) {
+    charCounts.set(char, (charCounts.get(char) || 0) + 1);
+  }
+
+  let entropy = 0;
+  for (const count of charCounts.values()) {
+    const p = count / len;
+    entropy -= p * Math.log2(p);
+  }
+  return entropy;
 }
 
 /**
@@ -126,36 +136,50 @@ function detectSuppression(
   const techniques: DetectedTechnique[] = [];
   const evidence: TechniqueEvidence[] = [];
 
-  const suppressionPatterns = [
-    /^\*+$/,           // All asterisks
-    /^[-]+$/,          // All dashes
-    /^N\/?A$/i,        // N/A
-    /^NULL$/i,         // NULL
-    /^REDACTED$/i,     // REDACTED
-    /^SUPPRESSED$/i,   // SUPPRESSED
-    /^\[REMOVED\]$/i,  // [REMOVED]
-    /^XXX+$/i,         // XXX
-  ];
+  const explicitPatterns = [
+    /^REDACTED$/i,
+    /^SUPPRESSED$/i,
+    /^\[REMOVED\]$/i,
+    /^\*{3,}$/,
+    /^X{3,}$/i
+  ]
+
+  const implicitPatterns = [
+    /^N\/?A$/i,        
+    /^NULL$/i,         
+    /^[-]+$/,          
+    /^$/
+  ]
 
   for (const attr of classification.attributes) {
     const colIndex = parsedCSV.headers.indexOf(attr.name);
     if (colIndex === -1) continue;
 
-    const values = parsedCSV.rows.map(row => row[colIndex] || '');
-    const suppressedValues = values.filter(v => 
-      suppressionPatterns.some(p => p.test(v.trim())) || v.trim() === ''
-    );
+    const values = parsedCSV.rows.map(row => (row[colIndex] || '').trim());
 
-    const suppressionRate = suppressedValues.length / values.length;
+    const explicitMatches = values.filter(v => explicitPatterns.some(p => p.test(v)));
+    const implicitMatches = values.filter(v => implicitPatterns.some(p => p.test(v)));
 
-    if (suppressionRate > 0.01 && suppressedValues.length > 0) {
-      const uniqueSuppressed = [...new Set(suppressedValues)].filter(v => v !== '');
+    const explicitRate = explicitMatches.length / values.length;
+
+    // Only consider implicit patterns if explicit suppression is not dominant
+    if (explicitRate > 0.01) {
+      const uniqueExplicit = [...new Set(explicitMatches)];
       evidence.push({
         attribute: attr.name,
-        confidence: Math.min(suppressionRate * 5, 0.95),
-        evidenceSamples: uniqueSuppressed.slice(0, 3),
-        reason: `${(suppressionRate * 100).toFixed(1)}% of values appear suppressed`,
+        confidence: Math.min(explicitRate * 10, 0.95),
+        evidenceSamples: uniqueExplicit.slice(0, 3),
+        reason: `Explicit redaction detected in ${(explicitRate * 100).toFixed(1)}% of values`,
       });
+    } else if (implicitMatches.length > 0 && explicitMatches.length === 0) {
+      // If there are a few explicit + lots of implicit, report with lower confidence
+      const uniqueImplicit = [...new Set(implicitMatches)].filter(v => v !== '');
+      evidence.push({
+        attribute: attr.name,
+        confidence: 0.4,
+        evidenceSamples: uniqueImplicit.slice(0, 3),
+        reason: 'Combination of missing data and minor explicit redaction detected',
+      })
     }
   }
 
@@ -165,9 +189,9 @@ function detectSuppression(
       affectedAttributes: [...new Set(evidence.map(e => e.attribute))],
       confidence: Math.max(...evidence.map(e => e.confidence)),
       evidence,
-      description: 'Some values have been removed or replaced with placeholders',
+      description: 'Values have been intentionally removed or redacted',
       privacyBenefit: 'medium',
-    });
+    })
   }
 
   return techniques;
@@ -226,9 +250,6 @@ function detectMasking(
   return techniques;
 }
 
-/**
- * Detect hashing (cryptographic transformation)
- */
 function detectHashing(
   parsedCSV: ParsedCSV,
   classification: ClassificationResult
@@ -237,45 +258,46 @@ function detectHashing(
   const evidence: TechniqueEvidence[] = [];
 
   const hashPatterns = [
-    { pattern: /^[a-f0-9]{8}$/i, name: 'Short hash (8 chars)' },
-    { pattern: /^[a-f0-9]{16}$/i, name: 'MD5 prefix (16 chars)' },
-    { pattern: /^[a-f0-9]{32}$/i, name: 'MD5 hash (32 chars)' },
-    { pattern: /^[a-f0-9]{40}$/i, name: 'SHA-1 hash (40 chars)' },
-    { pattern: /^[a-f0-9]{64}$/i, name: 'SHA-256 hash (64 chars)' },
-    { pattern: /^[a-f0-9]{128}$/i, name: 'SHA-512 hash (128 chars)' },
+    { pattern: /^[a-f0-9]{32}$/i, name: 'MD5 hash', minEntropy: 3.4 },
+    { pattern: /^[a-f0-9]{40}$/i, name: 'SHA-1 hash', minEntropy: 3.6 },
+    { pattern: /^[a-f0-9]{64}$/i, name: 'SHA-256 hash', minEntropy: 3.8 },
+    { pattern: /^[a-f0-9]{128}$/i, name: 'SHA-512 hash', minEntropy: 3.9 },
   ];
 
   for (const attr of classification.attributes) {
     const colIndex = parsedCSV.headers.indexOf(attr.name);
     if (colIndex === -1) continue;
 
-    const values = parsedCSV.rows.map(row => row[colIndex] || '');
-    const uniqueValues = [...new Set(values)];
+    const values = parsedCSV.rows.map(row => (row[colIndex] || '').trim()).filter(v => v !== '');
+    if (values.length === 0) continue;
 
-    for (const { pattern, name } of hashPatterns) {
-      const matchingValues = uniqueValues.filter(v => pattern.test(v.trim()));
-      const matchRatio = matchingValues.length / uniqueValues.length;
+    for (const { pattern, name, minEntropy } of hashPatterns) {
+      const matchingValues = values.filter(v => pattern.test(v));
+      const matchRatio = matchingValues.length / values.length;
 
-      if (matchRatio > 0.8 && matchingValues.length >= 3) {
-        evidence.push({
-          attribute: attr.name,
-          confidence: Math.min(matchRatio, 0.95),
-          evidenceSamples: matchingValues.slice(0, 3),
-          reason: `${name} pattern detected in ${(matchRatio * 100).toFixed(0)}% of values`,
-        });
-        break;
+      if (matchRatio > 0.8) {
+        // Sample up to 10 matching strings to check their entropy
+        const sampleSize = Math.min(matchingValues.length, 10);
+        let totalEntropy = 0;
+        
+        for (let i = 0; i < sampleSize; i++) {
+          totalEntropy += calculateEntropy(matchingValues[i]);
+        }
+        
+        const avgEntropy = totalEntropy / sampleSize;
+
+        // Only flag as a hash if the entropy is high enough
+        if (avgEntropy >= minEntropy) {
+          const uniqueMatches = [...new Set(matchingValues)];
+          evidence.push({
+            attribute: attr.name,
+            confidence: Math.min(matchRatio, 0.95),
+            evidenceSamples: uniqueMatches.slice(0, 3),
+            reason: `${name} detected (${(matchRatio * 100).toFixed(0)}% match, Avg Entropy: ${avgEntropy.toFixed(2)})`,
+          });
+          break;
+        }
       }
-    }
-
-    // Check for hash column names
-    const hashNamePattern = /hash|digest|checksum|sha|md5/i;
-    if (hashNamePattern.test(attr.name)) {
-      evidence.push({
-        attribute: attr.name,
-        confidence: 0.7,
-        evidenceSamples: uniqueValues.slice(0, 3),
-        reason: 'Column name suggests hashed values',
-      });
     }
   }
 
@@ -293,9 +315,6 @@ function detectHashing(
   return techniques;
 }
 
-/**
- * Detect pseudonymization (artificial identifiers)
- */
 function detectPseudonymization(
   parsedCSV: ParsedCSV,
   classification: ClassificationResult
@@ -351,66 +370,6 @@ function detectPseudonymization(
   return techniques;
 }
 
-/**
- * Detect bucketing (values grouped into buckets)
- */
-function detectBucketing(
-  parsedCSV: ParsedCSV,
-  classification: ClassificationResult
-): DetectedTechnique[] {
-  const techniques: DetectedTechnique[] = [];
-  const evidence: TechniqueEvidence[] = [];
-
-  const bucketPatterns = [
-    /^(Low|Medium|High|Very\s*High|Very\s*Low)$/i,
-    /^(Small|Large|Extra\s*Large|XL|XXL)$/i,
-    /^(Young|Middle[-\s]?Aged?|Old|Elderly|Senior)$/i,
-    /^(Tier|Level|Grade|Class)[-\s]?[1-5A-E]$/i,
-    /^<?\d+[-–]\d+>?$/,
-    /^[<>≤≥]=?\s*\d+$/,
-  ];
-
-  for (const attr of classification.attributes) {
-    const colIndex = parsedCSV.headers.indexOf(attr.name);
-    if (colIndex === -1) continue;
-
-    const values = parsedCSV.rows.map(row => row[colIndex] || '');
-    const uniqueValues = [...new Set(values)];
-
-    const matchingValues = uniqueValues.filter(v =>
-      bucketPatterns.some(p => p.test(v.trim()))
-    );
-
-    if (matchingValues.length >= 2 && matchingValues.length <= 10) {
-      const matchRatio = matchingValues.length / uniqueValues.length;
-      if (matchRatio > 0.5) {
-        evidence.push({
-          attribute: attr.name,
-          confidence: Math.min(matchRatio, 0.85),
-          evidenceSamples: matchingValues.slice(0, 4),
-          reason: 'Values appear to be bucketed into categories',
-        });
-      }
-    }
-  }
-
-  if (evidence.length > 0) {
-    techniques.push({
-      technique: 'bucketing',
-      affectedAttributes: [...new Set(evidence.map(e => e.attribute))],
-      confidence: Math.max(...evidence.map(e => e.confidence)),
-      evidence,
-      description: 'Continuous values have been grouped into discrete buckets',
-      privacyBenefit: 'medium',
-    });
-  }
-
-  return techniques;
-}
-
-/**
- * Detect noise addition (statistical noise in numerical values)
- */
 function detectNoiseAddition(
   parsedCSV: ParsedCSV,
   classification: ClassificationResult
@@ -480,8 +439,6 @@ function isEnabledTechnique(technique: string, enabled: TechniqueToggle): boolea
     'tokenization': 'tokenization',
     'noise-addition': 'noiseAddition',
     'data-swapping': 'dataSwapping',
-    'aggregation': 'aggregation',
-    'bucketing': 'bucketing',
   };
   
   const key = techniqueMap[technique];
@@ -512,8 +469,6 @@ function detectPrivacyTechniques(
     tokenization: detectPseudonymization, // Tokenization uses same detection as pseudonymization
     noiseAddition: detectNoiseAddition,
     dataSwapping: detectNoiseAddition, // Data swapping uses similar patterns
-    aggregation: detectBucketing, // Aggregation uses similar patterns to bucketing
-    bucketing: detectBucketing,
   };
 
   // Run detection methods only for enabled techniques
@@ -639,10 +594,10 @@ function generateRecommendations(
 
   if (unprotectedSA.length > 0) {
     recommendations.push({
-      technique: 'bucketing',
+      technique: 'noise-addition',
       targetAttributes: unprotectedSA.map(a => a.name),
       priority: 'medium',
-      reason: 'Sensitive attributes could benefit from bucketing.',
+      reason: 'Sensitive attributes could benefit from noise addition to prevent inference attacks.',
     });
   }
 

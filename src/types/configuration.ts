@@ -1,5 +1,6 @@
-import type { METRIC_THRESHOLDS, MetricToggle, TechniqueToggle } from "@/types/privacy-analysis";
+import type { MetricToggle, TechniqueToggle } from "@/types/privacy-analysis";
 import type { LucideIcon } from "lucide-react";
+import { METRIC_THRESHOLDS } from "@/utils/constants";
 
 export type MetricKey = keyof MetricToggle;
 export type TechniqueKey = keyof TechniqueToggle;

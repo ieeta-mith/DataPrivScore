@@ -1,5 +1,5 @@
 import { getThresholdWarning } from '@/lib/utils';
-import { METRIC_THRESHOLDS } from '@/types/privacy-analysis';
+import { METRIC_THRESHOLDS } from '@/utils/constants';
 
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';

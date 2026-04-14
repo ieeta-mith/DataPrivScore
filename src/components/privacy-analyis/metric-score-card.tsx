@@ -3,7 +3,7 @@ import { AlertTriangle, CheckCircle2, XCircle, Scale } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { statusColors } from "@/utils/privacy-styles";
+import { statusColors } from "@/utils/constants";
 import type { PrivacyIndexResult } from "@/types/privacy-analysis";
 
 type MetricScore = PrivacyIndexResult["metricScores"][0];

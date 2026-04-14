@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { Users, PieChart, Activity, Lock } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { gradeStyles, riskLevelStyles } from "@/utils/privacy-styles";
+import { gradeStyles, riskLevelStyles } from "@/utils/constants";
 import type { PrivacyIndexResult } from "@/types/privacy-analysis";
 
 interface PrivacyScoreCardProps {

@@ -32,9 +32,8 @@ import type {
   TechniqueToggle,
 } from '@/types/privacy-analysis';
 import {
-  DEFAULT_PRIVACY_CONFIG,
-  METRIC_THRESHOLDS,
-} from '@/types/privacy-analysis';
+  DEFAULT_PRIVACY_CONFIG
+} from '@/utils/constants';
 import type { MetricKey, TechniqueKey } from '@/types/configuration';
 import { MetricsSection } from '@/components/configuration/metrics-section';
 import { TechniquesSection } from '@/components/configuration/techniques-section';
@@ -173,8 +172,6 @@ function ConfigurePage() {
         tokenization: enabled,
         noiseAddition: enabled,
         dataSwapping: enabled,
-        aggregation: enabled,
-        bucketing: enabled,
       };
       const newConfig = { ...config, enabledTechniques: newTechniques };
       setConfig(newConfig);
@@ -183,7 +180,7 @@ function ConfigurePage() {
     [config]
   );
 
-  const getThresholdValue = (metricKey: keyof typeof METRIC_THRESHOLDS): number => {
+  const getThresholdValue = (metricKey: string | number | symbol): number => {
     switch (metricKey) {
       case 'kAnonymity':
         return config.kThreshold;
@@ -197,7 +194,7 @@ function ConfigurePage() {
   };
 
   const getThresholdKey = (
-    metricKey: keyof typeof METRIC_THRESHOLDS
+    metricKey: string | number | symbol
   ): 'kThreshold' | 'lThreshold' | 'tThreshold' => {
     switch (metricKey) {
       case 'kAnonymity':
@@ -206,6 +203,8 @@ function ConfigurePage() {
         return 'lThreshold';
       case 'tCloseness':
         return 'tThreshold';
+      default:
+        return 'kThreshold';
     }
   };
 

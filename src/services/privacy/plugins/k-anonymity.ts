@@ -3,10 +3,6 @@ import type { ClassificationResult } from '@/types/attribute-classification';
 import type { EquivalenceClass, KAnonymityResult } from '@/types/privacy-analysis';
 import type { PrivacyPlugin, PluginInput, PluginOutput, PluginMetadata, MetricStatus } from '@/types/privacy-plugins';
 
-// ============================================================================
-// Plugin Configuration
-// ============================================================================
-
 export interface KAnonymityConfig {
   /** The minimum k value to consider as compliant (default: 5) */
   kThreshold: number;
@@ -15,10 +11,6 @@ export interface KAnonymityConfig {
 const DEFAULT_CONFIG: KAnonymityConfig = {
   kThreshold: 5,
 };
-
-// ============================================================================
-// Plugin Metadata
-// ============================================================================
 
 const metadata: PluginMetadata = {
   id: 'k-anonymity',
@@ -31,19 +23,11 @@ const metadata: PluginMetadata = {
   author: 'Privacy Index Calculator',
 };
 
-// ============================================================================
-// Core Calculation Functions
-// ============================================================================
-
-/**
- * Calculate k-anonymity for a dataset
- */
 function calculateKAnonymity(
   parsedCSV: ParsedCSV,
   classification: ClassificationResult,
   kThreshold: number
 ): KAnonymityResult {
-  // Get quasi-identifier column indices
   const quasiIdentifiers = classification.attributes
     .filter(attr => attr.type === 'quasi-identifier')
     .map(attr => attr.name);
@@ -67,7 +51,6 @@ function calculateKAnonymity(
     };
   }
 
-  // Build equivalence classes
   const equivalenceClasses = buildEquivalenceClasses(
     parsedCSV,
     quasiIndices,
@@ -127,7 +110,6 @@ function buildEquivalenceClasses(
   const classMap = new Map<string, EquivalenceClass>();
 
   parsedCSV.rows.forEach((row, rowIndex) => {
-    // Create a key from quasi-identifier values
     const values: Record<string, string> = {};
     const keyParts: string[] = [];
 
@@ -156,24 +138,14 @@ function buildEquivalenceClasses(
   return Array.from(classMap.values());
 }
 
-/**
- * Normalize a value for comparison
- */
 function normalizeValue(value: string): string {
   return value.trim().toLowerCase();
 }
 
-/**
- * Calculate the k-anonymity score (0-100)
- */
 function calculateScore(result: KAnonymityResult): number {
-  // Base score on the k-value achieved
+
   const kScore = Math.min(result.kValue / result.kThreshold, 1) * 50;
-  
-  // Add compliance rate contribution
   const complianceScore = (result.complianceRate / 100) * 30;
-  
-  // Add penalty for having many small classes
   const avgClassPenalty = result.averageClassSize < result.kThreshold
     ? (result.averageClassSize / result.kThreshold) * 20
     : 20;
@@ -181,18 +153,12 @@ function calculateScore(result: KAnonymityResult): number {
   return Math.round(Math.min(kScore + complianceScore + avgClassPenalty, 100));
 }
 
-/**
- * Get status based on score
- */
 function getStatus(score: number): MetricStatus {
   if (score >= 70) return 'pass';
   if (score >= 40) return 'warning';
   return 'fail';
 }
 
-/**
- * Generate insights from the result
- */
 function generateInsights(result: KAnonymityResult): string[] {
   const insights: string[] = [];
 
@@ -223,13 +189,6 @@ function generateInsights(result: KAnonymityResult): string[] {
   return insights;
 }
 
-// ============================================================================
-// Plugin Implementation
-// ============================================================================
-
-/**
- * K-Anonymity Plugin
- */
 export const kAnonymityPlugin: PrivacyPlugin<KAnonymityResult, KAnonymityConfig> = {
   metadata,
 
@@ -257,7 +216,6 @@ export const kAnonymityPlugin: PrivacyPlugin<KAnonymityResult, KAnonymityConfig>
   },
 
   canCalculate(input: PluginInput): boolean {
-    // K-anonymity requires parsed CSV data
     return input.parsedCSV.rows.length > 0;
   },
 
@@ -273,13 +231,6 @@ export const kAnonymityPlugin: PrivacyPlugin<KAnonymityResult, KAnonymityConfig>
   },
 };
 
-// ============================================================================
-// Utility Exports (for backward compatibility)
-// ============================================================================
-
-/**
- * Get detailed information about violating equivalence classes
- */
 export function getKAnonymityViolationDetails(
   result: KAnonymityResult
 ): {

@@ -33,7 +33,7 @@ import type {
   TechniqueDetectionResult,
   MetricToggle,
 } from '@/types/privacy-analysis';
-import { DEFAULT_PRIVACY_CONFIG } from '@/types/privacy-analysis';
+import { DEFAULT_PRIVACY_CONFIG } from '@/utils/constants';
 
 import {
   getPluginRegistry,
@@ -290,10 +290,6 @@ export function calculatePrivacyIndex(input: PrivacyAnalysisInput): PrivacyIndex
   };
 }
 
-// ============================================================================
-// Helper Functions for Disabled Metrics
-// ============================================================================
-
 /**
  * Create a plugin output for a disabled metric
  */
@@ -341,9 +337,6 @@ function createEmptyLDiversityResult(config: PrivacyAnalysisConfig): LDiversityR
   };
 }
 
-/**
- * Create empty T-Closeness result
- */
 function createEmptyTClosenessResult(config: PrivacyAnalysisConfig): TClosenessResult {
   return {
     maxDistance: 0,
@@ -358,9 +351,6 @@ function createEmptyTClosenessResult(config: PrivacyAnalysisConfig): TClosenessR
   };
 }
 
-/**
- * Create empty Technique Detection result
- */
 function createEmptyTechniqueResult(): TechniqueDetectionResult {
   return {
     detectedTechniques: [],
@@ -532,22 +522,57 @@ function getGrade(score: number): 'A' | 'B' | 'C' | 'D' | 'F' {
 
 /**
  * Calculate re-identification risk assessment
+ * 
+ * New approach:
+ * 1. Calculate attacker models FIRST (Prosecutor, Journalist, Marketer)
+ * 2. Set baseline risk to the MAX (system is only as secure as worst-case attacker)
+ * 3. Add distinct penalties for vulnerabilities not covered by attacker models
  */
 function calculateReidentificationRisk(
-  parsedCSV: ParsedCSV,
+  _parsedCSV: ParsedCSV,
   classification: ClassificationResult,
   kAnonymity: KAnonymityResult,
-  lDiversity: LDiversityResult,
-  tCloseness: TClosenessResult,
+  _lDiversity: LDiversityResult,
+  _tCloseness: TClosenessResult,
   techniqueDetection: TechniqueDetectionResult
 ): ReidentificationRisk {
   const riskFactors: RiskFactor[] = [];
-  let totalRiskImpact = 0;
-
-  // Techniques that protect direct identifiers
+  
+  // STEP 1: Calculate attacker models first
+  const quasiCount = classification.summary.quasiIdentifiers;
+  const prosecutorRisk = calculateProsecutorRisk(kAnonymity);
+  const journalistRisk = calculateJournalistRisk(kAnonymity, quasiCount);
+  const marketerRisk = calculateMarketerRisk(kAnonymity);
+  
+  // Add attacker models as primary risk factors
+  riskFactors.push({
+    factor: 'Prosecutor Attack Model',
+    impact: prosecutorRisk,
+    description: `Attacker knows the target is in the dataset (risk: ${prosecutorRisk.toFixed(1)}%)`,
+    mitigation: 'Increase k-anonymity threshold to reduce re-identification probability',
+  });
+  
+  riskFactors.push({
+    factor: 'Journalist Attack Model',
+    impact: journalistRisk,
+    description: `Attacker doesn't know if target is in dataset (risk: ${journalistRisk.toFixed(1)}%)`,
+    mitigation: 'Increase k-anonymity and reduce quasi-identifiers to prevent record linkage',
+  });
+  
+  riskFactors.push({
+    factor: 'Marketer Attack Model',
+    impact: marketerRisk,
+    description: `Attacker targets any individual with specific attributes (risk: ${marketerRisk.toFixed(1)}%)`,
+    mitigation: 'Increase average equivalence class size through better generalization',
+  });
+  
+  // STEP 2: Set baseline risk to the highest attacker model
+  let baselineRisk = Math.max(prosecutorRisk, journalistRisk, marketerRisk);
+  
+  // STEP 3: Add distinct penalties for vulnerabilities not covered by attacker models
   const protectiveTechniques = ['pseudonymization', 'hashing', 'masking', 'suppression', 'tokenization'];
 
-  // Factor 1: Direct identifiers present
+  // Penalty 1: Unprotected Direct Identifiers
   const directIdentifiers = classification.summary.directIdentifiers;
   const protectedDIAttributes = new Set(
     techniqueDetection.detectedTechniques
@@ -558,100 +583,30 @@ function calculateReidentificationRisk(
   const unprotectedDI = directIdentifiers - protectedDIAttributes.size;
 
   if (unprotectedDI > 0) {
-    const impact = Math.min(unprotectedDI * 25, 50);
+    const penalty = Math.min(unprotectedDI * 20, 30);
     riskFactors.push({
       factor: 'Unprotected Direct Identifiers',
-      impact,
-      description: `${unprotectedDI} direct identifier(s) without protection`,
-      mitigation: 'Apply pseudonymization, hashing, or masking to direct identifiers',
+      impact: penalty,
+      description: `${unprotectedDI} direct identifier(s) can directly identify individuals without protection`,
+      mitigation: 'Apply pseudonymization, hashing, or masking to all direct identifiers',
     });
-    totalRiskImpact += impact;
+    baselineRisk = Math.min(100, baselineRisk + penalty);
   }
 
-  // Factor 2: Low k-anonymity
-  if (kAnonymity.kValue < kAnonymity.kThreshold) {
-    const impact = Math.min((kAnonymity.kThreshold - kAnonymity.kValue) * 10, 30);
+  // Penalty 2: Severe lack of technique coverage
+  if (techniqueDetection.techniqueCoverage < 0.3) {
+    const penalty = Math.round((0.3 - techniqueDetection.techniqueCoverage) * 50);
     riskFactors.push({
-      factor: 'Insufficient K-Anonymity',
-      impact,
-      description: `k=${kAnonymity.kValue} is below the threshold of ${kAnonymity.kThreshold}`,
-      mitigation: 'Generalize quasi-identifiers or suppress outlier records',
+      factor: 'Critical Protection Gap',
+      impact: penalty,
+      description: `Only ${(techniqueDetection.techniqueCoverage * 100).toFixed(0)}% of attributes have privacy protections`,
+      mitigation: 'Apply privacy-preserving techniques to sensitive attributes immediately',
     });
-    totalRiskImpact += impact;
+    baselineRisk = Math.min(100, baselineRisk + penalty);
   }
 
-  // Factor 3: L-Diversity violations
-  if (!lDiversity.satisfiesLDiversity && lDiversity.violatingClasses.length > 0) {
-    const violationRate = lDiversity.violatingClasses.length / Math.max(kAnonymity.equivalenceClassCount, 1);
-    const impact = Math.min(Math.round(violationRate * 25) + 5, 25);
-    riskFactors.push({
-      factor: 'L-Diversity Violations',
-      impact,
-      description: `${lDiversity.violatingClasses.length} equivalence class(es) lack sufficient sensitive value diversity`,
-      mitigation: 'Apply more generalization to increase diversity in sensitive attributes',
-    });
-    totalRiskImpact += impact;
-  }
-
-  // Factor 4: T-Closeness violations
-  if (!tCloseness.satisfiesTCloseness && tCloseness.maxDistance > tCloseness.tThreshold) {
-    const distanceExcess = tCloseness.maxDistance - tCloseness.tThreshold;
-    const impact = Math.min(Math.round(distanceExcess * 40), 20);
-    riskFactors.push({
-      factor: 'T-Closeness Violations',
-      impact,
-      description: `Max distribution distance (${tCloseness.maxDistance.toFixed(3)}) exceeds threshold (${tCloseness.tThreshold})`,
-      mitigation: 'Apply techniques to balance sensitive value distributions across groups',
-    });
-    totalRiskImpact += impact;
-  }
-
-  // Factor 5: Unique records
-  const uniqueRecords = kAnonymity.violatingClasses.filter(ec => ec.size === 1).length;
-  if (uniqueRecords > 0) {
-    const uniqueRatio = uniqueRecords / parsedCSV.rows.length;
-    const impact = Math.min(Math.round(uniqueRatio * 100), 25);
-    riskFactors.push({
-      factor: 'Unique Records',
-      impact,
-      description: `${uniqueRecords} record(s) are uniquely identifiable (${(uniqueRatio * 100).toFixed(1)}%)`,
-      mitigation: 'Suppress or merge unique records with similar ones',
-    });
-    totalRiskImpact += impact;
-  }
-
-  // Factor 6: Many quasi-identifiers
-  const quasiCount = classification.summary.quasiIdentifiers;
-  if (quasiCount > 5) {
-    const impact = Math.min((quasiCount - 5) * 5, 20);
-    riskFactors.push({
-      factor: 'High Quasi-Identifier Count',
-      impact,
-      description: `${quasiCount} quasi-identifiers increase linking attack surface`,
-      mitigation: 'Reduce quasi-identifiers or apply stronger generalization',
-    });
-    totalRiskImpact += impact;
-  }
-
-  // Factor 7: Low technique coverage
-  if (techniqueDetection.techniqueCoverage < 0.5) {
-    const impact = Math.round((0.5 - techniqueDetection.techniqueCoverage) * 30);
-    riskFactors.push({
-      factor: 'Low Privacy Technique Coverage',
-      impact,
-      description: `Only ${(techniqueDetection.techniqueCoverage * 100).toFixed(0)}% of attributes have detected privacy protections`,
-      mitigation: 'Apply additional privacy-preserving techniques to sensitive attributes',
-    });
-    totalRiskImpact += impact;
-  }
-
-  const riskScore = Math.min(Math.round(totalRiskImpact), 100);
+  const riskScore = Math.max(0, Math.min(100, baselineRisk));
   
-  // Calculate specific attack risks
-  const prosecutorRisk = calculateProsecutorRisk(kAnonymity);
-  const journalistRisk = calculateJournalistRisk(kAnonymity, quasiCount);
-  const marketerRisk = calculateMarketerRisk(kAnonymity);
-
   return {
     riskScore,
     riskLevel: getRiskLevel(100 - riskScore),
@@ -697,10 +652,6 @@ function calculateReidentificationProbability(kAnonymity: KAnonymityResult): num
   return (worstCase * 0.6 + avgCase * 0.4);
 }
 
-// ============================================================================
-// Recommendations Generation
-// ============================================================================
-
 /**
  * Generate prioritized recommendations
  */
@@ -714,7 +665,6 @@ function generateRecommendations(
   const recommendations: PrivacyRecommendation[] = [];
   let id = 1;
 
-  // Critical: Unprotected direct identifiers
   const directIdentifiers = classification.attributes
     .filter(a => a.type === 'direct-identifier')
     .map(a => a.name);
@@ -737,7 +687,6 @@ function generateRecommendations(
     });
   }
 
-  // High: K-anonymity violations
   if (!kAnonymity.satisfiesKAnonymity) {
     const violationDetails = getKAnonymityViolationDetails(kAnonymity);
     recommendations.push({

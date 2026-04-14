@@ -1,7 +1,7 @@
 import { CheckCircle2, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { priorityStyles, priorityBadgeVariants } from "@/utils/privacy-styles";
+import { priorityStyles, priorityBadgeVariants } from "@/utils/constants";
 import type { PrivacyRecommendation } from "@/types/privacy-analysis";
 
 interface RecommendationsListProps {

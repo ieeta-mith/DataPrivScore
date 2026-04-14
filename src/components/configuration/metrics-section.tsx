@@ -9,8 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { ThresholdConfig } from "@/components/configuration/threshold-config";
 import { Label } from "@/components/ui/label";
 
-import { containerVariants, itemVariants, L_DIVERSITY_TYPES, METRIC_CONFIGS } from "@/utils/constants";
-import { METRIC_INFO, METRIC_THRESHOLDS } from "@/types/privacy-analysis";
+import { containerVariants, itemVariants, L_DIVERSITY_TYPES, METRIC_CONFIGS, METRIC_THRESHOLDS, METRIC_INFO } from "@/utils/constants";
 
 import type { MetricKey } from "@/types/configuration";
 import type { LDiversityType, PrivacyAnalysisConfig } from "@/types/privacy-analysis";

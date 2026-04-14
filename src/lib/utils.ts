@@ -1,4 +1,4 @@
-import { METRIC_THRESHOLDS, METRIC_INFO } from "@/types/privacy-analysis";
+import { METRIC_THRESHOLDS, METRIC_INFO } from "@/utils/constants";
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 

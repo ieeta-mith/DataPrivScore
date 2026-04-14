@@ -318,23 +318,23 @@ function createEmptyTClosenessResult(
 
 /**
  * Calculate the t-closeness score (0-100)
+ * 
+ * Scoring follows the same pattern as K-Anonymity and L-Diversity:
+ * - Primary metric (distance ratio): 50 points
+ * - Compliance rate: 30 points
+ * - Average distance consistency: 20 points
  */
 function calculateScore(result: TClosenessResult): number {
   // If no sensitive attribute, give neutral score
-  if (!result.sensitiveAttribute) {
-    return 50;
-  }
+  if (!result.sensitiveAttribute) return 50;
 
-  // Score based on how close the max distance is to the threshold
-  const distanceScore = result.maxDistance <= result.tThreshold
-    ? 50
-    : Math.max(0, 50 - ((result.maxDistance - result.tThreshold) / result.tThreshold) * 50);
-
-  // Add compliance rate contribution
+  const distanceRatio = result.tThreshold / Math.max(result.maxDistance, result.tThreshold);
+  const distanceScore = Math.min(distanceRatio, 1) * 50;
   const complianceScore = (result.complianceRate / 100) * 30;
 
-  // Add average distance bonus (lower is better)
-  const avgDistanceScore = Math.max(0, (1 - result.averageDistance) * 20);
+  const avgDistanceScore = result.satisfiesTCloseness
+    ? Math.min(result.tThreshold / Math.max(result.averageDistance, result.tThreshold), 1) * 20
+    : 0; // No bonus for failing datasets
 
   return Math.round(Math.min(distanceScore + complianceScore + avgDistanceScore, 100));
 }

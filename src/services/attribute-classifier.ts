@@ -184,7 +184,7 @@ export class AttributeClassifier {
           reason: 'Low cardinality numeric field',
         };
       
-      case 'categorical':
+      case 'categorical': {
         // Low cardinality categorical = likely quasi-identifier or non-sensitive
         const uniqueRatio = this.getUniqueRatio(values);
         if (uniqueRatio < 0.1) {
@@ -199,6 +199,7 @@ export class AttributeClassifier {
           confidence: 0.50,
           reason: 'Categorical field with moderate cardinality',
         };
+      }
       
       default:
         return {
