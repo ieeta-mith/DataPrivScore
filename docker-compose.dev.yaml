@@ -2,14 +2,15 @@ services:
   data-privacy:
     build:
       context: .
-      dockerfile: docker/Dockerfile.prod
+      dockerfile: docker/Dockerfile
       args:
         BUILD_NPM_TOKEN: ${BUILD_NPM_TOKEN}
         VITE_KEYCLOAK_URL: ${KEYCLOAK_PROXY_URL}
         VITE_COMMUNITY_KEY: ${COMMUNITY_KEY}
         VITE_STANDALONE_MODE: ${SINGLE_COMMUNITY_MODE}
-        VITE_SIDEBAR_DEV_MODE: False
+        VITE_SIDEBAR_DEV_MODE: ${SIDEBAR_DEV_MODE}
+    env_file:
+      - .env
+    ports:
+      - "3000:3000"
     restart: unless-stopped
-    networks:
-      - core_plugin_network
-      - proxy_network

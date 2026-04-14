@@ -30,7 +30,7 @@ export default function SidebarWrapper( config : SidebarWrapperProps) {
           communityKey: import.meta.env.VITE_COMMUNITY_KEY,
           requireAuthentication: true,
           devMode: {
-            enabled:  true,
+            enabled:  import.meta.env.VITE_SIDEBAR_DEV_MODE?.toLowerCase() === 'true',
           },
           ...config
       }}
