@@ -8,7 +8,7 @@ services:
         VITE_KEYCLOAK_URL: ${KEYCLOAK_PROXY_URL}
         VITE_COMMUNITY_KEY: ${COMMUNITY_KEY}
         VITE_STANDALONE_MODE: ${SINGLE_COMMUNITY_MODE}
-        VITE_SIDEBAR_DEV_MODE: ${SIDEBAR_DEV_MODE}
+        VITE_SIDEBAR_DEV_MODE: True
     env_file:
       - .env
     ports:
