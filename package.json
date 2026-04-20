@@ -3,11 +3,13 @@
   "private": true,
   "version": "1.0.1",
   "type": "module",
+  "homepage": "https://ieeta-mith.github.io/DataPrivScore",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.4",
