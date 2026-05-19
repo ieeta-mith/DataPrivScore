@@ -9,13 +9,11 @@ import type {
 } from '@/types/attribute-classification';
 import { allClassificationRules } from './classification-rules';
 
-/**
- * Default configuration for the classifier
- */
+
 const DEFAULT_CONFIG: ClassificationConfig = {
   minConfidenceThreshold: 0.5,
   sampleSize: 10,
-  strictMode: false,
+  strictMode: true,
 };
 
 
