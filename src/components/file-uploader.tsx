@@ -13,7 +13,6 @@ export const FileUploader = ({
   onFileRemove,
   selectedFile = null,
   accept = ".csv",
-  maxSize = 10 * 1024 * 1024,
   disabled = false,
 }: FileUploaderProps) => {
   const [dragActive, setDragActive] = useState(false);
@@ -43,11 +42,6 @@ export const FileUploader = ({
 
 	const handleFileSelect = (file: File) => { 
 		if (disabled) return;
-
-		if (maxSize && file.size > maxSize) { 
-			return;
-		}
-
 		onFileSelect(file);
 	}
 
@@ -99,9 +93,6 @@ export const FileUploader = ({
             </div>
             <div>
               <p className="font-medium">Click to upload or drag and drop</p>
-              <p className="text-sm text-muted-foreground">
-                CSV files up to {formatFileSize(maxSize)}
-              </p>
             </div>
           </div>
         </motion.div>
