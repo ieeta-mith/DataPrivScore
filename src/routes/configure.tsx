@@ -17,22 +17,13 @@ import { Badge } from '@/components/ui/badge';
 
 import { calculatePrivacyIndex } from '@/services/privacy';
 
-import {
-  getClassificationData,
-  getPrivacyConfig,
-  setPrivacyConfig,
-  setPrivacyResultData,
-} from '@/lib/storage';
+import { usePrivacyStore } from '@/lib/storage';
 
-import type { ClassificationResult } from '@/types/attribute-classification';
-import type { ParsedCSV } from '@/types/csv-parser';
 import type {
-  PrivacyAnalysisConfig,
   LDiversityType,
   TechniqueToggle,
 } from '@/types/privacy-analysis';
 import {
-  DEFAULT_PRIVACY_CONFIG,
   METRIC_THRESHOLDS,
 } from '@/types/privacy-analysis';
 import type { MetricKey, TechniqueKey } from '@/types/configuration';
@@ -49,24 +40,25 @@ export const Route = createFileRoute('/configure')({
 
 function ConfigurePage() {
   const navigate = useNavigate();
-  const [result, setResult] = useState<ClassificationResult | null>(null);
-  const [parsedCSV, setParsedCSV] = useState<ParsedCSV | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [config, setConfig] = useState<PrivacyAnalysisConfig>(getPrivacyConfig());
+
+  const {
+    parsedCSV,
+    classificationResult: result,
+    fileName,
+    privacyConfig: config,
+    setPrivacyConfig,
+    resetPrivacyConfig,
+    setPrivacyResultData
+  } = usePrivacyStore();
+
   const [isCalculating, setIsCalculating] = useState(false);
   const [activeSection, setActiveSection] = useState<'metrics' | 'techniques' | 'weights'>('metrics');
 
   useEffect(() => {
-    const data = getClassificationData();
-    if (data.result && data.parsedCSV && data.fileName) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setResult(data.result);
-      setParsedCSV(data.parsedCSV);
-      setFileName(data.fileName);
-    } else {
+    if (!result || !parsedCSV || !fileName) {
       navigate({ to: '/' });
     }
-  }, [navigate]);
+  }, [result, parsedCSV, fileName, navigate]);
 
   const enabledMetricsCount = useMemo(
     () => Object.values(config.enabledMetrics).filter(Boolean).length,
@@ -87,14 +79,13 @@ function ConfigurePage() {
         ...config,
         enabledMetrics: { ...config.enabledMetrics, [key]: enabled },
       };
-      setConfig(newConfig);
       setPrivacyConfig(newConfig);
 
       if (key === 'techniqueDetection' && !enabled && activeSection === 'techniques') {
         setActiveSection('metrics');
       }
     },
-    [config, activeSection]
+    [config, activeSection, setPrivacyConfig]
   );
 
   const handleToggleTechnique = useCallback(
@@ -103,19 +94,17 @@ function ConfigurePage() {
         ...config,
         enabledTechniques: { ...config.enabledTechniques, [key]: enabled },
       };
-      setConfig(newConfig);
       setPrivacyConfig(newConfig);
     },
-    [config]
+    [config, setPrivacyConfig]
   );
 
   const handleThresholdChange = useCallback(
     (key: 'kThreshold' | 'lThreshold' | 'tThreshold', value: number) => {
       const newConfig = { ...config, [key]: value };
-      setConfig(newConfig);
       setPrivacyConfig(newConfig);
     },
-    [config]
+    [config, setPrivacyConfig]
   );
 
   const handleWeightChange = useCallback(
@@ -124,25 +113,18 @@ function ConfigurePage() {
         ...config,
         metricWeights: { ...config.metricWeights, [key]: value },
       };
-      setConfig(newConfig);
       setPrivacyConfig(newConfig);
     },
-    [config]
+    [config, setPrivacyConfig]
   );
 
   const handleLDiversityTypeChange = useCallback(
     (type: LDiversityType) => {
       const newConfig = { ...config, lDiversityType: type };
-      setConfig(newConfig);
       setPrivacyConfig(newConfig);
     },
-    [config]
+    [config, setPrivacyConfig]
   );
-
-  const handleResetConfig = useCallback(() => {
-    setConfig(DEFAULT_PRIVACY_CONFIG);
-    setPrivacyConfig(DEFAULT_PRIVACY_CONFIG);
-  }, []);
 
   const normalizeWeights = useCallback(() => {
     const enabledWeights = Object.entries(config.metricWeights).filter(
@@ -157,10 +139,8 @@ function ConfigurePage() {
       newWeights[key as MetricKey] = config.metricWeights[key as MetricKey] / totalWeight;
     });
 
-    const newConfig = { ...config, metricWeights: newWeights };
-    setConfig(newConfig);
-    setPrivacyConfig(newConfig);
-  }, [config]);
+    setPrivacyConfig({ ...config, metricWeights: newWeights });
+  }, [config, setPrivacyConfig]);
 
   const toggleAllTechniques = useCallback(
     (enabled: boolean) => {
@@ -176,23 +156,17 @@ function ConfigurePage() {
         aggregation: enabled,
         bucketing: enabled,
       };
-      const newConfig = { ...config, enabledTechniques: newTechniques };
-      setConfig(newConfig);
-      setPrivacyConfig(newConfig);
+      setPrivacyConfig({ ...config, enabledTechniques: newTechniques });
     },
-    [config]
+    [config, setPrivacyConfig]
   );
 
   const getThresholdValue = (metricKey: keyof typeof METRIC_THRESHOLDS): number => {
     switch (metricKey) {
-      case 'kAnonymity':
-        return config.kThreshold;
-      case 'lDiversity':
-        return config.lThreshold;
-      case 'tCloseness':
-        return config.tThreshold;
-      default:
-        return 0;
+      case 'kAnonymity': return config.kThreshold;
+      case 'lDiversity': return config.lThreshold;
+      case 'tCloseness': return config.tThreshold;
+      default: return 0;
     }
   };
 
@@ -200,12 +174,9 @@ function ConfigurePage() {
     metricKey: keyof typeof METRIC_THRESHOLDS
   ): 'kThreshold' | 'lThreshold' | 'tThreshold' => {
     switch (metricKey) {
-      case 'kAnonymity':
-        return 'kThreshold';
-      case 'lDiversity':
-        return 'lThreshold';
-      case 'tCloseness':
-        return 'tThreshold';
+      case 'kAnonymity': return 'kThreshold';
+      case 'lDiversity': return 'lThreshold';
+      case 'tCloseness': return 'tThreshold';
     }
   };
 
@@ -244,7 +215,7 @@ function ConfigurePage() {
   const totalPercentage = Math.round(enabledWeightSum * 100);
 
   const weightError = totalPercentage !== 100 ?
-    `Enabled metric weights sum to ${totalPercentage}%. Consider adjusting to total 100%.` 
+    `Enabled metric weights sum to ${totalPercentage}%. Consider adjusting to total 100%.`
     : null;
 
   if (!result) {
@@ -274,7 +245,7 @@ function ConfigurePage() {
             </div>
           }
           actionSection={
-            <Button variant="outline" size="sm" onClick={handleResetConfig}>
+            <Button variant="outline" size="sm" onClick={resetPrivacyConfig}>
               <RotateCcw className="h-4 w-4 mr-2" />
               Reset Defaults
             </Button>
@@ -324,13 +295,12 @@ function ConfigurePage() {
                 key={section.id}
                 onClick={() => !section.disabled && setActiveSection(section.id as typeof activeSection)}
                 disabled={section.disabled}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
-                  activeSection === section.id
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeSection === section.id
                     ? 'bg-background shadow text-foreground'
-                    : section.disabled 
+                    : section.disabled
                       ? 'text-muted-foreground/40 cursor-not-allowed'
                       : 'text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
               >
                 {section.label}
                 {section.count !== null && (

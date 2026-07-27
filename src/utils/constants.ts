@@ -51,8 +51,6 @@ export const features = [
 	},
 ];
 
-export const HIGH_CONFIDENCE_THRESHOLD = 0.8;
-
 export const attributeTypes: AttributeTypeInfo[] = [
 	{
 		title: 'Direct Identifier',
@@ -142,6 +140,29 @@ export const L_DIVERSITY_TYPES: { value: LDiversityType; label: string; descript
 	{ value: 'entropy', label: 'Entropy', description: 'Information-theoretic diversity measure' },
 	{ value: 'recursive', label: 'Recursive', description: 'Most restrictive, frequency-based' },
 ];
+
+export const CONFIDENCE_COLOR: { label: string; color: string, description: string }[] = [
+	{ 
+		label: 'high',
+		color: 'bg-green-100 text-green-700 border-green-200',
+		description: 'High confidence - classification is very likely correct'
+	},
+	{
+		label: 'manual',
+		color: 'bg-blue-100 text-blue-700 border-blue-200',
+		description: 'Manually classified attribute'
+	},
+	{
+		label: 'medium',
+		color: 'bg-amber-100 text-amber-700 border-amber-200',
+		description: 'Medium confidence - review recommended'
+	},
+	{
+		label: 'low',
+		color: 'bg-red-100 text-red-700 border-red-200',
+		description: 'Low confidence - manual verification needed'
+	}];
+
 
 export const containerVariants: Variants = {
 	hidden: { opacity: 0 },

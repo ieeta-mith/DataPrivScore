@@ -18,7 +18,7 @@ import { AnimatedButton } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CollapsibleSection } from "@/components/ui/collapsible-section";
-import { getPrivacyResultData } from "@/lib/storage";
+import { usePrivacyStore } from "@/lib/storage";
 import { downloadHTMLReport } from "@/services/html-report-generator";
 
 import {
@@ -53,8 +53,9 @@ type HelpDialogType = "general" | "kAnonymity" | "lDiversity" | "tCloseness" | "
 
 function ResultsPage() {
   const navigate = useNavigate();
-  const [result, setResult] = useState<PrivacyIndexResult | null>(null);
-  const [fileName, setFileName] = useState<string | null>(null);
+  const { privacyResult: result, classificationResult, fileName } = usePrivacyStore();
+
+
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     metrics: true,
     kAnonymity: false,
@@ -67,15 +68,10 @@ function ResultsPage() {
   const [activeHelpDialog, setActiveHelpDialog] = useState<HelpDialogType>(null);
 
   useEffect(() => {
-    const data = getPrivacyResultData();
-    if (data.privacyResult && data.classification && data.fileName) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setResult(data.privacyResult);
-      setFileName(data.fileName);
-    } else {
+    if (!result || !classificationResult || !fileName) {
       navigate({ to: "/" });
     }
-  }, [navigate]);
+  }, [result, classificationResult, fileName, navigate]);
 
   const toggleSection = (section: string) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
