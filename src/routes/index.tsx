@@ -10,10 +10,10 @@ import { AnimatedAlert } from '@/components/custom-alert'
 import { FileUploader } from '@/components/file-uploader'
 
 import { classifyDataset } from '@/services/attribute-classifier'
-
 import { features } from '@/utils/constants'
 import { parseCSV } from '@/utils/csv-parser'
-import { setClassificationData } from '@/lib/storage'
+
+import { usePrivacyStore } from '@/lib/storage'
 
 import type { ProcessingStatus } from '@/types/props'
 
@@ -23,12 +23,14 @@ export const Route = createFileRoute('/')({
 
 function Index() {
   const navigate = useNavigate()
+  
+  const { setClassificationData } = usePrivacyStore()
+
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [processingStatus, setProcessingStatus] = useState<ProcessingStatus>('idle')
   const [message, setMessage] = useState<string | null>(null)
 
   const handleFileSelect = (file: File) => {
-    // Check if the file is a CSV
     if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
       setMessage('Please upload a CSV file, other file types are not allowed ')
       setProcessingStatus('error');
@@ -53,7 +55,6 @@ function Index() {
       return;
     }
 
-    // Check if the file is a CSV
     if (selectedFile.type !== 'text/csv' && !selectedFile.name.endsWith('.csv')) {
       setMessage('Please upload a CSV file, other file types are not allowed ')
       setProcessingStatus('error');
@@ -62,34 +63,28 @@ function Index() {
 
     try {
       setProcessingStatus('processing');
+    
+      const parsedCSV = await parseCSV(selectedFile, 1000);
       
-      // Read and parse the CSV file
-      const text = await selectedFile.text();
-      const parsedCSV = parseCSV(text, 1000); // Parse up to 1000 rows for analysis
-      
-      // Classify the attributes
       const result = classifyDataset(parsedCSV);
       
-      // Store data and navigate to classification page
       setClassificationData(parsedCSV, result, selectedFile.name);
+      
       setProcessingStatus('completed');
       setMessage(`File "${selectedFile.name}" processed successfully!`);
       
-      // Navigate to classification page
       navigate({ to: '/classify' });
 
     } catch (error) {
-      setMessage('An error occurred while processing the file. Please try again.');
+      setMessage(error instanceof Error ? error.message : 'An error occurred while processing the file. Please try again.');
       console.error('Error processing file:', error);
       setProcessingStatus('error');
     }
   }
 
-
   return (
     <div className="min-h-screen bg-linear-to-br from-background to-muted">
       <div className="container mx-auto px-4 py-16">
-        {/* Hero Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -112,7 +107,6 @@ function Index() {
           </p>
         </motion.div>
 
-        {/* Features Grid */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -124,7 +118,6 @@ function Index() {
           ))}
         </motion.div>
 
-        {/* Upload Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
