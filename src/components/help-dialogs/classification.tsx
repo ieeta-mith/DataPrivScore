@@ -35,7 +35,6 @@ export const HelpDialogClassification = ({
         </DialogHeader>
 
         <div className="space-y-6 py-4">
-          {/* Overview */}
           <div className="p-4 rounded-lg bg-muted/50 border">
             <h4 className="font-semibold mb-2 flex items-center gap-2">
               <Info className="h-4 w-4 text-blue-500" />
@@ -49,45 +48,12 @@ export const HelpDialogClassification = ({
             </p>
           </div>
 
-          {/* Attribute Types */}
           <div className="space-y-4">
             {attributeTypes.map((attribute) => (
               <AttributeTypeRepresentation key={attribute.label} attribute={attribute} />
             ))}
           </div>
 
-          {/* Confidence Levels */}
-          <div className="p-4 rounded-lg bg-muted/50 border">
-            <h4 className="font-semibold mb-3">Confidence Levels</h4>
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <span className="text-xs px-2 py-1 rounded bg-green-100 text-green-700 dark:bg-green-950 dark:text-green-300 font-medium">
-                  80%+
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  High confidence - classification is very likely correct
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs px-2 py-1 rounded bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 font-medium">
-                  60-79%
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  Medium confidence - review recommended
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-xs px-2 py-1 rounded bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300 font-medium">
-                  &lt;60%
-                </span>
-                <span className="text-sm text-muted-foreground">
-                  Low confidence - manual verification needed
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* How to Use */}
           <div className="p-4 rounded-lg bg-muted/50 border">
             <h4 className="font-semibold mb-3">How to Reclassify Attributes</h4>
             <ol className="space-y-2 text-sm text-muted-foreground list-decimal list-inside">

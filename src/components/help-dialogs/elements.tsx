@@ -81,9 +81,3 @@ export const HelpDialogHeader = ({
     </DialogHeader>
   );
 }
-
-export const VisualExampleButtonExchange = () => {
-  return (
-    <div></div>
-  )
-}

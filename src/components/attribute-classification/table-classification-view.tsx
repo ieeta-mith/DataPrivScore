@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,28 +19,18 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-import { attributeTypes, HIGH_CONFIDENCE_THRESHOLD } from '@/utils/constants';
+import { attributeTypes, CONFIDENCE_COLOR } from '@/utils/constants';
 import { cn } from '@/lib/utils';
 
-import type { AttributeType, ClassificationResult, AttributeClassification } from '@/types/attribute-classification';
-import { WarningDialog } from './warning-dialog';
-
-interface TableClassificationViewProps {
-  result: ClassificationResult;
-  onUpdateAttribute: (name: string, type: AttributeType, reason?: string) => void;
-  editMode: boolean;
-}
+import type { AttributeType, ClassificationView, AttributeClassification } from '@/types/attribute-classification';
 
 export function TableClassificationView({
   result,
-  onUpdateAttribute,
-  editMode
-}: TableClassificationViewProps) {
+  editMode,
+  handleWarningDialog
+}: ClassificationView) {
+
   const [currentPage, setCurrentPage] = useState(1);
-  const [warningDialog, setWarningDialog] = useState<{
-    attribute: AttributeClassification;
-    targetType: AttributeType;
-  } | undefined>(undefined);
   const itemsPerPage = 10;
 
   const sortedAttributes = useMemo(() => {
@@ -53,7 +43,7 @@ export function TableClassificationView({
   }, [result.attributes]);
 
   const totalPages = Math.ceil(sortedAttributes.length / itemsPerPage);
-  
+
   const validCurrentPage = Math.max(1, Math.min(currentPage, totalPages || 1));
   if (currentPage !== validCurrentPage) {
     setCurrentPage(validCurrentPage);
@@ -64,27 +54,14 @@ export function TableClassificationView({
 
   const handleTypeChange = (attr: AttributeClassification, newType: AttributeType) => {
     if (newType === attr.type) return;
-
-    if (attr.confidence >= HIGH_CONFIDENCE_THRESHOLD && !attr.isManualOverride) {
-      setWarningDialog({ attribute: attr, targetType: newType });
-    } else {
-      onUpdateAttribute(
-        attr.name,
-        newType,
-        `Manually changed from ${
-          attributeTypes.find(t => t.label === attr.type)?.title || attr.type
-        } to ${
-          attributeTypes.find(t => t.label === newType)?.title || newType
-        }`
-      );
-    }
+    handleWarningDialog(attr, newType);
   };
 
   const typeRowBg: Record<string, string> = {
-    'direct-identifier': 'bg-red-500/5 dark:bg-red-950/20 hover:bg-red-500/10 dark:hover:bg-red-950/40',
-    'quasi-identifier': 'bg-amber-500/5 dark:bg-amber-950/20 hover:bg-amber-500/10 dark:hover:bg-amber-950/40',
-    'sensitive': 'bg-purple-500/5 dark:bg-purple-950/20 hover:bg-purple-500/10 dark:hover:bg-purple-950/40',
-    'non-sensitive': 'bg-green-500/5 dark:bg-green-950/20 hover:bg-green-500/10 dark:hover:bg-green-950/40',
+    'direct-identifier': 'bg-red-500/5 hover:bg-red-500/10',
+    'quasi-identifier': 'bg-amber-500/5 hover:bg-amber-500/10 ',
+    'sensitive': 'bg-purple-500/5 hover:bg-purple-500/10',
+    'non-sensitive': 'bg-green-500/5 hover:bg-green-500/10',
   };
 
   return (
@@ -96,7 +73,6 @@ export function TableClassificationView({
               <TableHead className="w-1/3">Attribute Name</TableHead>
               <TableHead className="w-1/3">Classification Type</TableHead>
               <TableHead>Confidence</TableHead>
-              <TableHead className="w-24 text-right pr-6">Manual</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -105,19 +81,15 @@ export function TableClassificationView({
                 const isNewGroup = index === 0 || attr.type !== currentAttributes[index - 1].type;
                 const typeInfo = attributeTypes.find(t => t.label === attr.type);
                 const colors = typeInfo?.color ?? { bg: '', text: '', border: '' };
-                const confidenceColor = attr.confidence >= 0.8 
-                  ? 'text-emerald-600 dark:text-emerald-400' 
-                  : attr.confidence >= 0.6 
-                    ? 'text-amber-600 dark:text-amber-400'
-                    : 'text-red-600 dark:text-red-400';
+                const confidenceColor = CONFIDENCE_COLOR.find(c => c.label === attr.confidence)?.color ?? 'text-muted-foreground';
 
                 const elements = [];
 
                 if (isNewGroup) {
                   const Icon = typeInfo?.icon;
                   elements.push(
-                    <TableRow 
-                      key={`group-${attr.type}-${validCurrentPage}`} 
+                    <TableRow
+                      key={`group-${attr.type}-${validCurrentPage}`}
                       className="bg-muted/40 hover:bg-muted/40 border-y shadow-[inset_0_1px_0_rgba(0,0,0,0.02)]"
                     >
                       <TableCell colSpan={4} className="py-2.5">
@@ -169,18 +141,9 @@ export function TableClassificationView({
                       )}
                     </TableCell>
                     <TableCell>
-                      <span className={cn("font-semibold", confidenceColor)}>
-                        {(attr.confidence * 100).toFixed(0)}%
+                      <span className={cn("font-semibold p-2 rounded-lg", confidenceColor)}>
+                        {attr.confidence}
                       </span>
-                    </TableCell>
-                    <TableCell className="text-right pr-6">
-                      {attr.isManualOverride ? (
-                        <Badge variant="secondary" className="text-[10px]">
-                          Yes
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground/50 text-xs font-medium">No</span>
-                      )}
                     </TableCell>
                   </motion.tr>
                 );
@@ -224,11 +187,6 @@ export function TableClassificationView({
           </Button>
         </div>
       )}
-      <WarningDialog
-        warningDialog={warningDialog}
-        setWarningDialog={setWarningDialog}
-        onUpdateAttribute={onUpdateAttribute}
-      />
     </div>
   );
 }

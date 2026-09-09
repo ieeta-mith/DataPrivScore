@@ -1,17 +1,28 @@
+import Papa, { type ParseResult } from "papaparse";
 import type { ParsedCSV } from "@/types/csv-parser";
 
-export const parseCSV = (text: string, maxRows: number = 100): ParsedCSV => {
-  const lines = text.split("\n").filter((line) => line.trim());
+export const parseCSV = (file: File, maxRows: number = 1000): Promise<ParsedCSV> => {
+  return new Promise((resolve, reject) => {
+    Papa.parse<string[]>(file, {
+      preview: maxRows + 1,
+      skipEmptyLines: true,
+      transform: (value) => value.trim(),
+      complete: (results: ParseResult<string[]>) => {
+        if (results.data.length < 2) {
+          reject(new Error("CSV file must have at least one header row and one data row."));
+          return;
+        }
 
-  if (lines.length === 0)
-    throw new Error("CSV file must have headers and at least one row of data.");
+        const data = results.data as string[][];
+        const headers = data[0];
+        const rows = data.slice(1);
 
-  const headers = lines[0]
-    .split(",")
-    .map((h) => h.trim().replace(/^"|"$/g, ""));
-  const rows = lines
-    .slice(1, Math.min(maxRows + 1, lines.length))
-    .map((line) => line.split(",").map((v) => v.trim().replace(/^"|"$/g, "")));
+        resolve({ headers, rows });
+      },
 
-	return { headers, rows };
-};
+      error: (error: Error) => {
+        reject(new Error(error.message));
+      }
+    })
+  })
+}

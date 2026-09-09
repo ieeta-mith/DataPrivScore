@@ -5,14 +5,10 @@ import {
 	ArrowRight,
 	Download,
 	FileSpreadsheet,
-	Database,
-	Columns,
-	Rows,
 	User,
 	Users,
 	Shield,
 	FileText,
-	TrendingUp,
 	BarChart3,
 	Settings2,
 } from 'lucide-react';
@@ -21,16 +17,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { AnimatedButton } from '@/components/ui/button';
 import { DatasetStats } from '@/components/classification-stats';
 
-import { updateAttributeClassification } from '@/services/attribute-classifier';
+import { usePrivacyStore } from '@/lib/storage';
 
-import {
-  updateClassificationResult,
-	getClassificationData,
-	clearClassificationData,
-} from '@/lib/storage';
-
-import type { AttributeType, ClassificationResult } from '@/types/attribute-classification';
-import type { ParsedCSV } from '@/types/csv-parser';
 import { TabView } from '@/components/attribute-classification/tab-view';
 import { PageHeader } from '@/components/page-header';
 import { PrivacyNote } from '@/components/privacy-note';
@@ -41,35 +29,27 @@ export const Route = createFileRoute('/classify')({
 
 function ClassifyPage() {
 	const navigate = useNavigate();
-	const [result, setResult] = useState<ClassificationResult | null>(null);
-	const [parsedCSV, setParsedCSV] = useState<ParsedCSV | null>(null);
-	const [fileName, setFileName] = useState<string | null>(null);
+	const {
+		parsedCSV,
+		classificationResult: result,
+		fileName,
+		clearClassificationData,
+		updateAttribute
+	} = usePrivacyStore();
+
 	const [editMode, setEditMode] = useState(false);
 	const [helpDialogOpen, setHelpDialogOpen] = useState(false);
 
+
 	useEffect(() => {
-		const data = getClassificationData();
-		if (data.result && data.parsedCSV && data.fileName) {
-			// eslint-disable-next-line react-hooks/set-state-in-effect
-			setResult(data.result);
-			setParsedCSV(data.parsedCSV);
-			setFileName(data.fileName);
-		} else {
+		if (!result || !parsedCSV || !fileName) {
 			navigate({ to: '/' });
 		}
-	}, [navigate]);
+	}, [result, parsedCSV, fileName, navigate]);
 
 	const handleBack = () => {
 		clearClassificationData();
 		navigate({ to: '/' });
-	};
-
-	const handleUpdateAttribute = (name: string, type: AttributeType, reason?: string) => {
-		if (!result) return;
-		const updatedResult = updateAttributeClassification(result, name, type, reason);
-		setResult(updatedResult);
-		// Update stored data as well
-		if (parsedCSV && fileName) updateClassificationResult(updatedResult);
 	};
 
 	const handleProceedToConfiguration = () => {
@@ -87,9 +67,7 @@ function ClassifyPage() {
 				name: attr.name,
 				type: attr.type,
 				confidence: attr.confidence,
-				isManualOverride: attr.isManualOverride,
-				dataPattern: attr.dataPattern,
-				reason: attr.classificationReason,
+				dataPattern: attr.dataPattern
 			})),
 		};
 
@@ -138,62 +116,6 @@ function ClassifyPage() {
 					}
 				/>
 
-				{/* Dataset Information Cards */}
-				<motion.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.3, delay: 0.1 }}
-					className="mb-6"
-				>
-					<h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-						<Database className="h-5 w-5" />
-						Dataset Overview
-					</h2>
-					<Card className="bg-card shadow-xs border-muted">
-						<CardContent>
-							<div className="grid grid-cols-2 md:grid-cols-4 gap-6 divide-y md:divide-y-0 md:divide-x divide-border">
-								<div className="flex justify-center gap-6 py-3 text-muted-foreground">
-									<span className='flex gap-2 items-center'>
-										<Rows className="h-4 w-4" />
-										<p className="text-md font-medium">Total Records</p>
-									</span>
-									<span className="text-2xl font-bold text-foreground">
-										{parsedCSV?.rows.length.toLocaleString() || 0}
-									</span>
-								</div>
-								<div className="flex justify-center gap-6 py-3 text-muted-foreground">
-									<span className='flex gap-2 items-center'>
-										<Columns className="h-4 w-4" />
-										<p className="text-md font-medium">Total Attributes</p>
-									</span>
-									<span className="text-2xl font-bold text-foreground">
-										{parsedCSV?.headers.length || 0}
-									</span>
-								</div>
-								<div className="flex justify-center gap-6 py-3 text-muted-foreground">
-									<span className='flex gap-2 items-center'>
-										<FileText className="h-4 w-4" />
-										<span className="text-md font-medium">Total Cells</span>
-									</span>
-									<span className="text-2xl font-bold text-foreground">
-										{((parsedCSV?.rows.length || 0) * (parsedCSV?.headers.length || 0)).toLocaleString()}
-									</span>
-								</div>
-								<div className="flex justify-center gap-6 py-3 text-muted-foreground">
-									<span className='flex gap-2 items-center'>
-										<TrendingUp className="h-4 w-4" />
-										<span className="text-md font-medium">Avg. Confidence</span>
-									</span>
-									<span className="text-2xl font-bold text-foreground">
-										{`${(result.summary.averageConfidence * 100).toFixed(0)}%`}
-									</span>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-				</motion.div>
-
-				{/* Classification Summary Cards */}
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -232,7 +154,6 @@ function ClassifyPage() {
 					</div>
 				</motion.div>
 
-				{/* Classification Views */}
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -240,14 +161,14 @@ function ClassifyPage() {
 				>
 					<TabView
 						result={result}
-						handleUpdateAttribute={handleUpdateAttribute}
+						handleUpdateAttribute={updateAttribute}
 						editMode={editMode}
 						setEditMode={setEditMode}
 						helpDialogOpen={helpDialogOpen}
 						setHelpDialogOpen={setHelpDialogOpen}
 					/>
 				</motion.div>
-				{/* Next Step */}
+				<PrivacyNote />
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}
@@ -284,9 +205,6 @@ function ClassifyPage() {
 						</CardContent>
 					</Card>
 				</motion.div>
-
-				{/* Privacy Note */}
-				<PrivacyNote />
 			</div>
 		</div>
 	);
