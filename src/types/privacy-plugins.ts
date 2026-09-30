@@ -1,18 +1,9 @@
 import type { ParsedCSV } from '@/types/csv-parser';
 import type { ClassificationResult } from '@/types/attribute-classification';
-import type { PrivacyAnalysisConfig } from '@/types/privacy-analysis';
+import type { ComponentType } from "react";
+import type { LucideIcon } from "lucide-react";
 
-// ============================================================================
-// Core Plugin Types
-// ============================================================================
-
-export type PluginId = 
-  | 'k-anonymity'
-  | 'l-diversity'
-  | 't-closeness'
-  | 'technique-detection'
-  | 'reidentification-risk'
-  | string; // Allow custom plugin IDs
+export type PluginId = string;
 
 export type PluginCategory = 
   | 'privacy-model'
@@ -22,169 +13,124 @@ export type PluginCategory =
 
 export type MetricStatus = 'pass' | 'warning' | 'fail';
 
-// ============================================================================
-// Plugin Input/Output Types
-// ============================================================================
+export interface GlobalAnalysisConfig {
+  includeDetailedAnalysis: boolean;
+}
 
 export interface PluginInput {
   parsedCSV: ParsedCSV;
   classification: ClassificationResult;
-  config: PrivacyAnalysisConfig;
+  globalConfig: GlobalAnalysisConfig;
+
+  getUpstreamResult: <T>(pluginId: PluginId) => PluginOutput<T> | undefined;
 }
 
 export interface PluginOutput<TResult = unknown> {
-  // The raw analysis result (plugin-specific)
   result: TResult;
-  // Normalized score from 0-100
   score: number;
-  // Status indicator
   status: MetricStatus;
-  // Human-readable details about the result
   details: string;
-  // Optional insights for the UI
   insights?: string[];
 }
 
 export interface PluginMetadata {
-  // Unique plugin identifier
   id: PluginId;
-  // Display name for the plugin
   name: string;
-  // Short description
   description: string;
-  // Plugin version
   version: string;
-  // Plugin category
   category: PluginCategory;
-  // Default weight in overall score calculation
   defaultWeight: number;
-  // Whether this plugin is required for analysis
   required: boolean;
-  // Dependencies on other plugins (by ID)
   dependencies?: PluginId[];
-  // Plugin author (optional)
-  author?: string;
 }
 
-// ============================================================================
-// Plugin Interface
-// ============================================================================
+export type ConfigSchemaType = 'number' | 'boolean' | 'string' | 'select';
+
+export interface PluginConfigSchema {
+  key: string;
+  type: ConfigSchemaType;
+  label: string;
+  description: string;
+  min?: number;
+  max?: number;
+  options?: { label: string; value: string | number }[];
+  defaultValue?: unknown;
+}
 
 export interface PrivacyPlugin<TResult = unknown, TConfig = unknown> {
-  /** Plugin metadata */
   readonly metadata: PluginMetadata;
-  
-  /**
-   * Calculate the privacy metric
-   * @param input Standard plugin input
-   * @param pluginConfig Optional plugin-specific configuration
-   * @returns Plugin output with results and score
-   */
-  calculate(input: PluginInput, pluginConfig?: TConfig): PluginOutput<TResult>;
-  
-  /**
-   * Check if the plugin can run with the given input
-   * @param input Standard plugin input
-   * @returns true if the plugin can run, false otherwise
-   */
+
+  getConfigurationSchema?(): PluginConfigSchema[];
+
+  calculate(input: PluginInput, pluginConfig: TConfig): PluginOutput<TResult>;
   canCalculate(input: PluginInput): boolean;
-  
-  /**
-   * Get the default configuration for this plugin
-   * @returns Default plugin-specific configuration
-   */
   getDefaultConfig(): TConfig;
-  
-  /**
-   * Validate plugin-specific configuration
-   * @param config Configuration to validate
-   * @returns true if valid, or an error message
-   */
-  validateConfig(config: TConfig): true | string;
+  validateConfig?(config: TConfig): true | string; 
 }
-
-// ============================================================================
-// Plugin Registration Types
-// ============================================================================
-
-/**
- * Options for plugin registration
- */
-export interface PluginRegistrationOptions {
-  /** Override the default weight */
+export interface PluginRegistrationOptions<TConfig = unknown> {
   weight?: number;
-  /** Whether the plugin is enabled */
   enabled?: boolean;
-  /** Plugin-specific configuration */
-  config?: unknown;
+  config?: TConfig;
 }
 
-/**
- * Registered plugin with its options
- */
-export interface RegisteredPlugin<TResult = unknown> {
-  /** The plugin instance */
+export interface RegisteredPlugin<TResult = unknown, TConfig = unknown> {
   plugin: PrivacyPlugin<TResult>;
-  /** Registration options */
-  options: Required<PluginRegistrationOptions>;
+  options: Required<PluginRegistrationOptions<TConfig>>;
 }
-
-// ============================================================================
-// Plugin Result Types
-// ============================================================================
-
-/**
- * Result from running all plugins
- */
 export interface PluginExecutionResult {
-  /** Plugin ID */
   pluginId: PluginId;
-  /** Plugin name */
   pluginName: string;
-  /** Plugin output */
   output: PluginOutput;
-  /** Weight used in calculation */
   weight: number;
-  /** Weighted score contribution */
   weightedScore: number;
-  /** Execution time in milliseconds */
   executionTime: number;
 }
 
-/**
- * Aggregated results from all plugins
- */
 export interface AggregatedPluginResults {
-  /** Individual plugin results */
   results: PluginExecutionResult[];
-  /** Overall score (0-100) */
   overallScore: number;
-  /** Total execution time */
   totalExecutionTime: number;
-  /** Number of plugins executed */
   pluginsExecuted: number;
-  /** Plugins that were skipped */
   skippedPlugins: Array<{
     pluginId: PluginId;
     reason: string;
   }>;
 }
 
-// ============================================================================
-// Helper Types for Plugin Development
-// ============================================================================
+// ====================================================
+// UI Plugin definitions
+// ====================================================
 
-/**
- * Helper type to extract the result type from a plugin
- */
-export type ExtractPluginResult<P> = P extends PrivacyPlugin<infer R> ? R : never;
+export interface PluginDetailsProps<TData =unknown> {
+  data: TData;
+}
 
-/**
- * Helper type to extract the config type from a plugin
- */
-export type ExtractPluginConfig<P> = P extends PrivacyPlugin<unknown, infer C> ? C : never;
+export interface PluginHelpProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}
 
-/**
- * Factory function type for creating plugins
- */
-export type PluginFactory<TResult = unknown, TConfig = unknown> = () => PrivacyPlugin<TResult, TConfig>;
+export interface PluginConfigProps<TConfig = unknown> {
+  config: TConfig;
+  onChange: (newConfig: TConfig) => void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export interface PluginUIExtension<TData = any, TConfig = any> {
+  id: string;
+  title: string;
+  icon: LucideIcon;
+
+  // Config Components
+  InlineConfig?: ComponentType<PluginConfigProps<TConfig>>;
+  ConfigTab?: {
+    label: string;
+    getBadgeCount?: (config: TConfig) => number | null;
+    Component: ComponentType<PluginConfigProps<TConfig>>;
+  }
+
+  // Privacy Analysis Components
+  DetailsComponent: ComponentType<PluginDetailsProps<TData>>;
+  HelpComponent: ComponentType<PluginHelpProps>;
+  formatQuickStat: (data: TData) => string;
+}
