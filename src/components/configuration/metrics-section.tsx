@@ -1,37 +1,32 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-
 import { CheckCircle2, HelpCircle } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
-import { ThresholdConfig } from "@/components/configuration/threshold-config";
-import { Label } from "@/components/ui/label";
+import { containerVariants, itemVariants } from "@/utils/constants";
 
-import { containerVariants, itemVariants, L_DIVERSITY_TYPES, METRIC_CONFIGS } from "@/utils/constants";
-import { METRIC_INFO, METRIC_THRESHOLDS } from "@/types/privacy-analysis";
-
-import type { MetricKey } from "@/types/configuration";
-import type { LDiversityType, PrivacyAnalysisConfig } from "@/types/privacy-analysis";
+import type { PluginUIExtension } from "@/types/privacy-plugins";
 
 interface MetricsSectionProps {
-  config: PrivacyAnalysisConfig;
-  onToggleMetric: (key: MetricKey, enabled: boolean) => void;
-  onThresholdChange: (key: 'kThreshold' | 'lThreshold' | 'tThreshold', value: number) => void;
-  onLDiversityTypeChange: (type: LDiversityType) => void;
-  getThresholdValue: (key: keyof typeof METRIC_THRESHOLDS) => number;
-  getThresholdKey: (key: keyof typeof METRIC_THRESHOLDS) => 'kThreshold' | 'lThreshold' | 'tThreshold';
+  uiExtensions: PluginUIExtension[];
+  enabledPlugins: Record<string, boolean>;
+  pluginConfigs: Record<string, any>;
+  onTogglePlugin: (pluginId: string, enabled: boolean) => void;
+  onConfigChange: (pluginId: string, config: any) => void;
 }
 
-export const MetricsSection =({
-  config,
-  onToggleMetric,
-  onThresholdChange,
-  onLDiversityTypeChange,
-  getThresholdValue,
-  getThresholdKey,
+export const MetricsSection = ({
+  uiExtensions,
+  enabledPlugins,
+  pluginConfigs,
+  onTogglePlugin,
+  onConfigChange,
 }: MetricsSectionProps) => {
+
+  const [activeHelp, setActiveHelp] = useState<string | null>(null);
+
   return (
     <motion.div variants={containerVariants} className="space-y-4">
       <div className="flex items-center gap-2 mb-4">
@@ -39,18 +34,19 @@ export const MetricsSection =({
         <h2 className="text-lg font-semibold">Select Metrics to Evaluate</h2>
       </div>
 
-      {METRIC_CONFIGS.map((metricConfig) => {
-        const info = METRIC_INFO[metricConfig.key];
-        const isEnabled = config.enabledMetrics[metricConfig.key];
-        const Icon = metricConfig.icon;
+      {uiExtensions.map((ui) => {
+        if (!ui.InlineConfig && ui.ConfigTab) return null;
+
+        const isEnabled = enabledPlugins[ui.id] || false;
+        const Icon = ui.icon;
+        const InlineConfig = ui.InlineConfig;
+        const HelpDialog = ui.HelpComponent;
 
         return (
-          <motion.div key={metricConfig.key} variants={itemVariants}>
+          <motion.div key={ui.id} variants={itemVariants}>
             <Card
               className={`transition-all duration-200 ${
-                isEnabled
-                  ? 'border-primary/50 bg-primary/5 shadow-md'
-                  : 'border-muted bg-muted/30 opacity-70'
+                isEnabled ? 'border-primary/50 bg-primary/5 shadow-md' : 'border-muted bg-muted/30 opacity-70'
               }`}
             >
               <CardContent className="p-5">
@@ -58,97 +54,57 @@ export const MetricsSection =({
                   <div className="flex items-start gap-4">
                     <motion.div
                       animate={{ scale: isEnabled ? 1 : 0.9 }}
-                      className={`p-3 rounded-xl ${
-                        isEnabled ? 'bg-primary/10' : 'bg-muted'
-                      }`}
+                      className={`p-3 rounded-xl ${isEnabled ? 'bg-primary/10' : 'bg-muted'}`}
                     >
-                      <Icon
-                        className={`h-5 w-5 ${
-                          isEnabled ? 'text-primary' : 'text-muted-foreground'
-                        }`}
-                      />
+                      <Icon className={`h-5 w-5 ${isEnabled ? 'text-primary' : 'text-muted-foreground'}`} />
                     </motion.div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-base">{info.name}</span>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent side="right" className="max-w-xs">
-                            <p>{info.guidance}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{info.shortDescription}</p>
+                    <div className="flex items-center gap-2 h-11">
+                      <span className="font-semibold text-base">{ui.title}</span>
+                      {/* Render Help Button inline next to the title */}
+                      {HelpDialog && (
+                        <button 
+                          onClick={() => setActiveHelp(ui.id)}
+                          className="p-1 rounded-full hover:bg-muted transition-colors"
+                          title={`Learn about ${ui.title}`}
+                        >
+                          <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+                        </button>
+                      )}
                     </div>
                   </div>
                   <Switch
                     checked={isEnabled}
-                    onCheckedChange={(checked) => onToggleMetric(metricConfig.key, checked)}
+                    onCheckedChange={(checked) => onTogglePlugin(ui.id, checked)}
                   />
                 </div>
 
                 <AnimatePresence>
-                  {isEnabled && metricConfig.hasThreshold && metricConfig.thresholdKey && (
+                  {isEnabled && InlineConfig && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="mt-5 pt-5 border-t"
+                      className="overflow-hidden"
                     >
-                      <ThresholdConfig
-                        metricKey={metricConfig.thresholdKey}
-                        value={getThresholdValue(metricConfig.thresholdKey)}
-                        onChange={(value) =>
-                          onThresholdChange(getThresholdKey(metricConfig.thresholdKey!), value)
-                        }
+                      <InlineConfig
+                        config={pluginConfigs[ui.id]}
+                        onChange={(newConfig) => onConfigChange(ui.id, newConfig)}
                       />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence>
-                  {isEnabled && metricConfig.key === 'lDiversity' && (
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="mt-4 pt-4 border-t"
-                    >
-                      <Label className="text-sm text-muted-foreground mb-3 block">
-                        L-Diversity Type
-                      </Label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {L_DIVERSITY_TYPES.map((type) => (
-                          <motion.button
-                            key={type.value}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            onClick={() => onLDiversityTypeChange(type.value)}
-                            className={`p-3 rounded-lg border text-left transition-colors ${
-                              config.lDiversityType === type.value
-                                ? 'border-primary bg-primary/10'
-                                : 'border-muted hover:border-primary/50'
-                            }`}
-                          >
-                            <span className="text-sm font-medium block">{type.label}</span>
-                            <span className="text-xs text-muted-foreground">
-                              {type.description}
-                            </span>
-                          </motion.button>
-                        ))}
-                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
               </CardContent>
             </Card>
+            {HelpDialog && (
+              <HelpDialog 
+                open={activeHelp === ui.id} 
+                onOpenChange={(open) => !open && setActiveHelp(null)} 
+              />
+            )}
           </motion.div>
         );
       })}
     </motion.div>
   );
-}
+};

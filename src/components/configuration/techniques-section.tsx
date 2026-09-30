@@ -1,11 +1,10 @@
 import type { TechniqueKey } from "@/types/configuration";
 import { TECHNIQUE_INFO, type PrivacyAnalysisConfig } from "@/types/privacy-analysis";
 import { containerVariants, itemVariants, TECHNIQUE_ICONS } from "@/utils/constants";
-import { Info, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 
 interface TechniquesSectionProps {
@@ -53,24 +52,6 @@ export const TechniquesSection = ({
         </div>
       </div>
 
-      <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/30 mb-4">
-        <CardContent className="p-4">
-          <div className="flex gap-3">
-            <Info className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
-                What are Privacy Techniques?
-              </p>
-              <p className="text-sm text-amber-800 dark:text-amber-200">
-                Privacy techniques are methods applied to data to protect individual privacy while
-                maintaining data utility. Select which techniques you want to detect in your
-                dataset.
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {(Object.keys(TECHNIQUE_INFO) as TechniqueKey[]).map((techKey) => {
           const info = TECHNIQUE_INFO[techKey];
@@ -105,18 +86,6 @@ export const TechniquesSection = ({
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-sm">{info.name}</span>
-                          <Badge
-                            variant={
-                              info.privacyBenefit === 'high'
-                                ? 'default'
-                                : info.privacyBenefit === 'medium'
-                                  ? 'secondary'
-                                  : 'outline'
-                            }
-                            className="text-xs"
-                          >
-                            {info.privacyBenefit} benefit
-                          </Badge>
                         </div>
                         <p className="text-xs text-muted-foreground">{info.description}</p>
                       </div>
