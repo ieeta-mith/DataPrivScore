@@ -1,21 +1,3 @@
-/**
- * Privacy Index Calculator (Plugin-Based Architecture)
- * 
- * This module provides two ways to calculate privacy metrics:
- * 
- * 1. Plugin-Based (New): Uses the plugin registry to execute all registered
- *    privacy plugins dynamically. This is more flexible and extensible.
- * 
- * 2. Direct (Legacy): Calls each metric calculator directly for backward
- *    compatibility with existing code.
- * 
- * The plugin-based approach allows:
- * - Easy addition of new privacy models
- * - Dynamic enabling/disabling of metrics
- * - Custom weight configurations
- * - Third-party plugin support
- */
-
 import type { ParsedCSV } from '@/types/csv-parser';
 import type { ClassificationResult } from '@/types/attribute-classification';
 import type {
@@ -47,15 +29,8 @@ import {
 } from './plugins';
 import type { PluginInput, PluginOutput } from './plugins';
 
-// ============================================================================
-// Plugin-Based Privacy Index
-// ============================================================================
-
 let pluginsInitialized = false;
 
-/**
- * Initialize plugins if not already done
- */
 function ensurePluginsInitialized(): void {
   if (!pluginsInitialized) {
     registerBuiltInPlugins();
@@ -63,10 +38,6 @@ function ensurePluginsInitialized(): void {
   }
 }
 
-/**
- * Calculate comprehensive privacy index using the plugin system
- * This is the new recommended way to calculate privacy metrics
- */
 export function calculatePrivacyIndexWithPlugins(input: PrivacyAnalysisInput): PrivacyIndexResult {
   ensurePluginsInitialized();
   

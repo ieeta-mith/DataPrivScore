@@ -1,7 +1,5 @@
 // Plugin Types
 export type {
-  PluginId,
-  PluginCategory,
   MetricStatus,
   PluginInput,
   PluginOutput,
@@ -11,9 +9,6 @@ export type {
   RegisteredPlugin,
   PluginExecutionResult,
   AggregatedPluginResults,
-  ExtractPluginResult,
-  ExtractPluginConfig,
-  PluginFactory,
 } from '@/types/privacy-plugins';
 
 // Plugin Registry
