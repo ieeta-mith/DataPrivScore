@@ -5,11 +5,7 @@ import type { LucideIcon } from "lucide-react";
 
 export type PluginId = string;
 
-export type PluginCategory = 
-  | 'privacy-model'
-  | 'technique'
-  | 'risk'
-  | 'custom';   
+export type PluginCategory = string;
 
 export type MetricStatus = 'pass' | 'warning' | 'fail';
 
