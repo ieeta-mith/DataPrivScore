@@ -9,16 +9,19 @@ import { registerUIExtension } from '@/core/ui-registry'
 import { kAnonymityPlugin, kAnonymityUI } from '@/plugins/k-anonymity'
 import { lDiversityPlugin, lDiversityUI } from '@/plugins/l-diversity'
 import { tClosenessPlugin, tClosenessUI } from '@/plugins/t-closeness'
+import { techniqueDetectionPlugin ,techniqueDetectionUI } from '@/plugins/anonymization'
 
 // Register plugins logic
-registerPlugin(kAnonymityPlugin)
-registerPlugin(lDiversityPlugin)
-registerPlugin(tClosenessPlugin)
+registerPlugin(kAnonymityPlugin);
+registerPlugin(lDiversityPlugin);
+registerPlugin(tClosenessPlugin);
+registerPlugin(techniqueDetectionPlugin);
 
 // Register plugins UI
-registerUIExtension(kAnonymityUI)
-registerUIExtension(lDiversityUI)
-registerUIExtension(tClosenessUI)
+registerUIExtension(kAnonymityUI);
+registerUIExtension(lDiversityUI);
+registerUIExtension(tClosenessUI);
+registerUIExtension(techniqueDetectionUI);
 
 const router = createRouter({ 
   routeTree,
