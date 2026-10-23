@@ -1,4 +1,4 @@
-FROM node:20-alpine AS base
+FROM node:24.22.1-alpine3.23 AS base
 
 ARG BUILD_NPM_TOKEN
 ARG VITE_KEYCLOAK_URL
