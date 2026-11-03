@@ -7,7 +7,7 @@ import type { TClosenessConfig } from '../types';
 
 export function TClosenessInlineConfig({ config, onChange }: PluginConfigProps<TClosenessConfig>) {
 	const min = 0.01;
-	const max = 5;
+	const max = 1.0;
 	const step = 0.01;
 
 	const handleThresholdChange = (val: number) => {
@@ -16,7 +16,7 @@ export function TClosenessInlineConfig({ config, onChange }: PluginConfigProps<T
 	}
 
 	return (
-		<div className="space-y-4 mt-5 pt-5 border-t">
+		<div className="space-y-4 mt-5 pt-5 border-t border-foreground/20">
       <div className="flex items-center justify-between">
         <Label className="text-sm font-medium">T-Closeness Threshold (t)</Label>
         <div className="flex items-center gap-2">

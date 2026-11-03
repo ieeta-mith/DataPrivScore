@@ -25,14 +25,14 @@ export const tClosenessPlugin: PrivacyPlugin<TClosenessResult, TClosenessConfig>
 				label: 'T-Closeness Threshold (t)',
 				description: 'Maximum allowed distance between local and global distributions',
 				min: 0.01,
-				max: 5,
-				defaultValue: 0.2
+				max: 1.0,
+				defaultValue: 0.5
 			}
 		]
 	},
 
 	getDefaultConfig(): TClosenessConfig {
-		return { tThreshold: 0.2 };
+		return { tThreshold: 0.5 };
 	},
 
 	validateConfig(config: TClosenessConfig): true | string {
@@ -63,6 +63,7 @@ export const tClosenessPlugin: PrivacyPlugin<TClosenessResult, TClosenessConfig>
 export const tClosenessUI: PluginUIExtension<TClosenessResult, TClosenessConfig> = {
 	id: 't-closeness',
 	title: 'T-Closeness Analysis',
+	description: 'Limits the distribution difference between groups and overall dataset',
 	icon: Activity,
 
 	InlineConfig: TClosenessInlineConfig,
@@ -70,5 +71,5 @@ export const tClosenessUI: PluginUIExtension<TClosenessResult, TClosenessConfig>
 
 	DetailsComponent: TClosenessDetails,
 	HelpComponent: TClosenessHelp,
-	formatQuickStat: (data) => `t = ${data?.maxDistance?.toFixed(3) ?? '?'}`
+	formatQuickStat: (data) => data.satisfiesTCloseness ? 'Satisfied' : 'Violated'
 };

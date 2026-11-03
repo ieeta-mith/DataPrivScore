@@ -1,28 +1,23 @@
 export interface TClosenessConfig {
-	tThreshold: number;
-}
-export interface EquivalenceClassWithSensitiveValues {
-  id: string;
-  size: number;
-  sensitiveValues: string[];
+  tThreshold: number;
 }
 
-export interface TClosenessClassResult {
-	equivalenceClassId: string;
-	distance: number;
-	satisfiesTCloseness: boolean;
-	localDistribution: Record<string, number>;
+export interface AttributeTClosenessResult {
+  maxDistance: number;
+  averageDistance: number;
+  satisfiesTCloseness: boolean;
+  complianceRate: number;
+  globalDistribution: Record<string, number>;
+  violatingClasses: string[];
 }
 
 export interface TClosenessResult {
-	maxDistance: number;
-	satisfiesTCloseness: boolean;
-	tThreshold: number;
-	classResults: TClosenessClassResult[];
-	violatingClasses: string[];
-	complianceRate: number;
-	globalDistribution: Record<string, number>;
-	sensitiveAttribute: string;
-	averageDistance: number;
+  maxDistance: number;
+  satisfiesTCloseness: boolean;
+  tThreshold: number;
+  complianceRate: number;
+  averageDistance: number;
+  sensitiveAttributes: string[];
+  attributeResults: Record<string, AttributeTClosenessResult>;
+  violatingClasses: string[];
 }
-
