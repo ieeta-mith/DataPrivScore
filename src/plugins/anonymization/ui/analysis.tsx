@@ -1,78 +1,112 @@
-import { AlertTriangle, Archive, Eye, EyeOff, Hash, Info, Layers, ShieldCheck, UserX, Lock, Waves } from "lucide-react";
+import { AlertTriangle, Archive, Eye, EyeOff, Hash, Info, Layers, ShieldCheck, UserX, Lock, Waves, XCircle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { StatCard, StatGrid, WarningCard } from "@/components/ui/stat-card";
+import { StatCard, StatGrid } from "@/components/ui/stat-card";
 
 import type { PluginDetailsProps } from "@/types/privacy-plugins";
 import type { TechniqueDetectionResult } from "../types";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { AnimatedButton } from "@/components/ui/button";
 import { HelpDialogHeader, InformationSection } from "@/components/help-dialogs/elements";
+import { TECHNIQUE_INFO } from "./constants";
 
 export function TechniqueDetails({ data: tech }: PluginDetailsProps<TechniqueDetectionResult>) {
-	return (
-		<div className="space-y-4">
-			<StatGrid columns={3}>
-				<StatCard label="Verified Techniques" value={tech.detectedTechniques.length.toString()} />
-				<StatCard label="Attribute Coverage" value={`${(tech.techniqueCoverage * 100).toFixed(0)}%`} />
-				<StatCard label="Technique Risk Score" value={tech.techniqueScore.toString()} />
-			</StatGrid>
+  return (
+    <div className="space-y-6">
+      <StatGrid columns={3}>
+        <StatCard label="Verified Techniques" value={tech.detectedTechniques.length.toString()} />
+        <StatCard label="Attribute Coverage" value={`${(tech.techniqueCoverage * 100).toFixed(0)}%`} />
+        <StatCard label="Technique Risk Score" value={tech.techniqueScore.toString()} />
+      </StatGrid>
 
-			{tech.unverifiedTechniques.length > 0 && (
-				<WarningCard
-					title="Unverified Declarations"
-					count={tech.unverifiedTechniques.length}
-					description={`The following techniques were declared but could not be confidently verified based on data heuristics: ${tech.unverifiedTechniques.map(t => t.replace(/([A-Z])/g, ' $1').toLowerCase()).join(', ')}.`}
-					icon={<AlertTriangle className="h-4 w-4" />}
-				/>
-			)}
+      {tech.unverifiedTechniques.length > 0 && (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-500" />
+            <h4 className="text-sm font-semibold text-amber-700 dark:text-amber-500">
+              Unverified Declarations
+            </h4>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            You declared the following techniques, but our heuristic engine could not find sufficient mathematical or structural evidence of them in the dataset.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tech.unverifiedTechniques.map((techKey) => {
+              const info = TECHNIQUE_INFO[techKey] || { name: techKey, description: 'Unknown technique', icon: XCircle };
+              const Icon = info.icon;
+              
+              return (
+                <Card key={techKey} className="border-amber-200 bg-amber-50/10 dark:border-amber-900/50 dark:bg-amber-950/10">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2 text-amber-700 dark:text-amber-500">
+                        <Icon className="h-4 w-4" />
+                        <h4 className="font-medium">{info.name}</h4>
+                      </div>
+                      <Badge variant="quasi">Unverified</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{info.description}</p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
-			{tech.detectedTechniques.length > 0 ? (
-				<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-					{tech.detectedTechniques.map((technique, index) => {
-						return (
-							<Card key={index} className="border-green-200 dark:border-green-900">
-								<CardContent className="p-4">
-									<div className="flex items-center justify-between mb-2">
-										<div className="flex items-center gap-2">
-											<ShieldCheck className="h-4 w-4 text-green-500" />
-											<h4 className="font-medium capitalize">
-												{technique.technique.replace(/-/g, " ")}
-											</h4>
-										</div>
-									</div>
-									<p className="text-sm text-muted-foreground mb-3">{technique.description}</p>
-									<div className="space-y-2">
-										<div className="text-xs font-medium">Protected Attributes:</div>
-										<div className="flex flex-wrap gap-1">
-											{technique.affectedAttributes.map((attr) => (
-												<Badge key={attr} variant="secondary" className="text-xs">{attr}</Badge>
-											))}
-										</div>
-									</div>
+      <div className="space-y-3">
+        <h4 className="text-sm font-semibold">Verified Techniques</h4>
+        {tech.detectedTechniques.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {tech.detectedTechniques.map((technique, index) => {
+              const info = TECHNIQUE_INFO[technique.technique] || { icon: ShieldCheck };
+              const Icon = info.icon;
 
-									<div className="mt-3 pt-3 border-t text-xs text-muted-foreground flex justify-between">
-										<span>Verification Confidence</span>
-										<span className="font-medium">{(technique.confidence * 100).toFixed(0)}%</span>
-									</div>
-								</CardContent>
-							</Card>
-						);
-					})}
-				</div>
-			) : (
-				<Card className="border-dashed">
-					<CardContent className="p-6 text-center">
-						<EyeOff className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
-						<p className="font-medium">No techniques verified</p>
-						<p className="text-sm text-muted-foreground mt-1">
-							None of the evaluated techniques were detected with sufficient confidence.
-						</p>
-					</CardContent>
-				</Card>
-			)}
-		</div>
-	);
+              return (
+                <Card key={index} className="border-green-200 bg-green-50/10 dark:border-green-900/50 dark:bg-green-950/10">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2 text-green-700 dark:text-green-500">
+                        <Icon className="h-4 w-4" />
+                        <h4 className="font-medium capitalize">
+                          {technique.technique.replace(/-/g, " ")}
+                        </h4>
+                      </div>
+                      <Badge variant="safe">Verified</Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-3">{technique.description}</p>
+                    <div className="space-y-2">
+                      <div className="text-xs font-medium">Protected Attributes:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {technique.affectedAttributes.map((attr) => (
+                          <Badge key={attr} variant="secondary" className="text-xs">{attr}</Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-3 pt-3 border-t text-xs text-muted-foreground flex justify-between">
+                      <span>Verification Confidence</span>
+                      <span className="font-medium text-foreground">{(technique.confidence * 100).toFixed(0)}%</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        ) : (
+          <Card className="border-dashed bg-muted/30">
+            <CardContent className="p-6 text-center">
+              <EyeOff className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+              <p className="font-medium">No techniques verified</p>
+              <p className="text-sm text-muted-foreground mt-1">
+                None of the evaluated techniques were detected with sufficient confidence.
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </div>
+    </div>
+  );
 }
 
 interface HelpDialogTechniquesProps {
@@ -99,11 +133,9 @@ export function HelpDialogTechniques({ open, onOpenChange }: HelpDialogTechnique
             colorVariant="muted"
           />
 
-          {/* Techniques Grid */}
           <div className="space-y-4">
             <h4 className="font-semibold">Supported Techniques</h4>
-            
-            {/* Generalization */}
+    
             <TechniqueCard
               icon={<Layers className="h-5 w-5 text-blue-500" />}
               title="Generalization"
@@ -129,7 +161,6 @@ export function HelpDialogTechniques({ open, onOpenChange }: HelpDialogTechnique
               }
             />
 
-            {/* Suppression */}
             <TechniqueCard
               icon={<EyeOff className="h-5 w-5 text-purple-500" />}
               title="Suppression"
@@ -155,7 +186,6 @@ export function HelpDialogTechniques({ open, onOpenChange }: HelpDialogTechnique
               }
             />
 
-            {/* Masking */}
             <TechniqueCard
               icon={<Eye className="h-5 w-5 text-pink-500" />}
               title="Masking"
@@ -179,7 +209,6 @@ export function HelpDialogTechniques({ open, onOpenChange }: HelpDialogTechnique
               }
             />
 
-            {/* Hashing */}
             <TechniqueCard
               icon={<Hash className="h-5 w-5 text-slate-500" />}
               title="Hashing"
@@ -201,7 +230,6 @@ export function HelpDialogTechniques({ open, onOpenChange }: HelpDialogTechnique
               }
             />
 
-            {/* Pseudonymization */}
             <TechniqueCard
               icon={<UserX className="h-5 w-5 text-indigo-500" />}
               title="Pseudonymization"
@@ -225,7 +253,6 @@ export function HelpDialogTechniques({ open, onOpenChange }: HelpDialogTechnique
               }
             />
 
-            {/* Noise Addition */}
             <TechniqueCard
               icon={<Waves className="h-5 w-5 text-orange-500" />}
               title="Noise Addition"
@@ -249,7 +276,6 @@ export function HelpDialogTechniques({ open, onOpenChange }: HelpDialogTechnique
               }
             />
 
-            {/* Bucketing */}
             <TechniqueCard
               icon={<Archive className="h-5 w-5 text-teal-500" />}
               title="Bucketing"

@@ -1,29 +1,15 @@
 import { motion } from "motion/react";
 
-import { Button } from "@/components/ui/button";
+import { AnimatedButton } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 
-import { 
-  Layers, EyeOff, Eye, Hash, UserX,
-  Waves, Archive 
-} from "lucide-react";
+import { Info, Search } from "lucide-react";
 
 import type { PluginConfigProps } from "@/types/privacy-plugins";
 import type { TechniqueDetectionConfig, TechniqueKey } from "../types";
-import type { LucideIcon } from "lucide-react";
+import { TECHNIQUE_INFO } from "./constants";
 
-const TECHNIQUE_INFO: Record<TechniqueKey, { name: string; description: string; icon: LucideIcon }> = {
-  generalization: { name: 'Generalization', description: 'Replaces specific values with broader categories', icon: Layers },
-  suppression: { name: 'Suppression', description: 'Removes or replaces sensitive values with placeholders', icon: EyeOff },
-  masking: { name: 'Masking', description: 'Partially hides values while preserving some info', icon: Eye },
-  hashing: { name: 'Hashing', description: 'Transforms values into fixed-length cryptographic hashes', icon: Hash },
-  pseudonymization: { name: 'Pseudonymization', description: 'Replaces identifiers with artificial pseudonyms', icon: UserX },
-  noiseAddition: { name: 'Noise Addition', description: 'Adds random statistical noise to numerical values', icon: Waves },
-  bucketing: { name: 'Bucketing', description: 'Groups continuous values into discrete bins', icon: Archive },
-};
 
 export function TechniqueDetectionConfigTab({ config, onChange }: PluginConfigProps<TechniqueDetectionConfig>) {
 
@@ -49,22 +35,28 @@ export function TechniqueDetectionConfigTab({ config, onChange }: PluginConfigPr
         </p>
       </div>
 
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-muted/50 p-4 rounded-lg">
-        <div className="flex items-center gap-4">
-          <Label className="text-sm font-medium whitespace-nowrap">Verification Strictness (Min. Confidence)</Label>
-          <Input
-            type="number"
-            value={config.minConfidence}
-            onChange={(e) => onChange({ ...config, minConfidence: Math.max(0.1, Math.min(1.0, parseFloat(e.target.value) || 0.3)) })}
-            min={0.1}
-            max={1.0}
-            step={0.1}
-            className="w-20 h-8 text-center"
-          />
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Search className="h-5 w-5 text-primary" />
+          <h2 className="text-lg font-semibold">Privacy Techniques to Detect</h2>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => handleToggleAll(true)}>Declare All</Button>
-          <Button variant="outline" size="sm" onClick={() => handleToggleAll(false)}>Clear All</Button>
+          <AnimatedButton
+            variant="outline"
+            size="sm"
+            onClick={() => handleToggleAll(true)}
+            disabled={config.enabledTechniques && Object.values(config.enabledTechniques).every(Boolean)}
+          >
+            Enable All
+          </AnimatedButton>
+          <AnimatedButton
+            variant="outline"
+            size="sm"
+            onClick={() => handleToggleAll(false)}
+            disabled={config.enabledTechniques && Object.values(config.enabledTechniques).every((v) => !v)}
+          >
+            Disable All
+          </AnimatedButton>
         </div>
       </div>
 
@@ -105,22 +97,13 @@ export function TechniqueDetectionConfigTab({ config, onChange }: PluginConfigPr
   );
 }
 
-export function TechniqueDetectionInlineConfig({ config, onChange }: PluginConfigProps<TechniqueDetectionConfig>) {
+export function TechniqueDetectionInlineConfig() {
   return (
-    <div className="space-y-4 mt-5 pt-5 border-t">
-      <div className="flex items-center justify-between">
-        <div className="space-y-0.5">
-          <Label className="text-sm font-medium">Generate Recommendations</Label>
-          <p className="text-xs text-muted-foreground">Suggest additional privacy techniques for unprotected attributes</p>
-        </div>
-        <Switch
-          checked={config.generateRecommendations}
-          onCheckedChange={(checked) => onChange({ ...config, generateRecommendations: checked })}
-        />
-      </div>
-      
-      <div className="p-3 bg-muted/50 rounded-lg border border-dashed text-sm text-muted-foreground flex items-center justify-center">
-        <span>Use the <strong>Technique Detection</strong> tab above to declare previously applied techniques.</span>
+    <div className="space-y-4 mt-5 pt-5 border-t border-foreground/20">
+      <div className="flex items-center justify-center">
+        <span className=" flex items-center gap-2 bg-blue-500/10 p-3 rounded-lg border border-blue-800 text-sm text-blue-800">
+          <Info /> Use the <strong>Technique Detection</strong> tab above to declare already applied techniques.
+        </span>
       </div>
     </div>
   );

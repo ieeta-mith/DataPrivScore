@@ -49,7 +49,6 @@ export function detectPrivacyTechniques(
   for (const [techniqueKey, detectMethod] of Object.entries(detectionMethodsMap)) {
     const isDeclared = config.enabledTechniques[techniqueKey as TechniqueKey];
 
-    // ROUTING: If declarations exist, only verify selected. Else, auto-detect all.
     if (hasDeclarations && !isDeclared) continue;
     if (processedMethods.has(detectMethod)) continue;
 
@@ -58,7 +57,7 @@ export function detectPrivacyTechniques(
     let wasVerified = false;
 
     for (const technique of results) {
-      if (technique.confidence >= config.minConfidence) {
+      if (technique.confidence >= 0.5) {
         detectedTechniques.push(technique);
         technique.affectedAttributes.forEach(attr => protectedAttributes.add(attr));
         wasVerified = true;
@@ -106,7 +105,7 @@ export function detectPrivacyTechniques(
     protectedAttributeCount: protectedAttributes.size,
     totalAttributes,
     techniqueScore,
-    recommendations: config.generateRecommendations ? generateRecommendations(classification, protectedAttributes) : [],
+    recommendations: generateRecommendations(classification, protectedAttributes),
   };
 }
 
