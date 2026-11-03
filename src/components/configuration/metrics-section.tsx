@@ -45,9 +45,8 @@ export const MetricsSection = ({
         return (
           <motion.div key={ui.id} variants={itemVariants}>
             <Card
-              className={`transition-all duration-200 ${
-                isEnabled ? 'border-primary/50 bg-primary/5 shadow-md' : 'border-muted bg-muted/30 opacity-70'
-              }`}
+              className={`transition-all duration-200 ${isEnabled ? 'border-primary/50 bg-primary/5 shadow-md' : 'border-muted bg-muted/30 opacity-70'
+                }`}
             >
               <CardContent className="p-5">
                 <div className="flex items-start justify-between gap-4">
@@ -58,18 +57,20 @@ export const MetricsSection = ({
                     >
                       <Icon className={`h-5 w-5 ${isEnabled ? 'text-primary' : 'text-muted-foreground'}`} />
                     </motion.div>
-                    <div className="flex items-center gap-2 h-11">
-                      <span className="font-semibold text-base">{ui.title}</span>
-                      {/* Render Help Button inline next to the title */}
-                      {HelpDialog && (
-                        <button 
-                          onClick={() => setActiveHelp(ui.id)}
-                          className="p-1 rounded-full hover:bg-muted transition-colors"
-                          title={`Learn about ${ui.title}`}
-                        >
-                          <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
-                        </button>
-                      )}
+                    <div className="flex flex-col h-11">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-base">{ui.title}</span>
+                        {HelpDialog && (
+                          <button
+                            onClick={() => setActiveHelp(ui.id)}
+                            className="p-1 rounded-full hover:bg-muted transition-colors"
+                            title={`Learn about ${ui.title}`}
+                          >
+                            <HelpCircle className="h-4 w-4 text-muted-foreground hover:text-primary transition-colors" />
+                          </button>
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground">{ui.description}</p>
                     </div>
                   </div>
                   <Switch
@@ -97,9 +98,9 @@ export const MetricsSection = ({
               </CardContent>
             </Card>
             {HelpDialog && (
-              <HelpDialog 
-                open={activeHelp === ui.id} 
-                onOpenChange={(open) => !open && setActiveHelp(null)} 
+              <HelpDialog
+                open={activeHelp === ui.id}
+                onOpenChange={(open) => !open && setActiveHelp(null)}
               />
             )}
           </motion.div>
