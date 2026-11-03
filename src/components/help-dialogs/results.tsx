@@ -1,4 +1,4 @@
-import { Info, BookOpen, ExternalLink } from "lucide-react";
+import { Info, BookOpen } from "lucide-react";
 import { 
   Dialog, 
   DialogContent,
@@ -30,18 +30,6 @@ export function HelpDialogResults({ open, onOpenChange }: HelpDialogResultsProps
             description="The Privacy Index is a comprehensive score (0-100) that evaluates how well your dataset protects individual privacy. It combines multiple privacy metrics including k-anonymity, l-diversity, t-closeness, and re-identification risk analysis. A higher score indicates better privacy protection."
             colorVariant="muted"
           />
-
-          {/* Grade Explanation */}
-          <div className="p-4 rounded-lg bg-muted/50 border">
-            <h4 className="font-semibold mb-3">Privacy Grades</h4>
-            <div className="grid grid-cols-5 gap-2">
-              <GradeBadge grade="A" range="90-100" description="Excellent protection" color="emerald" />
-              <GradeBadge grade="B" range="75-89" description="Good protection" color="green" />
-              <GradeBadge grade="C" range="60-74" description="Moderate protection" color="yellow" />
-              <GradeBadge grade="D" range="50-59" description="Poor protection" color="orange" />
-              <GradeBadge grade="F" range="0-49" description="Critical risk" color="red" />
-            </div>
-          </div>
 
           {/* Privacy Metrics Overview */}
           <div className="p-4 rounded-lg bg-muted/50 border">
@@ -96,25 +84,6 @@ export function HelpDialogResults({ open, onOpenChange }: HelpDialogResultsProps
               </li>
             </ul>
           </div>
-
-          {/* Resources */}
-          <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800">
-            <h4 className="font-semibold mb-2 flex items-center gap-2 text-blue-700 dark:text-blue-300">
-              <ExternalLink className="h-4 w-4" />
-              Learn More
-            </h4>
-            <div className="space-y-1 text-sm">
-              <p className="text-blue-600 dark:text-blue-400">
-                • Sweeney, L. (2002). "k-Anonymity: A Model for Protecting Privacy"
-              </p>
-              <p className="text-blue-600 dark:text-blue-400">
-                • Machanavajjhala, A. et al. (2007). "l-Diversity: Privacy Beyond k-Anonymity"
-              </p>
-              <p className="text-blue-600 dark:text-blue-400">
-                • Li, N. et al. (2007). "t-Closeness: Privacy Beyond k-Anonymity and l-Diversity"
-              </p>
-            </div>
-          </div>
         </div>
 
         <DialogFooter>
@@ -126,32 +95,6 @@ export function HelpDialogResults({ open, onOpenChange }: HelpDialogResultsProps
     </Dialog>
   );
 }
-
-interface GradeBadgeProps {
-  grade: string;
-  range: string;
-  description: string;
-  color: "emerald" | "green" | "yellow" | "orange" | "red";
-}
-
-function GradeBadge({ grade, range, description, color }: GradeBadgeProps) {
-  const colorStyles = {
-    emerald: "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800",
-    green: "bg-green-100 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-300 dark:border-green-800",
-    yellow: "bg-yellow-100 dark:bg-yellow-950 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-800",
-    orange: "bg-orange-100 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-300 dark:border-orange-800",
-    red: "bg-red-100 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-300 dark:border-red-800",
-  };
-
-  return (
-    <div className={`p-2 rounded-lg border text-center ${colorStyles[color]}`}>
-      <div className="text-2xl font-bold">{grade}</div>
-      <div className="text-xs font-medium">{range}</div>
-      <div className="text-xs opacity-70">{description}</div>
-    </div>
-  );
-}
-
 interface MetricOverviewCardProps {
   title: string;
   description: string;
@@ -171,9 +114,6 @@ interface HelpButtonProps {
   className?: string;
 }
 
-/**
- * Small help button to trigger help dialog
- */
 export function HelpButton({ onClick, className = "" }: HelpButtonProps) {
   return (
     <Button
