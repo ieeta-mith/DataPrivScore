@@ -9,7 +9,7 @@ import type {
   AggregatedPluginResults,
   PluginCategory,
   PluginConfigSchema,
-} from '@/types/privacy-plugins'; // Note: Update this import path to your core types file
+} from '@/types/privacy-plugins';
 
 export interface PluginUIConfig {
   pluginId: PluginId;
