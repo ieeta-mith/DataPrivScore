@@ -1,6 +1,4 @@
 import type { AttributeTypeInfo } from '@/types/attribute-classification';
-import type { MetricConfig, TechniqueKey } from '@/types/configuration';
-import type { LDiversityType } from '@/types/privacy-analysis';
 import type { Variants } from 'motion/react';
 import {
 	BarChart3,
@@ -11,17 +9,6 @@ import {
 	Users,
 	Shield,
 	FileText,
-	Layers,
-	Activity,
-	Search,
-	EyeOff,
-	Eye,
-	Hash,
-	UserX,
-	Key,
-	Waves,
-	Shuffle,
-	Archive,
 } from 'lucide-react';
 
 export const features = [
@@ -100,25 +87,6 @@ export const attributeTypes: AttributeTypeInfo[] = [
 			border: 'border-green-300 dark:border-green-800',
 		},
 	},
-];
-
-export const TECHNIQUE_ICONS: Record<TechniqueKey, typeof Layers> = {
-	generalization: Layers,
-	suppression: EyeOff,
-	masking: Eye,
-	hashing: Hash,
-	pseudonymization: UserX,
-	tokenization: Key,
-	noiseAddition: Waves,
-	dataSwapping: Shuffle,
-	aggregation: BarChart3,
-	bucketing: Archive,
-};
-
-export const L_DIVERSITY_TYPES: { value: LDiversityType; label: string; description: string }[] = [
-	{ value: 'distinct', label: 'Distinct', description: 'Count of unique sensitive values' },
-	{ value: 'entropy', label: 'Entropy', description: 'Information-theoretic diversity measure' },
-	{ value: 'recursive', label: 'Recursive', description: 'Most restrictive, frequency-based' },
 ];
 
 export const CONFIDENCE_COLOR: { label: string; color: string, description: string }[] = [
