@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect, useMemo } from 'react';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { motion, AnimatePresence } from 'motion/react';
@@ -8,7 +7,7 @@ import { Button, AnimatedButton } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 import { getAllUIExtensions } from '@/core/ui-registry';
-import { getPluginRegistry } from '@/core/plugin-registry';
+import { calculatePrivacyIndex } from '@/core/privacy-index';
 import { usePrivacyStore } from '@/lib/storage';
 
 import { MetricsSection } from '@/components/configuration/metrics-section';
@@ -77,42 +76,16 @@ function ConfigurePage() {
 
     setTimeout(() => {
       try {
-        const pluginRegistry = getPluginRegistry();
-        
-        Object.entries(enabledPlugins).forEach(([id, enabled]) => {
-          pluginRegistry.setPluginEnabled(id, enabled);
-          if (enabled) {
-            pluginRegistry.setPluginConfig(id, pluginConfigs[id]);
-            pluginRegistry.setPluginWeight(id, pluginWeights[id]);
-          }
-        });
-
-        const executionResult = pluginRegistry.executeAll({
+        const privacyResult = calculatePrivacyIndex({
           parsedCSV,
           classification: result,
-          globalConfig: { includeDetailedAnalysis: true }
+          pluginConfigs,
+          pluginWeights,
+          enabledPlugins
         });
 
-        const formattedResult = {
-          overallScore: executionResult.overallScore,
-          riskLevel: 'medium', // Generate via your standard risk lookup
-          grade: 'B', // Generate via your standard grade lookup
-          metricScores: executionResult.results.map(r => ({
-            id: r.pluginId,
-            name: r.pluginName,
-            score: r.output.score,
-            weight: r.weight,
-            weightedScore: r.weightedScore,
-            status: r.output.status,
-            details: r.output.details,
-          })),
-          pluginData: Object.fromEntries(executionResult.results.map(r => [r.pluginId, r.output.result])),
-          recommendations: executionResult.results.flatMap(r => r.output.insights || []),
-          timestamp: new Date(),
-          metadata: { recordCount: parsedCSV.rows.length, attributeCount: parsedCSV.headers.length, config: {} as any }
-        };
-
-        setPrivacyResultData(formattedResult as any, result, parsedCSV, fileName);
+        setPrivacyResultData(privacyResult, result, parsedCSV, fileName);
+        
         navigate({ to: '/results' });
       } catch (error) {
         console.error('Error calculating privacy index:', error);
@@ -198,7 +171,6 @@ function ConfigurePage() {
             </motion.div>
           )}
 
-          {/* Render Active Plugin Configuration Tab */}
           {dynamicTabs.map((tab) => {
             if (activeSection !== tab.id) return null;
             const DynamicComponent = tab.Component;
@@ -213,7 +185,6 @@ function ConfigurePage() {
           })}
         </AnimatePresence>
 
-        {/* Action Footer */}
         <motion.div className="mt-8">
           <Card className="p-6">
             <CardContent>

@@ -2,12 +2,6 @@ import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
   BarChart3,
-  PieChart,
-  Lock,
-  Users,
-  Activity,
-  Target,
-  Lightbulb,
   HelpCircle,
   FileJson,
   FileCode,
@@ -19,53 +13,32 @@ import { Badge } from "@/components/ui/badge";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CollapsibleSection } from "@/components/ui/collapsible-section";
 import { usePrivacyStore } from "@/lib/storage";
-import { downloadHTMLReport } from "@/services/html-report-generator";
+// import { downloadHTMLReport } from "@/services/html-report-generator";
+import { getUIExtension } from "@/core/ui-registry";
 
 import {
   PrivacyScoreCard,
   MetricScoresGrid,
-  KAnonymityDetails,
-  LDiversityDetails,
-  TClosenessDetails,
-  TechniqueDetails,
-  RiskDetails,
-  RecommendationsList,
-} from "@/components/privacy-analyis";
+} from "@/components/privacy-analysis";
 
-import { 
-  HelpDialogResults,
-  HelpButton,
-  HelpDialogKAnonymity,
-  HelpDialogLDiversity,
-  HelpDialogTCloseness,
-  HelpDialogRisk,
-  HelpDialogTechniques,
-} from "@/components/help-dialogs";
-
-import type { PrivacyIndexResult } from "@/types/privacy-analysis";
+import { HelpDialogResults, HelpButton } from "@/components/help-dialogs/results";
+import type { PrivacyIndexResult } from "@/core/privacy-index";
 import { PageHeader } from "@/components/page-header";
 
 export const Route = createFileRoute("/results")({
   component: ResultsPage,
 });
 
-type HelpDialogType = "general" | "kAnonymity" | "lDiversity" | "tCloseness" | "risk" | "techniques" | null;
-
 function ResultsPage() {
   const navigate = useNavigate();
   const { privacyResult: result, classificationResult, fileName } = usePrivacyStore();
 
-
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     metrics: true,
-    kAnonymity: false,
-    lDiversity: false,
-    tCloseness: false,
-    techniques: false,
-    risk: false,
     recommendations: true,
   });
-  const [activeHelpDialog, setActiveHelpDialog] = useState<HelpDialogType>(null);
+
+  const [activeHelpDialog, setActiveHelpDialog] = useState<string | null>(null);
 
   useEffect(() => {
     if (!result || !classificationResult || !fileName) {
@@ -77,25 +50,10 @@ function ResultsPage() {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
-  const handleBack = () => {
-    navigate({ to: "/configure" });
-  };
+  if (!result) return <LoadingState />;
 
-  const handleExportJSON = () => {
-    if (!result) return;
-
-    const report = createExportReport(result, fileName);
-    downloadReport(report, fileName);
-  };
-
-  const handleExportHTML = () => {
-    if (!result) return;
-    downloadHTMLReport(result, fileName);
-  };
-
-  if (!result) {
-    return <LoadingState />;
-  }
+  const genericResult = result as PrivacyIndexResult;
+  console.log("Generic Result:", genericResult);
 
   return (
     <TooltipProvider>
@@ -104,10 +62,10 @@ function ResultsPage() {
           <PageHeader
             title="Privacy Analysis Results"
             backDescription="Back to Configuration"
-            handleFunc={handleBack}
+            handleFunc={() => navigate({ to: "/configure" })}
             subTitle={
               <p className="text-muted-foreground text-sm">
-                {fileName} • {result.metadata.recordCount.toLocaleString()} records • {result.metadata.attributeCount} attributes
+                {fileName} • {genericResult.metadata.recordCount.toLocaleString()} records • {genericResult.metadata.attributeCount} attributes
               </p>
             }
             actionSection={
@@ -115,22 +73,18 @@ function ResultsPage() {
                 <AnimatedButton variant="outline" size="icon" onClick={() => setActiveHelpDialog("general")}>
                   <HelpCircle className="h-4 w-4" />
                 </AnimatedButton>
-                <AnimatedButton variant="outline" onClick={handleExportJSON} className="gap-2">
-                  <FileJson className="h-4 w-4" />
-                  JSON
+                <AnimatedButton variant="outline" className="gap-2">
+                  <FileJson className="h-4 w-4" /> JSON
                 </AnimatedButton>
-                <AnimatedButton onClick={handleExportHTML} className="gap-2">
-                  <FileCode className="h-4 w-4" />
-                  HTML Report
+                <AnimatedButton className="gap-2">
+                  <FileCode className="h-4 w-4" /> HTML Report
                 </AnimatedButton>
               </>
             }
           />
 
-          {/* Main Score Card */}
-          <PrivacyScoreCard result={result} />
+          <PrivacyScoreCard result={genericResult} />
 
-          {/* Metric Scores */}
           <CollapsibleSection
             title="Privacy Metrics Breakdown"
             icon={BarChart3}
@@ -138,239 +92,83 @@ function ResultsPage() {
             onToggle={() => toggleSection("metrics")}
             delay={0.15}
           >
-            <MetricScoresGrid metrics={result.metricScores} />
+            <MetricScoresGrid metrics={genericResult.results} />
           </CollapsibleSection>
 
-          {/* K-Anonymity Details */}
-          {result.metadata.config.enabledMetrics.kAnonymity && (
-            <CollapsibleSection
-              title="K-Anonymity Analysis"
-              icon={Users}
-              expanded={expandedSections.kAnonymity}
-              onToggle={() => toggleSection("kAnonymity")}
-              delay={0.2}
-              badge={
-                <Badge variant={result.kAnonymity.satisfiesKAnonymity ? "safe" : "sensitive"}>
-                  {result.kAnonymity.satisfiesKAnonymity ? "Satisfied" : "Violated"}
-                </Badge>
-              }
-              helpButton={<HelpButton onClick={() => setActiveHelpDialog("kAnonymity")} />}
-            >
-              <KAnonymityDetails result={result} />
-            </CollapsibleSection>
-          )}
+          {genericResult.results.map((pluginExecution, index) => {
+            const uiExt = getUIExtension(pluginExecution.pluginId);
+            if (!uiExt) return null;
 
-          {/* L-Diversity Details */}
-          {result.metadata.config.enabledMetrics.lDiversity && (
-            <CollapsibleSection
-              title="L-Diversity Analysis"
-              icon={PieChart}
-              expanded={expandedSections.lDiversity}
-              onToggle={() => toggleSection("lDiversity")}
-              delay={0.25}
-              badge={
-                <Badge variant={result.lDiversity.satisfiesLDiversity ? "safe" : "sensitive"}>
-                  {result.lDiversity.satisfiesLDiversity ? "Satisfied" : "Violated"}
-                </Badge>
-              }
-              helpButton={<HelpButton onClick={() => setActiveHelpDialog("lDiversity")} />}
-            >
-              <LDiversityDetails result={result} />
-            </CollapsibleSection>
-          )}
+            const isExpanded = expandedSections[pluginExecution.pluginId] || false;
+            const DetailsComponent = uiExt.DetailsComponent;
+            const HelpComponent = uiExt.HelpComponent;
+            const output = pluginExecution.output;
 
-          {/* T-Closeness Details */}
-          {result.metadata.config.enabledMetrics.tCloseness && (
-            <CollapsibleSection
-              title="T-Closeness Analysis"
-              icon={Activity}
-              expanded={expandedSections.tCloseness}
-              onToggle={() => toggleSection("tCloseness")}
-              delay={0.3}
-              badge={
-                <Badge variant={result.tCloseness.satisfiesTCloseness ? "safe" : "sensitive"}>
-                  {result.tCloseness.satisfiesTCloseness ? "Satisfied" : "Violated"}
-                </Badge>
-              }
-              helpButton={<HelpButton onClick={() => setActiveHelpDialog("tCloseness")} />}
-            >
-              <TClosenessDetails result={result} />
-            </CollapsibleSection>
-          )}
+            return (
+              <div key={pluginExecution.pluginId}>
+                <CollapsibleSection
+                  title={uiExt.title}
+                  icon={uiExt.icon}
+                  expanded={isExpanded}
+                  onToggle={() => toggleSection(pluginExecution.pluginId)}
+                  delay={0.2 + (index * 0.05)}
+                  badge={
+                    <Badge
+                      variant={
+                        output.status === 'pass' ? "safe" :
+                          output.status === 'warning' ? "quasi" :
+                            "sensitive"
+                      }
+                    >
+                      {
+                        output.status === 'pass' ? "Satisfied" :
+                          output.status === 'warning' ? "Warning" :
+                            "Violated"
+                      }
+                    </Badge>
+                  }
+                  helpButton={HelpComponent && <HelpButton onClick={() => setActiveHelpDialog(pluginExecution.pluginId)} />}
+                >
+                  <DetailsComponent data={output.result} />
+                </CollapsibleSection>
 
-          {/* Privacy Techniques */}
-          {result.metadata.config.enabledMetrics.techniqueDetection && (
-            <CollapsibleSection
-              title="Detected Privacy Techniques"
-              icon={Lock}
-              expanded={expandedSections.techniques}
-              onToggle={() => toggleSection("techniques")}
-              delay={0.35}
-              badge={
-                <Badge variant="secondary">
-                  {result.techniqueDetection.detectedTechniques.length} technique(s)
-                </Badge>
-              }
-              helpButton={<HelpButton onClick={() => setActiveHelpDialog("techniques")} />}
-            >
-              <TechniqueDetails result={result} />
-            </CollapsibleSection>
-          )}
-
-          {/* Re-identification Risk */}
-          {result.metadata.config.enabledMetrics.reidentificationRisk && (
-            <CollapsibleSection
-              title="Re-identification Risk Assessment"
-              icon={Target}
-              expanded={expandedSections.risk}
-              onToggle={() => toggleSection("risk")}
-              delay={0.4}
-              badge={
-                <Badge variant={result.reidentificationRisk.riskScore < 30 ? "safe" : result.reidentificationRisk.riskScore < 60 ? "quasi" : "sensitive"}>
-                  {result.reidentificationRisk.riskScore}% Risk
-                </Badge>
-              }
-              helpButton={<HelpButton onClick={() => setActiveHelpDialog("risk")} />}
-            >
-              <RiskDetails result={result} />
-            </CollapsibleSection>
-          )}
-
-          {/* Recommendations */}
-          <CollapsibleSection
-            title="Recommendations"
-            icon={Lightbulb}
-            expanded={expandedSections.recommendations}
-            onToggle={() => toggleSection("recommendations")}
-            delay={0.45}
-            badge={
-              <Badge variant="outline">
-                {result.recommendations.length} action(s)
-              </Badge>
-            }
-          >
-            <RecommendationsList recommendations={result.recommendations} />
-          </CollapsibleSection>
-
-          {/* Analysis Metadata */}
-          <AnalysisFooter metadata={result.metadata} timestamp={result.timestamp} />
+                {HelpComponent && (
+                  <HelpComponent
+                    open={activeHelpDialog === pluginExecution.pluginId}
+                    onOpenChange={(open) => !open && setActiveHelpDialog(null)}
+                  />
+                )}
+              </div>
+            );
+          })}
+          <AnalysisFooter analysisDuration={genericResult.metadata.analysisDuration} timestamp={genericResult.timestamp} />
         </div>
       </div>
 
-      {/* Help Dialogs */}
-      <HelpDialogResults 
-        open={activeHelpDialog === "general"} 
-        onOpenChange={(open) => !open && setActiveHelpDialog(null)}
-      />
-      <HelpDialogKAnonymity 
-        open={activeHelpDialog === "kAnonymity"} 
-        onOpenChange={(open) => !open && setActiveHelpDialog(null)}
-      />
-      <HelpDialogLDiversity 
-        open={activeHelpDialog === "lDiversity"} 
-        onOpenChange={(open) => !open && setActiveHelpDialog(null)}
-      />
-      <HelpDialogTCloseness 
-        open={activeHelpDialog === "tCloseness"} 
-        onOpenChange={(open) => !open && setActiveHelpDialog(null)}
-      />
-      <HelpDialogRisk 
-        open={activeHelpDialog === "risk"} 
-        onOpenChange={(open) => !open && setActiveHelpDialog(null)}
-      />
-      <HelpDialogTechniques 
-        open={activeHelpDialog === "techniques"} 
+      <HelpDialogResults
+        open={activeHelpDialog === "general"}
         onOpenChange={(open) => !open && setActiveHelpDialog(null)}
       />
     </TooltipProvider>
   );
 }
 
-// Sub-components for better organization
-
 function LoadingState() {
   return (
-    <div className="min-h-screen bg-linear-to-br from-background to-muted flex items-center justify-center">
-      <div className="text-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4" />
-        <p className="text-muted-foreground">Loading privacy analysis...</p>
-      </div>
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
     </div>
   );
 }
 
-interface AnalysisFooterProps {
-  metadata: PrivacyIndexResult["metadata"];
-  timestamp: Date;
-}
-
-function AnalysisFooter({ metadata, timestamp }: AnalysisFooterProps) {
+function AnalysisFooter({ analysisDuration, timestamp }: { analysisDuration: number, timestamp: Date }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.5 }}
       className="mt-8 text-center text-sm text-muted-foreground"
     >
-      <p>
-        Analysis completed in {metadata.analysisDuration.toFixed(2)}ms •{" "}
-        {timestamp.toLocaleString()}
-      </p>
+      <p>Analysis completed in {analysisDuration.toFixed(2)}ms • {timestamp.toLocaleString()}</p>
     </motion.div>
   );
-}
-
-// Utility functions
-
-function createExportReport(result: PrivacyIndexResult, fileName: string | null) {
-  return {
-    fileName,
-    timestamp: result.timestamp,
-    overallScore: result.overallScore,
-    grade: result.grade,
-    riskLevel: result.riskLevel,
-    metricScores: result.metricScores,
-    kAnonymity: {
-      kValue: result.kAnonymity.kValue,
-      threshold: result.kAnonymity.kThreshold,
-      satisfies: result.kAnonymity.satisfiesKAnonymity,
-      complianceRate: result.kAnonymity.complianceRate,
-      equivalenceClasses: result.kAnonymity.equivalenceClassCount,
-    },
-    lDiversity: {
-      lValue: result.lDiversity.lValue,
-      threshold: result.lDiversity.lThreshold,
-      satisfies: result.lDiversity.satisfiesLDiversity,
-      complianceRate: result.lDiversity.complianceRate,
-      type: result.lDiversity.diversityType,
-    },
-    tCloseness: {
-      maxDistance: result.tCloseness.maxDistance,
-      threshold: result.tCloseness.tThreshold,
-      satisfies: result.tCloseness.satisfiesTCloseness,
-      complianceRate: result.tCloseness.complianceRate,
-    },
-    detectedTechniques: result.techniqueDetection.detectedTechniques.map(t => ({
-      technique: t.technique,
-      confidence: t.confidence,
-      affectedAttributes: t.affectedAttributes,
-    })),
-    reidentificationRisk: {
-      score: result.reidentificationRisk.riskScore,
-      probability: result.reidentificationRisk.reidentificationProbability,
-      level: result.reidentificationRisk.riskLevel,
-    },
-    recommendations: result.recommendations,
-    metadata: result.metadata,
-  };
-}
-
-function downloadReport(report: ReturnType<typeof createExportReport>, fileName: string | null) {
-  const blob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `privacy-report-${fileName?.replace(".csv", "")}-${Date.now()}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
 }
