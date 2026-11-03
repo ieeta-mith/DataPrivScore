@@ -32,7 +32,7 @@ export function LDiversityInlineConfig({ config, onChange }: PluginConfigProps<L
   }
 
 	return (
-    <div className="space-y-6 mt-5 pt-5 border-t">
+    <div className="space-y-6 mt-5 pt-5 border-t border-foreground/20">
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <Label className="text-sm font-medium">L-Diversity Threshold (l)</Label>
@@ -68,7 +68,7 @@ export function LDiversityInlineConfig({ config, onChange }: PluginConfigProps<L
         <Label className="text-sm text-muted-foreground mb-3 block">
           L-Diversity Type
         </Label>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 p-2">
           {L_DIVERSITY_TYPES.map((type) => (
             <motion.button
               key={type.value}
@@ -78,7 +78,7 @@ export function LDiversityInlineConfig({ config, onChange }: PluginConfigProps<L
               className={`p-3 rounded-lg border text-left transition-colors ${
                 config.diversityType === type.value
                   ? 'border-primary bg-primary/10'
-                  : 'border-muted hover:border-primary/50'
+                  : 'border-primary/20 hover:border-foreground bg-stone-100'
               }`}
             >
               <span className="text-sm font-medium block">{type.label}</span>
@@ -97,7 +97,7 @@ export function LDiversityInlineConfig({ config, onChange }: PluginConfigProps<L
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden"
           >
-            <div className="pt-4 border-t space-y-4">
+            <div className="pt-4 border-t border-foreground/20 space-y-4">
               <div className="flex items-center justify-between">
                 <Label className="text-sm font-medium">Dominance Multiplier (c-value)</Label>
                 <div className="flex items-center gap-2">

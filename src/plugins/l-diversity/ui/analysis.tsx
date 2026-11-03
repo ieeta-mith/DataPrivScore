@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { AlertTriangle, PieChart, Info, XCircle, CheckCircle2 } from "lucide-react";
+import { PieChart, Info, XCircle, CheckCircle2, ShieldAlert } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { AnimatedButton } from "@/components/ui/button";
-import { StatCard, StatGrid, InfoCard, WarningCard } from "@/components/ui/stat-card";
+import { StatCard, StatGrid, InfoCard } from "@/components/ui/stat-card";
 import { HelpDialogHeader, InformationSection } from "@/components/help-dialogs/elements";
 import SwitchExample from "@/components/switch-example";
 
@@ -12,6 +12,13 @@ import type { PluginDetailsProps, PluginHelpProps } from "@/types/privacy-plugin
 import type { LDiversityResult } from "../types";
 
 export function LDiversityDetails({ data: l }: PluginDetailsProps<LDiversityResult>) {
+  const detailedViolations = l.classResults.filter(c => !c.satisfiesLDiversity);
+  const homogeneousCount = detailedViolations.filter(c => c.distinctCount === 1).length;
+  
+  const worstViolators = [...detailedViolations]
+    .sort((a, b) => a.distinctCount - b.distinctCount || a.entropy - b.entropy)
+    .slice(0, 5);
+
   return (
     <div className="space-y-4">
       <StatGrid columns={4}>
@@ -33,13 +40,50 @@ export function LDiversityDetails({ data: l }: PluginDetailsProps<LDiversityResu
         </div>
       </InfoCard>
 
-      {l.violatingClasses.length > 0 && (
-        <WarningCard
-          title="Violating Classes"
-          count={l.violatingClasses.length}
-          description="These equivalence classes have insufficient diversity in sensitive attribute values, making them vulnerable to attribute disclosure."
-          icon={<AlertTriangle className="h-4 w-4" />}
-        />
+      {detailedViolations.length > 0 && (
+        <div className="border border-red-200 bg-red-50/30 dark:border-red-900/50 dark:bg-red-950/20 rounded-xl p-5 space-y-4">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="h-5 w-5 text-red-600 dark:text-red-500 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-red-900 dark:text-red-200">
+                Diversity Vulnerabilities Detected
+              </h4>
+              <p className="text-sm text-red-800/80 dark:text-red-200/80">
+                {detailedViolations.length} group(s) failed the {l.diversityType} l-diversity threshold of {l.lThreshold}.
+                {homogeneousCount > 0 && <strong> {homogeneousCount} of these groups have completely homogeneous sensitive values (l=1), making them highly vulnerable to attribute disclosure.</strong>}
+              </p>
+            </div>
+          </div>
+          
+          <div className="bg-background/50 rounded-lg p-4 border border-red-100 dark:border-red-900/30">
+            <h5 className="text-xs font-semibold uppercase text-muted-foreground mb-3">Top At-Risk Groups & Distributions</h5>
+            <div className="space-y-3">
+              {worstViolators.map((ec, index) => (
+                <div key={index} className="flex flex-col gap-2 text-sm p-3 bg-background rounded border">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-mono text-muted-foreground break-all mr-4">{ec.equivalenceClassId}</span>
+                    <div className="flex items-center gap-3 text-xs shrink-0">
+                      <span>Distinct: <strong className="text-red-600 dark:text-red-400">{ec.distinctCount}</strong></span>
+                      <span>Entropy: <strong>{ec.entropy.toFixed(2)}</strong></span>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-1 mt-1 pt-2 border-t border-dashed">
+                    {Object.entries(ec.sensitiveValueDistribution).map(([val, count]) => (
+                      <Badge key={val} variant="outline" className="text-xs font-normal">
+                        {val}: <strong className="ml-1">{count}</strong>
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {detailedViolations.length > 5 && (
+                <div className="text-xs text-center text-muted-foreground pt-2">
+                  + {detailedViolations.length - 5} more violating groups
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

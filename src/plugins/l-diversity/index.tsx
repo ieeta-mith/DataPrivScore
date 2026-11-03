@@ -27,13 +27,13 @@ export const lDiversityPlugin: PrivacyPlugin<LDiversityResult, LDiversityConfig>
         description: 'Minimum distinct sensitive values per group',
         min: 2,
         max: 10,
-        defaultValue: 2
+        defaultValue: 3
       }
     ]
   },
   
   getDefaultConfig(): LDiversityConfig {
-    return { lThreshold: 2, diversityType: 'distinct', cValue: 1.0 };
+    return { lThreshold: 3, diversityType: 'distinct', cValue: 1.0 };
   },
 
   validateConfig(config: LDiversityConfig): true | string {
@@ -79,7 +79,8 @@ export const lDiversityPlugin: PrivacyPlugin<LDiversityResult, LDiversityConfig>
 
 export const lDiversityUI: PluginUIExtension<LDiversityResult, LDiversityConfig> = {
   id: 'l-diversity',
-  title: 'L-Diversity',
+  title: 'L-Diversity Analysis',
+  description:'Ensures each equivalence class has at least l distinct sensitive values', 
   icon: PieChart,
   
   InlineConfig: LDiversityInlineConfig,
@@ -87,5 +88,5 @@ export const lDiversityUI: PluginUIExtension<LDiversityResult, LDiversityConfig>
   
   DetailsComponent: LDiversityDetails,
   HelpComponent: LDiversityHelp,
-  formatQuickStat: (data) => `l = ${data?.lValue ?? '?'}`
+  formatQuickStat: (data) => data.satisfiesLDiversity ? 'Satisfied' : 'Violated'
 };
