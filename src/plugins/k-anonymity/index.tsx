@@ -21,10 +21,10 @@ export const kAnonymityPlugin: PrivacyPlugin<KAnonymityResult, KAnonymityConfig>
   metadata: {
     id: 'k-anonymity',
     name: 'K-Anonymity',
-    description: 'Ensures each record is indistinguishable from at least k-1 others based on quasi-identifiers',
+    description: 'Ensures each record is indistinguishable from at least k-1 other records',
     version: '1.0.0',
     category: 'privacy-model',
-    defaultWeight: 0.25,
+    defaultWeight: 0.20,
     required: true,
   },
 
@@ -80,6 +80,7 @@ export const kAnonymityPlugin: PrivacyPlugin<KAnonymityResult, KAnonymityConfig>
 export const kAnonymityUI: PluginUIExtension<KAnonymityResult, KAnonymityConfig> = {
   id: 'k-anonymity',
   title: 'K-Anonymity Analysis',
+  description: 'Ensures each record is indistinguishable from at least k-1 other records',
   icon: Users,
 
   InlineConfig: KAnonymityInlineConfig,
@@ -87,5 +88,5 @@ export const kAnonymityUI: PluginUIExtension<KAnonymityResult, KAnonymityConfig>
 
   DetailsComponent: KAnonymityDetails,
   HelpComponent: KAnonymityHelp,
-  formatQuickStat: (data) => `k = ${data.kValue}`
+  formatQuickStat: (data) => data.satisfiesKAnonymity ? 'Satisfied' : 'Violated'
 };

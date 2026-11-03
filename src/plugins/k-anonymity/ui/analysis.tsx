@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { AlertTriangle, CheckCircle2, Info, Users, XCircle } from "lucide-react";
+import { CheckCircle2, Info, ShieldAlert, Users, XCircle } from "lucide-react";
 
-import { InfoCard, StatCard, StatGrid, WarningCard } from "@/components/ui/stat-card";
+import { InfoCard, StatCard, StatGrid } from "@/components/ui/stat-card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogFooter } from "@/components/ui/dialog";
 import { AnimatedButton } from "@/components/ui/button";
@@ -12,53 +12,91 @@ import type { PluginDetailsProps, PluginHelpProps } from "@/types/privacy-plugin
 import type { KAnonymityResult } from "../types";
 
 export function KAnonymityDetails({ data }: PluginDetailsProps<KAnonymityResult>) {
-	return (
-		<div className="space-y-4">
-			<StatGrid columns={4}>
-				<StatCard label="K-Value Achieved" value={data.kValue.toString()} />
-				<StatCard label="K-Threshold" value={data.kThreshold.toString()} />
-				<StatCard label="Equivalence Classes" value={data.equivalenceClassCount.toLocaleString()} />
-				<StatCard label="Compliance Rate" value={`${data.complianceRate.toFixed(1)}%`} />
-			</StatGrid>
+  const vulnerableRecordsCount = data.violatingClasses.reduce((sum, ec) => sum + ec.size, 0);
+  const uniqueClassesCount = data.sizeDistribution[1] || 0;
 
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<InfoCard title="Quasi-Identifiers Analyzed">
-					<div className="flex flex-wrap gap-2">
-						{data.quasiIdentifiers.length > 0 ? (
-							data.quasiIdentifiers.map((qi) => (
-								<Badge key={qi} variant="quasi">{qi}</Badge>
-							))
-						) : (
-							<span className="text-muted-foreground text-sm">No quasi-identifiers found</span>
-						)}
-					</div>
-				</InfoCard>
+  const worstViolators = [...data.violatingClasses].sort((a, b) => a.size - b.size).slice(0, 5);
 
-				<InfoCard title="Class Size Distribution">
-					<div className="space-y-1 max-h-32 overflow-y-auto">
-						{Object.entries(data.sizeDistribution)
-							.sort(([a], [b]) => parseInt(a) - parseInt(b))
-							.slice(0, 10)
-							.map(([size, count]) => (
-								<div key={size} className="flex justify-between text-sm">
-									<span>Size {size}:</span>
-									<span className="text-muted-foreground">{count} class(es)</span>
-								</div>
-							))}
-					</div>
-				</InfoCard>
-			</div>
+  return (
+    <div className="space-y-4">
+      <StatGrid columns={4}>
+        <StatCard label="K-Value Achieved" value={data.kValue.toString()} />
+        <StatCard label="K-Threshold" value={data.kThreshold.toString()} />
+        <StatCard label="Equivalence Classes" value={data.equivalenceClassCount.toLocaleString()} />
+        <StatCard label="Compliance Rate" value={`${data.complianceRate.toFixed(1)}%`} />
+      </StatGrid>
 
-			{data.violatingClasses.length > 0 && (
-				<WarningCard
-					title="Violating Equivalence Classes"
-					count={data.violatingClasses.length}
-					description={`These equivalence classes have fewer than ${data.kThreshold} records, making individuals potentially identifiable.`}
-					icon={<AlertTriangle className="h-4 w-4" />}
-				/>
-			)}
-		</div>
-	)
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InfoCard title="Quasi-Identifiers Analyzed">
+          <div className="flex flex-wrap gap-2">
+            {data.quasiIdentifiers.length > 0 ? (
+              data.quasiIdentifiers.map((qi) => (
+                <Badge key={qi} variant="quasi">{qi}</Badge>
+              ))
+            ) : (
+              <span className="text-muted-foreground text-sm">No quasi-identifiers found</span>
+            )}
+          </div>
+        </InfoCard>
+
+        <InfoCard title="Class Size Distribution">
+          <div className="space-y-2 max-h-32 overflow-y-auto pr-2">
+            {Object.entries(data.sizeDistribution)
+              .sort(([a], [b]) => parseInt(a) - parseInt(b))
+              .slice(0, 10)
+              .map(([size, count]) => (
+                <div key={size} className="flex justify-between items-center text-sm border-b pb-1 last:border-0">
+                  <span className="font-medium">Size {size}</span>
+                  <span className="text-muted-foreground">{count} group(s)</span>
+                </div>
+              ))}
+          </div>
+        </InfoCard>
+      </div>
+
+      {data.violatingClasses.length > 0 && (
+        <div className="border border-red-200 bg-red-50/30 dark:border-red-900/50 dark:bg-red-950/20 rounded-xl p-5 space-y-4">
+          <div className="flex items-start gap-3">
+            <ShieldAlert className="h-5 w-5 text-red-600 dark:text-red-500 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-red-900 dark:text-red-200">
+                Privacy Vulnerabilities Detected
+              </h4>
+              <p className="text-sm text-red-800/80 dark:text-red-200/80">
+                {vulnerableRecordsCount} total record(s) across {data.violatingClasses.length} groups failed to meet the k={data.kThreshold} threshold. 
+                {uniqueClassesCount > 0 && <strong> {uniqueClassesCount} of these groups contain only a single, completely unique individual.</strong>}
+              </p>
+            </div>
+          </div>
+          
+          <div className="bg-background/50 rounded-lg p-4 border border-red-100 dark:border-red-900/30">
+            <h5 className="text-xs font-semibold uppercase text-muted-foreground mb-3">Top At-Risk Groups (Needs Generalization)</h5>
+            <div className="space-y-2">
+              {worstViolators.map((ec, index) => (
+                <div key={index} className="flex items-center justify-between text-sm p-2 bg-background rounded border">
+                  <div className="flex flex-wrap gap-2">
+                    {Object.entries(ec.quasiIdentifierValues).map(([key, val]) => (
+                      <span key={key} className="text-xs bg-muted px-2 py-1 rounded">
+                        <span className="text-muted-foreground">{key}:</span> {val}
+                      </span>
+                    ))}
+                  </div>
+                  <Badge variant="sensitive" className="ml-2 whitespace-nowrap">
+                    Size: {ec.size}
+                  </Badge>
+                </div>
+              ))}
+              {data.violatingClasses.length > 5 && (
+                <div className="text-xs text-center text-muted-foreground pt-2">
+                  + {data.violatingClasses.length - 5} more violating groups
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 export function KAnonymityHelp({ open, onOpenChange }: PluginHelpProps) {

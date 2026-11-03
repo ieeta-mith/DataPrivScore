@@ -14,7 +14,7 @@ export function KAnonymityInlineConfig({ config, onChange }: PluginConfigProps<K
   };
 
   return (
-    <div className="space-y-4 mt-5 pt-5 border-t">
+    <div className="space-y-4 mt-5 pt-5 border-t border-foreground/20">
       <div className="flex items-center justify-between">
         <Label className="text-sm font-medium">K-Anonymity Threshold (k)</Label>
         <div className="flex items-center gap-2">
@@ -24,6 +24,7 @@ export function KAnonymityInlineConfig({ config, onChange }: PluginConfigProps<K
             onChange={(e) => handleValueChange(parseInt(e.target.value) || min)}
             min={min}
             max={max}
+            
             className="w-24 h-9 text-center"
           />
           <span className="text-xs text-muted-foreground">records</span>
