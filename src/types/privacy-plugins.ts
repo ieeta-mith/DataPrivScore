@@ -8,6 +8,7 @@ export type PluginId = string;
 export type PluginCategory = string;
 
 export type MetricStatus = 'pass' | 'warning' | 'fail';
+export type RiskLevel = 'critical' | 'high' | 'medium' | 'low' | 'minimal';
 
 export interface GlobalAnalysisConfig {
   includeDetailedAnalysis: boolean;
@@ -93,10 +94,6 @@ export interface AggregatedPluginResults {
   }>;
 }
 
-// ====================================================
-// UI Plugin definitions
-// ====================================================
-
 export interface PluginDetailsProps<TData =unknown> {
   data: TData;
 }
@@ -115,6 +112,7 @@ export interface PluginConfigProps<TConfig = unknown> {
 export interface PluginUIExtension<TData = any, TConfig = any> {
   id: string;
   title: string;
+  description: string;
   icon: LucideIcon;
 
   // Config Components
