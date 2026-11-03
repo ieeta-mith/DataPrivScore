@@ -5,7 +5,7 @@ import { getPluginRegistry } from '@/core/plugin-registry';
 
 import type { ClassificationResult, AttributeType } from '@/types/attribute-classification';
 import type { ParsedCSV } from '@/types/csv-parser';
-import type { PrivacyIndexResult } from '@/types/privacy-analysis';
+import type { PrivacyIndexResult } from '@/core/privacy-index';
 
 const getDefaultPluginState = () => {
   const registry = getPluginRegistry();
