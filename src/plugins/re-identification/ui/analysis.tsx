@@ -1,30 +1,109 @@
 import { useState } from 'react';
-import { Info, Target, User, Newspaper, TrendingUp, AlertTriangle } from 'lucide-react';
+import { Info, Target, User, Newspaper, TrendingUp, AlertTriangle, Calculator } from 'lucide-react';
 
-import { Badge } from '@/components/ui/badge';
-import { StatCard, StatGrid } from '@/components/ui/stat-card';
 import { Dialog, DialogContent, DialogFooter } from '@/components/ui/dialog';
 import { AnimatedButton } from '@/components/ui/button';
 import { HelpDialogHeader, InformationSection } from '@/components/help-dialogs/elements';
 
 import type { PluginDetailsProps, PluginHelpProps } from '@/types/privacy-plugins';
 import type { ReIdentificationRiskResult } from '../types';
+import { Badge } from '@/components/ui/badge';
 
 export function RiskDetails({ data }: PluginDetailsProps<ReIdentificationRiskResult>) {
-	return (
-		<div className="space-y-4">
-			<StatGrid columns={4}>
-				<StatCard label="Final Risk Score (Sr)" value={`${data.score.toFixed(1)}`} />
-				<StatCard label="Prosecutor Risk (Rp)" value={`${data.prosecutorRisk.toFixed(1)}%`} />
-				<StatCard label="Journalist Risk (Rj)" value={`${data.journalistRisk.toFixed(1)}%`} />
-				<StatCard label="Marketer Risk (Rm)" value={`${data.marketerRisk.toFixed(1)}%`} />
-			</StatGrid>
-			<div className="p-4 rounded-lg bg-muted/50 border text-sm text-muted-foreground flex justify-between">
-				<span><strong>Sampling Fraction (ρ):</strong> {data.samplingFraction === 1.0 ? '1.0 (Worst-case baseline)' : data.samplingFraction.toFixed(4)}</span>
-				<span><strong>Max Risk Trigger:</strong> {data.maxRisk.toFixed(1)}%</span>
-			</div>
-		</div>
-	);
+  // Identify which risk is the bottleneck
+  const isProsecutorMax = data.maxRisk === data.prosecutorRisk;
+  const isJournalistMax = data.maxRisk === data.journalistRisk;
+  const isMarketerMax = data.maxRisk === data.marketerRisk;
+
+  return (
+    <div className="space-y-4">
+      {/* 1. Primary Score Banner */}
+      <div className="flex flex-col md:flex-row gap-4">
+        <div className="flex-1 p-4 rounded-xl border bg-primary/5 border-primary/20 flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-semibold text-primary/80 uppercase tracking-wider mb-1">Final Risk Score</h4>
+            <div className="flex items-baseline gap-2">
+              <span className="text-3xl font-bold">{data.score.toFixed(1)}</span>
+              <span className="text-sm text-muted-foreground">/ 100</span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">
+              Calculated as 100 - Max Risk ({data.maxRisk.toFixed(1)}%)
+            </p>
+          </div>
+          <Target className="h-10 w-10 text-primary/20" />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+        <div className={`p-4 rounded-lg border flex flex-col gap-3 ${isProsecutorMax ? 'border-red-200 bg-red-50/30 dark:border-red-900/30' : 'bg-muted/30'}`}>
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2">
+              <User className={`h-4 w-4 ${isProsecutorMax ? 'text-red-500' : 'text-muted-foreground'}`} />
+              <span className="font-semibold text-sm">Prosecutor Risk</span>
+            </div>
+            {isProsecutorMax && <Badge variant="sensitive" className="text-[10px]">Max Risk</Badge>}
+          </div>
+          <span className="text-2xl font-bold">{data.prosecutorRisk.toFixed(1)}%</span>
+          <div className="pt-3 border-t border-dashed mt-auto">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+              <Calculator className="h-3 w-3" />
+              <span className="font-medium">Calculation:</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Based on the smallest group size (<strong className="text-foreground">k_min = {data.kMin}</strong>). 
+              <br/>Formula: 1 / {data.kMin}
+            </p>
+          </div>
+        </div>
+
+        {/* Journalist Card */}
+        <div className={`p-4 rounded-lg border flex flex-col gap-3 ${isJournalistMax && !isProsecutorMax ? 'border-orange-200 bg-orange-50/30 dark:border-orange-900/30' : 'bg-muted/30'}`}>
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2">
+              <Newspaper className={`h-4 w-4 ${isJournalistMax && !isProsecutorMax ? 'text-orange-500' : 'text-muted-foreground'}`} />
+              <span className="font-semibold text-sm">Journalist Risk</span>
+            </div>
+            {isJournalistMax && !isProsecutorMax && <Badge variant="quasi" className="text-[10px]">Max Risk</Badge>}
+          </div>
+          <span className="text-2xl font-bold">{data.journalistRisk.toFixed(1)}%</span>
+          <div className="pt-3 border-t border-dashed mt-auto">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+              <Calculator className="h-3 w-3" />
+              <span className="font-medium">Calculation:</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Prosecutor risk scaled by the sampling fraction (<strong className="text-foreground">ρ = {data.samplingFraction.toFixed(2)}</strong>).
+              <br/>Formula: {data.prosecutorRisk.toFixed(1)}% × {data.samplingFraction.toFixed(1)}
+            </p>
+          </div>
+        </div>
+
+        {/* Marketer Card */}
+        <div className={`p-4 rounded-lg border flex flex-col gap-3 ${isMarketerMax && !isProsecutorMax && !isJournalistMax ? 'border-blue-200 bg-blue-50/30 dark:border-blue-900/30' : 'bg-muted/30'}`}>
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-2">
+              <TrendingUp className={`h-4 w-4 ${isMarketerMax && !isProsecutorMax && !isJournalistMax ? 'text-blue-500' : 'text-muted-foreground'}`} />
+              <span className="font-semibold text-sm">Marketer Risk</span>
+            </div>
+            {isMarketerMax && !isProsecutorMax && !isJournalistMax && <Badge variant="safe" className="text-[10px]">Max Risk</Badge>}
+          </div>
+          <span className="text-2xl font-bold">{data.marketerRisk.toFixed(1)}%</span>
+          <div className="pt-3 border-t border-dashed mt-auto">
+            <div className="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
+              <Calculator className="h-3 w-3" />
+              <span className="font-medium">Calculation:</span>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Based on the average group size (<strong className="text-foreground">k_avg = {data.kAvg.toFixed(1)}</strong>).
+              <br/>Formula: 1 / {data.kAvg.toFixed(1)}
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
 }
 
 export function RiskHelp({ open, onOpenChange }: PluginHelpProps) {
@@ -105,74 +184,6 @@ export function RiskHelp({ open, onOpenChange }: PluginHelpProps) {
             {selectedAttacker === "prosecutor" && <ProsecutorModel />}
             {selectedAttacker === "journalist" && <JournalistModel />}
             {selectedAttacker === "marketer" && <MarketerModel />}
-          </div>
-
-          <div className="space-y-4">
-            <h4 className="font-semibold">Visual Example: Risk Calculation</h4>
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-sm">
-                <thead className="bg-muted/50">
-                  <tr>
-                    <th className="px-4 py-2 text-left font-medium">Equivalence Class</th>
-                    <th className="px-4 py-2 text-left font-medium">Size</th>
-                    <th className="px-4 py-2 text-left font-medium">Re-id Probability</th>
-                    <th className="px-4 py-2 text-left font-medium">Risk Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-t bg-red-50/50 dark:bg-red-950/20">
-                    <td className="px-4 py-2">Age: 25, ZIP: 10001, M</td>
-                    <td className="px-4 py-2">1</td>
-                    <td className="px-4 py-2 font-mono">1/1 = 100%</td>
-                    <td className="px-4 py-2"><Badge variant="sensitive">Critical</Badge></td>
-                  </tr>
-                  <tr className="border-t bg-orange-50/50 dark:bg-orange-950/20">
-                    <td className="px-4 py-2">Age: 30-35, ZIP: 100**, F</td>
-                    <td className="px-4 py-2">3</td>
-                    <td className="px-4 py-2 font-mono">1/3 = 33%</td>
-                    <td className="px-4 py-2"><Badge variant="quasi">High</Badge></td>
-                  </tr>
-                  <tr className="border-t bg-yellow-50/50 dark:bg-yellow-950/20">
-                    <td className="px-4 py-2">Age: 40-50, ZIP: 200**, M</td>
-                    <td className="px-4 py-2">8</td>
-                    <td className="px-4 py-2 font-mono">1/8 = 12.5%</td>
-                    <td className="px-4 py-2"><Badge variant="secondary">Medium</Badge></td>
-                  </tr>
-                  <tr className="border-t bg-green-50/50 dark:bg-green-950/20">
-                    <td className="px-4 py-2">Age: 20-30, ZIP: 300**, F</td>
-                    <td className="px-4 py-2">25</td>
-                    <td className="px-4 py-2 font-mono">1/25 = 4%</td>
-                    <td className="px-4 py-2"><Badge variant="safe">Low</Badge></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              <strong>Prosecutor risk</strong> is calculated as the maximum probability across all classes (100% in this example).
-              <strong> Overall risk</strong> considers the weighted average based on class sizes.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-lg bg-muted/50 border">
-            <h4 className="font-semibold mb-3">Risk Thresholds</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="p-3 rounded-lg bg-green-100 dark:bg-green-950 border border-green-300 dark:border-green-700">
-                <p className="text-lg font-bold text-green-700 dark:text-green-300">&lt; 5%</p>
-                <p className="text-xs text-green-600 dark:text-green-400">Minimal Risk</p>
-              </div>
-              <div className="p-3 rounded-lg bg-yellow-100 dark:bg-yellow-950 border border-yellow-300 dark:border-yellow-700">
-                <p className="text-lg font-bold text-yellow-700 dark:text-yellow-300">5-20%</p>
-                <p className="text-xs text-yellow-600 dark:text-yellow-400">Low Risk</p>
-              </div>
-              <div className="p-3 rounded-lg bg-orange-100 dark:bg-orange-950 border border-orange-300 dark:border-orange-700">
-                <p className="text-lg font-bold text-orange-700 dark:text-orange-300">20-50%</p>
-                <p className="text-xs text-orange-600 dark:text-orange-400">Medium Risk</p>
-              </div>
-              <div className="p-3 rounded-lg bg-red-100 dark:bg-red-950 border border-red-300 dark:border-red-700">
-                <p className="text-lg font-bold text-red-700 dark:text-red-300">&gt; 50%</p>
-                <p className="text-xs text-red-600 dark:text-red-400">High/Critical</p>
-              </div>
-            </div>
           </div>
         </div>
 

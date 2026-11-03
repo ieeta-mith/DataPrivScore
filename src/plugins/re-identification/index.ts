@@ -9,7 +9,6 @@ import type {
 import type { ReIdentificationRiskResult, ReIdentificationRiskConfig, ExpectedUpstreamData } from './types';
 import { ShieldAlert } from 'lucide-react';
 import { RiskDetails, RiskHelp } from './ui/analysis';
-import { RiskInlineConfig } from './ui/config';
 
 export const reidentificationRiskPlugin: PrivacyPlugin<ReIdentificationRiskResult, ReIdentificationRiskConfig> = {
   metadata: {
@@ -18,38 +17,30 @@ export const reidentificationRiskPlugin: PrivacyPlugin<ReIdentificationRiskResul
     description: 'Calculates the probability of record linkage attacks (Prosecutor, Journalist, and Marketer risks).',
     version: '1.0.0',
     category: 'risk-assessment',
-    defaultWeight: 0.30,
+    defaultWeight: 0.10,
     required: true,
     dependencies: ['k-anonymity']
   },
 
   getConfigurationSchema(): PluginConfigSchema[] {
-    return [
-      {
-        key: 'populationSize',
-        type: 'number',
-        label: 'Target Population Size (N_pop)',
-        description: 'Estimated real-world target population size. Leave empty for conservative worst-case.',
-      }
-    ];
+    return [];
   },
 
   getDefaultConfig(): ReIdentificationRiskConfig {
-    return { populationSize: 1 }; 
+    return {}; 
   },
 
   canCalculate(input: PluginInput): boolean {
     return input.parsedCSV.rows.length > 0;
   },
 
-  calculate(input: PluginInput, config: ReIdentificationRiskConfig): PluginOutput<ReIdentificationRiskResult> {
+  calculate(input: PluginInput): PluginOutput<ReIdentificationRiskResult> {
     const upstreamOutput = input.getUpstreamResult<ExpectedUpstreamData>('k-anonymity');
 
     const kMin = upstreamOutput?.result?.kValue ?? 1;
     const kAvg = upstreamOutput?.result?.averageClassSize ?? 1;
-    const nData = input.parsedCSV.rows.length;
 
-    const result = calculateRisks(kMin, kAvg, nData, config.populationSize);
+    const result = calculateRisks(kMin, kAvg);
 
     return {
       result,
@@ -64,8 +55,9 @@ export const reidentificationRiskPlugin: PrivacyPlugin<ReIdentificationRiskResul
 export const reidentificationRiskUI: PluginUIExtension<ReIdentificationRiskResult, ReIdentificationRiskConfig> = {
   id: 'reidentification-risk',
   title: 'Re-identification Risk',
+  description: 'Estimates the probability of identifying individuals in the dataset',
   icon: ShieldAlert,
-  InlineConfig: RiskInlineConfig,
+  InlineConfig: undefined,
   DetailsComponent: RiskDetails,
   HelpComponent: RiskHelp,
   formatQuickStat: (data) => `Score: ${data.score.toFixed(0)}`
