@@ -57,7 +57,7 @@ function ScoreCircle({ score, style }: ScoreCircleProps) {
             stroke="currentColor"
             strokeWidth="12"
             fill="none"
-            className="text-muted/20"
+            className="text-muted/90"
           />
           <motion.circle
             cx="80"
@@ -100,14 +100,14 @@ function ScoreCircle({ score, style }: ScoreCircleProps) {
 
 interface RiskLevelDisplayProps {
   riskLevel: string;
-  riskStyle: { bg: string; text: string };
+  riskStyle: { bg: string; text: string, circleBg?: string };
   RiskIcon: React.ComponentType<{ className?: string }>;
 }
 
 function RiskLevelDisplay({ riskLevel, riskStyle, RiskIcon }: RiskLevelDisplayProps) {
   return (
     <div className="flex flex-col items-center justify-center space-y-4">
-      <div className={`p-4 rounded-full ${riskStyle.bg}`}>
+      <div className={`p-4 rounded-full ${riskStyle.circleBg || "bg-muted/50"}`}>
         <RiskIcon className={`h-12 w-12 ${riskStyle.text}`} />
       </div>
       <div className="text-center">

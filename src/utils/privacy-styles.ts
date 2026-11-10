@@ -1,12 +1,11 @@
-import type { RiskLevel } from "@/types/privacy-plugins";
 import { Shield, ShieldAlert, ShieldCheck, ShieldX } from "lucide-react";
 
-export const riskLevelStyles: Record<RiskLevel, { bg: string; text: string; icon: typeof Shield }> = {
-  minimal: { bg: "bg-emerald-100 dark:bg-emerald-900/30", text: "text-emerald-700 dark:text-emerald-300", icon: ShieldCheck },
-  low: { bg: "bg-green-100 dark:bg-green-900/30", text: "text-green-700 dark:text-green-300", icon: Shield },
-  medium: { bg: "bg-yellow-100 dark:bg-yellow-900/30", text: "text-yellow-700 dark:text-yellow-300", icon: ShieldAlert },
-  high: { bg: "bg-orange-100 dark:bg-orange-900/30", text: "text-orange-700 dark:text-orange-300", icon: ShieldAlert },
-  critical: { bg: "bg-red-100 dark:bg-red-900/30", text: "text-red-700 dark:text-red-300", icon: ShieldX },
+export const riskLevelStyles: Record<string, { bg: string; text: string; icon: typeof Shield; circleBg?: string }> = {
+  minimal: { bg: "bg-emerald-500", circleBg: "bg-emerald-100", text: "text-emerald-700", icon: ShieldCheck },
+  low: { bg: "bg-green-500", circleBg: "bg-green-100", text: "text-green-700", icon: Shield },
+  medium: { bg: "bg-yellow-500", circleBg: "bg-yellow-100", text: "text-yellow-700", icon: ShieldAlert },
+  high: { bg: "bg-orange-500", circleBg: "bg-orange-100", text: "text-orange-700", icon: ShieldAlert },
+  critical: { bg: "bg-red-500", circleBg: "bg-red-100", text: "text-red-700", icon: ShieldX },
 };
 
 export const statusColors = {
