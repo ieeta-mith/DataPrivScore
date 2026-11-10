@@ -3,6 +3,29 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 
+import { registerPlugin } from '@/core/plugin-registry'
+import { registerUIExtension } from '@/core/ui-registry'
+
+import { kAnonymityPlugin, kAnonymityUI } from '@/plugins/k-anonymity'
+import { lDiversityPlugin, lDiversityUI } from '@/plugins/l-diversity'
+import { tClosenessPlugin, tClosenessUI } from '@/plugins/t-closeness'
+import { techniqueDetectionPlugin ,techniqueDetectionUI } from '@/plugins/anonymization'
+import { reidentificationRiskPlugin, reidentificationRiskUI } from '@/plugins/re-identification'
+
+// Register plugins logic
+registerPlugin(kAnonymityPlugin);
+registerPlugin(lDiversityPlugin);
+registerPlugin(tClosenessPlugin);
+registerPlugin(techniqueDetectionPlugin);
+registerPlugin(reidentificationRiskPlugin);
+
+// Register plugins UI
+registerUIExtension(kAnonymityUI);
+registerUIExtension(lDiversityUI);
+registerUIExtension(tClosenessUI);
+registerUIExtension(techniqueDetectionUI);
+registerUIExtension(reidentificationRiskUI);
+
 const router = createRouter({ 
   routeTree,
   basepath: '/privacy', 
