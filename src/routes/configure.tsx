@@ -214,5 +214,3 @@ function ConfigurePage() {
     </div>
   );
 }
-
-export default ConfigurePage;
