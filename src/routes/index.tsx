@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'motion/react'
-import { Upload, Lock } from 'lucide-react'
+import { Upload, Lock, ShieldAlert, ShieldCheck } from 'lucide-react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,9 +32,9 @@ function Index() {
 
   const handleFileSelect = (file: File) => {
     if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
-      setMessage('Please upload a CSV file, other file types are not allowed ')
-      setProcessingStatus('error');
-      return;
+      setMessage('Please upload a CSV file, other file types are not allowed')
+      setProcessingStatus('error')
+      return
     }
 
     setSelectedFile(file)
@@ -47,43 +47,61 @@ function Index() {
     setProcessingStatus('idle')
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    if (!selectedFile) {
-      setProcessingStatus('error');
-      return;
-    }
-
-    if (selectedFile.type !== 'text/csv' && !selectedFile.name.endsWith('.csv')) {
-      setMessage('Please upload a CSV file, other file types are not allowed ')
-      setProcessingStatus('error');
-      return;
-    }
-
+  const processFile = async (file: File) => {
     try {
-      setProcessingStatus('processing');
+      setProcessingStatus('processing')
     
-      const parsedCSV = await parseCSV(selectedFile, 1000);
+      const parsedCSV = await parseCSV(file, 1000)
+      const result = classifyDataset(parsedCSV)
       
-      const result = classifyDataset(parsedCSV);
+      setClassificationData(parsedCSV, result, file.name)
       
-      setClassificationData(parsedCSV, result, selectedFile.name);
+      setProcessingStatus('completed')
+      setMessage(`File "${file.name}" processed successfully!`)
       
-      setProcessingStatus('completed');
-      setMessage(`File "${selectedFile.name}" processed successfully!`);
-      
-      navigate({ to: '/classify' });
+      navigate({ to: '/classify' })
 
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'An error occurred while processing the file. Please try again.');
-      console.error('Error processing file:', error);
+      setMessage(error instanceof Error ? error.message : 'An error occurred while processing the file. Please try again.')
+      console.error('Error processing file:', error)
+      setProcessingStatus('error')
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!selectedFile) {
+      setProcessingStatus('error')
+      return
+    }
+    await processFile(selectedFile)
+  }
+
+  const handleLoadDemo = async (type: 'poor' | 'protected') => {
+    try {
+      setProcessingStatus('processing');
+      setMessage(null);
+
+      const fileName = type === 'poor' ? 'dataset_poorly.csv' : 'dataset_well.csv';
+      const response = await fetch(`${import.meta.env.BASE_URL}/${fileName}`);
+      console.log(`${import.meta.env.BASE_URL}${fileName}`)
+      
+      if (!response.ok) throw new Error(`Failed to fetch ${fileName}. Ensure it is in the public folder.`);
+
+      const csvContent = await response.text();
+      const demoFile = new File([csvContent], fileName, { type: "text/csv" });
+
+      await processFile(demoFile);
+      
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : 'An error occurred loading the demo.');
+      console.error('Error loading demo file:', error);
       setProcessingStatus('error');
     }
   }
 
   return (
-    <div className="min-h-full bg-linear-to-br from-background to-muted">
+    <div className="min-h-full bg-linear-to-br from-background to-muted pb-16">
       <div className="container mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -123,14 +141,14 @@ function Index() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.6 }}
         >
-          <Card className="max-w-2xl mx-auto p-6">
+          <Card className="max-w-2xl mx-auto p-6 relative overflow-hidden">
             <CardHeader>
               <CardTitle className="text-2xl flex items-center gap-2">
                 <Upload className="h-6 w-6" />
                 Upload Your Dataset
               </CardTitle>
               <CardDescription>
-                Upload a CSV file to begin analyzing your data's privacy level
+                Upload a CSV file to begin analyzing your data's privacy level.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -141,12 +159,14 @@ function Index() {
                   selectedFile={selectedFile}
                   disabled={processingStatus === 'processing'}
                 />
+                
                 {message && (
                   <AnimatedAlert
                     status={processingStatus}
                     message={message}
                   />
                 )}
+                
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <AnimatedButton
                     type="submit"
@@ -159,6 +179,44 @@ function Index() {
                   </AnimatedButton>
                 </motion.div>
               </form>
+              <div className="mt-6 pt-4 border-t border-border/50">
+                <div className="text-center mb-4">
+                  <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
+                    Or try a demo dataset
+                  </span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => handleLoadDemo('poor')}
+                    disabled={processingStatus === 'processing'}
+                    className="group relative cursor-pointer flex flex-col items-center p-4 rounded-xl border-2 border-rose-100 bg-rose-50/50 hover:bg-rose-50 hover:border-rose-200 transition-all text-center w-full disabled:opacity-50"
+                  >
+                    <div className="mb-3 p-2.5 rounded-full bg-rose-100 text-rose-600 group-hover:scale-110 transition-transform">
+                      <ShieldAlert className="h-6 w-6" />
+                    </div>
+                    <span className="font-semibold text-rose-950 text-sm mb-1">Synthetic Data Not Protected</span>
+                    <span className="text-xs text-rose-700/80 leading-relaxed">
+                      Poorly anonymized dataset containing direct identifiers
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleLoadDemo('protected')}
+                    disabled={processingStatus === 'processing'}
+                    className="group cursor-pointer relative flex flex-col items-center p-4 rounded-xl border-2 border-emerald-100 bg-emerald-50/50 hover:bg-emerald-50 hover:border-emerald-200 transition-all text-center w-full disabled:opacity-50"
+                  >
+                    <div className="mb-3 p-2.5 rounded-full bg-emerald-100 text-emerald-600 group-hover:scale-110 transition-transform">
+                      <ShieldCheck className="h-6 w-6" />
+                    </div>
+                    <span className="font-semibold text-emerald-950 text-sm mb-1">Protected Synthetic Data</span>
+                    <span className="text-xs text-emerald-700/80 leading-relaxed">
+                      Safely anonymized dataset ready for secure analysis
+                    </span>
+                  </button>
+                </div>
+              </div>
 
               <div className="mt-6 p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground">

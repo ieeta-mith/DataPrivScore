@@ -1,7 +1,7 @@
 import SidebarWrapper from '@/components/sidebar-wrapper'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { NotFoundComponent } from './not-found'
-import { ServerErrorComponent } from './server-error'
+import { NotFoundComponent } from '@/components/not-found'
+import { ServerErrorComponent } from '@/components/server-error'
 import { Navbar } from '@/components/navbar'
 
 const RootLayout = () => {
