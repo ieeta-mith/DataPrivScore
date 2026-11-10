@@ -3,8 +3,6 @@ import { motion } from "motion/react";
 import {
   BarChart3,
   HelpCircle,
-  FileJson,
-  FileCode,
 } from "lucide-react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
@@ -57,7 +55,7 @@ function ResultsPage() {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-linear-to-br from-background to-muted">
+      <div className="min-h-full bg-linear-to-br from-background to-muted">
         <div className="container mx-auto px-4 py-8 max-w-7xl">
           <PageHeader
             title="Privacy Analysis Results"
@@ -72,12 +70,6 @@ function ResultsPage() {
               <>
                 <AnimatedButton variant="outline" size="icon" onClick={() => setActiveHelpDialog("general")}>
                   <HelpCircle className="h-4 w-4" />
-                </AnimatedButton>
-                <AnimatedButton variant="outline" className="gap-2">
-                  <FileJson className="h-4 w-4" /> JSON
-                </AnimatedButton>
-                <AnimatedButton className="gap-2">
-                  <FileCode className="h-4 w-4" /> HTML Report
                 </AnimatedButton>
               </>
             }
