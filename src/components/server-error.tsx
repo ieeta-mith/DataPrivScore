@@ -1,14 +1,10 @@
 import { motion } from 'motion/react';
 import { AlertCircle, Home } from 'lucide-react';
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 
 import { AnimatedButton } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { containerVariants, itemVariants } from '@/utils/constants';
-
-export const Route = createFileRoute('/server-error')({
-	component: ServerErrorComponent,
-});
 
 export function ServerErrorComponent() {
 	const navigate = useNavigate();

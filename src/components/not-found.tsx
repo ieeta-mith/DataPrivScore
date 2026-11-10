@@ -1,14 +1,10 @@
-import { createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useNavigate } from '@tanstack/react-router';
 import { motion } from 'motion/react';
 import { Home } from 'lucide-react';
 
 import { AnimatedButton } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { containerVariants, itemVariants } from '@/utils/constants';
-
-export const Route = createFileRoute('/not-found')({
-	component: NotFoundComponent,
-});
 
 export function NotFoundComponent() {
 	const navigate = useNavigate();
