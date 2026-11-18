@@ -3,6 +3,7 @@ import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { NotFoundComponent } from '@/components/not-found'
 import { ServerErrorComponent } from '@/components/server-error'
 import { Navbar } from '@/components/navbar'
+import { Footer } from '@/components/footer'
 
 const RootLayout = () => {
   return (
@@ -11,6 +12,7 @@ const RootLayout = () => {
       <main className="flex-1 overflow-auto relative">
         <Navbar />
         <Outlet />
+        <Footer />
       </main>
     </div>
   )
