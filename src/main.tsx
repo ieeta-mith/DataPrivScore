@@ -28,7 +28,7 @@ registerUIExtension(reidentificationRiskUI);
 
 const router = createRouter({ 
   routeTree,
-  basepath: '/privacy', 
+  basepath: '/DataPrivScore/',
 })
 
 declare module '@tanstack/react-router' {

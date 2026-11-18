@@ -1,4 +1,3 @@
-import SidebarWrapper from '@/components/sidebar-wrapper'
 import { Outlet, createRootRoute } from '@tanstack/react-router'
 import { NotFoundComponent } from '@/components/not-found'
 import { ServerErrorComponent } from '@/components/server-error'

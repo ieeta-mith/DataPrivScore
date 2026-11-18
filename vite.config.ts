@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/privacy',
+  base: '/DataPrivScore/',
   plugins: [
     tanstackRouter({
       target: 'react',
