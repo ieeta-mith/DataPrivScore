@@ -3,12 +3,7 @@ import { motion } from 'motion/react';
 import { AnimatedButton } from '@/components/ui/button';
 import { HelpDialogClassification } from '@/components/help-dialogs/classification';
 
-import { 
-	HelpCircle, 
-	Lock, 
-	Unlock,
-} from 'lucide-react';
-
+import { HelpCircle, Lock, Unlock } from 'lucide-react';
 
 interface ClassificationBarProps {
 	editMode: boolean;
@@ -17,13 +12,13 @@ interface ClassificationBarProps {
 	setHelpDialogOpen: (open: boolean) => void;
 }
 
-export const ClassificationBar = ( {
+export const ClassificationBar = ({
 	editMode,
 	setEditMode,
 	helpDialogOpen,
 	setHelpDialogOpen,
 }: ClassificationBarProps) => {
-  return (
+	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
@@ -34,8 +29,8 @@ export const ClassificationBar = ( {
 				<div className="flex items-center gap-3">
 					<div className="flex items-center gap-2 text-sm text-muted-foreground">
 						<span>
-							{editMode 
-								? 'Select a new type to reclassify attributes' 
+							{editMode
+								? 'Select a new type to reclassify attributes'
 								: 'Enable edit mode to modify classifications'}
 						</span>
 					</div>
@@ -70,10 +65,10 @@ export const ClassificationBar = ( {
 					</AnimatedButton>
 				</div>
 			</div>
-			<HelpDialogClassification 
-        helpDialogOpen={helpDialogOpen}
-        setHelpDialogOpen={setHelpDialogOpen}
-      />
+			<HelpDialogClassification
+				helpDialogOpen={helpDialogOpen}
+				setHelpDialogOpen={setHelpDialogOpen}
+			/>
 		</motion.div>
-  );
+	);
 }

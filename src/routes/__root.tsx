@@ -1,12 +1,17 @@
 import { Outlet, createRootRoute } from '@tanstack/react-router'
-import { NotFoundComponent } from './not-found'
-import { ServerErrorComponent } from './server-error'
+import { NotFoundComponent } from '@/components/not-found'
+import { ServerErrorComponent } from '@/components/server-error'
+import { Navbar } from '@/components/navbar'
+import { Footer } from '@/components/footer'
 
 const RootLayout = () => {
   return (
-    <div className="flex min-h-screen">
-      <main className="flex-1 overflow-auto">
+    <div className="flex h-screen overflow-hidden bg-background">
+      <SidebarWrapper />
+      <main className="flex-1 overflow-auto relative">
+        <Navbar />
         <Outlet />
+        <Footer />
       </main>
     </div>
   )

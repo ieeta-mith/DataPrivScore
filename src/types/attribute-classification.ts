@@ -1,3 +1,5 @@
+import type { LucideIcon } from 'lucide-react';
+
 export type AttributeType = 
   | 'direct-identifier'
   | 'quasi-identifier'
@@ -5,20 +7,11 @@ export type AttributeType =
   | 'non-sensitive';
 
 export interface AttributeClassification {
-  // Column name from the CSV header
   name: string;
-  // Classified type of the attribute
   type: AttributeType;
-  // Confidence score from 0-1 for auto-classification
-  confidence: number;
-  // Whether the classification was manually overridden by user
-  isManualOverride: boolean;
-  // Sample values from the dataset for display
+  confidence: string;
   sampleValues: string[];
-  // Detected data pattern (e.g., 'numeric', 'categorical', 'date', 'identifier')
   dataPattern: DataPattern;
-  // Reason for the classification
-  classificationReason: string;
 }
 
 export type DataPattern = 
@@ -30,7 +23,9 @@ export type DataPattern =
   | 'boolean'
   | 'hash'
   | 'location'
-  | 'unknown';
+  | 'unknown'
+  | 'ip_address'
+  | 'phone';
 
 export interface ClassificationResult {
   attributes: AttributeClassification[];
@@ -44,38 +39,18 @@ export interface ClassificationSummary {
   quasiIdentifiers: number;
   sensitiveAttributes: number;
   nonSensitiveAttributes: number;
-  averageConfidence: number;
-}
-
-export interface ClassificationConfig {
-  // Minimum confidence threshold for auto-classification (0-1) 
-  minConfidenceThreshold: number;
-  // Number of sample values to analyze per attribute
-  sampleSize: number;
-  // Enable strict mode (higher confidence requirements)
-  strictMode: boolean;
 }
 
 export interface ClassificationRule {
-  // Patterns to match against column names (case-insensitive)
   namePatterns: RegExp[];
-  // Patterns to match against sample values
-  valuePatterns?: RegExp[];
-  // The type to assign if matched
   type: AttributeType;
-  // Base confidence for this rule
-  confidence: number;
-  // Human-readable reason
-  reason: string;
-  // Data pattern this rule typically matches
   dataPattern?: DataPattern;
 }
 
 export interface AttributeTypeInfo {
   title: string;
   label: AttributeType;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  icon: React.ComponentType<any>;
+  icon: LucideIcon;
   short: string;
   examples: string;
   color: {
@@ -84,3 +59,19 @@ export interface AttributeTypeInfo {
     border: string;
   };
 }
+
+export interface DataPatternInfo {
+  type: string;
+  pattern: RegExp[];
+}
+ 
+export interface ClassificationView {
+  result: ClassificationResult;
+  onUpdateAttribute: (name: string, type: AttributeType) => void;
+  editMode: boolean;
+  handleWarningDialog: (
+    attribute: AttributeClassification,
+    targetType: AttributeType
+  ) => void;
+}
+

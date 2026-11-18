@@ -1,6 +1,4 @@
 import type { AttributeTypeInfo } from '@/types/attribute-classification';
-import type { MetricConfig, TechniqueKey } from '@/types/configuration';
-import type { LDiversityType } from '@/types/privacy-analysis';
 import type { Variants } from 'motion/react';
 import {
 	BarChart3,
@@ -11,17 +9,6 @@ import {
 	Users,
 	Shield,
 	FileText,
-	Layers,
-	Activity,
-	Search,
-	EyeOff,
-	Eye,
-	Hash,
-	UserX,
-	Key,
-	Waves,
-	Shuffle,
-	Archive,
 } from 'lucide-react';
 
 export const features = [
@@ -50,8 +37,6 @@ export const features = [
 		color: 'from-orange-500 to-purple-500',
 	},
 ];
-
-export const HIGH_CONFIDENCE_THRESHOLD = 0.8;
 
 export const attributeTypes: AttributeTypeInfo[] = [
 	{
@@ -104,66 +89,56 @@ export const attributeTypes: AttributeTypeInfo[] = [
 	},
 ];
 
-export const METRIC_CONFIGS: MetricConfig[] = [
-	{ key: 'kAnonymity', icon: Users, hasThreshold: true, thresholdKey: 'kAnonymity', color: 'blue' },
-	{
-		key: 'lDiversity',
-		icon: Layers,
-		hasThreshold: true,
-		thresholdKey: 'lDiversity',
-		color: 'purple',
+export const CONFIDENCE_COLOR: { label: string; color: string, description: string }[] = [
+	{ 
+		label: 'high',
+		color: 'bg-green-100 text-green-700 border-green-200',
+		description: 'High confidence - classification is very likely correct'
 	},
 	{
-		key: 'tCloseness',
-		icon: Activity,
-		hasThreshold: true,
-		thresholdKey: 'tCloseness',
-		color: 'cyan',
+		label: 'manual',
+		color: 'bg-blue-100 text-blue-700 border-blue-200',
+		description: 'Manually classified attribute'
 	},
-	{ key: 'techniqueDetection', icon: Search, hasThreshold: false, color: 'amber' },
-	{ key: 'reidentificationRisk', icon: Shield, hasThreshold: false, color: 'red' },
-];
+	{
+		label: 'medium',
+		color: 'bg-amber-100 text-amber-700 border-amber-200',
+		description: 'Medium confidence - review recommended'
+	},
+	{
+		label: 'low',
+		color: 'bg-red-100 text-red-700 border-red-200',
+		description: 'Low confidence - manual verification needed'
+	}];
 
-export const TECHNIQUE_ICONS: Record<TechniqueKey, typeof Layers> = {
-	generalization: Layers,
-	suppression: EyeOff,
-	masking: Eye,
-	hashing: Hash,
-	pseudonymization: UserX,
-	tokenization: Key,
-	noiseAddition: Waves,
-	dataSwapping: Shuffle,
-	aggregation: BarChart3,
-	bucketing: Archive,
-};
-
-export const L_DIVERSITY_TYPES: { value: LDiversityType; label: string; description: string }[] = [
-	{ value: 'distinct', label: 'Distinct', description: 'Count of unique sensitive values' },
-	{ value: 'entropy', label: 'Entropy', description: 'Information-theoretic diversity measure' },
-	{ value: 'recursive', label: 'Recursive', description: 'Most restrictive, frequency-based' },
-];
 
 export const containerVariants: Variants = {
-	hidden: { opacity: 0 },
-	visible: {
-		opacity: 1,
-		transition: {
-			staggerChildren: 0.2,
-			delayChildren: 0.1,
-		},
-	},
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05, // Snappier wave effect
+      delayChildren: 0.05,
+    },
+  },
 };
 
 export const itemVariants: Variants = {
-	hidden: { opacity: 0, y: 20 },
-	visible: {
-		opacity: 1,
-		y: 0,
-		transition: {
-			duration: 0.6,
-			ease: 'easeInOut',
-		},
-	},
+  hidden: { 
+    opacity: 0, 
+    y: 20,
+    scale: 0.95 // Start slightly smaller
+  },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring",
+      stiffness: 260, // How rigid the spring is
+      damping: 20,    // How quickly it settles (lower = more bouncy)
+    },
+  },
 };
 
 export const tabVariants: Variants = {
