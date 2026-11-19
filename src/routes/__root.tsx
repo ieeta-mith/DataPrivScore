@@ -7,7 +7,6 @@ import { Footer } from '@/components/footer'
 const RootLayout = () => {
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <SidebarWrapper />
       <main className="flex-1 overflow-auto relative">
         <Navbar />
         <Outlet />
