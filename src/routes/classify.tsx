@@ -94,7 +94,7 @@ function ClassifyPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-linear-to-br from-background to-muted">
+		<div className="min-h-full bg-linear-to-br from-background to-muted">
 			<div className="container mx-auto px-4 py-8">
 				<PageHeader
 					title="Attribute Classification"
